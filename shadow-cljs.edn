@@ -6,8 +6,7 @@
                 [clj-commons/citrus "3.2.3"]
                 [bidi "2.1.6"]
                 [cider/cider-nrepl "0.25.0"]]
-
- :dev-http {8080 "resources/public/"}
+ :dev-http     {8080 "resources/public/"}
 
  :builds {:main {:target    :node-script
                  :output-to "resources/main.js"

@@ -7,6 +7,7 @@
   (reset! main-window (BrowserWindow.
                         (clj->js {:width          800
                                   :height         600
+                                  :titleBarStyle  "hidden"
                                   :frame          false
                                   :webPreferences {:nodeIntegration true}})))
 

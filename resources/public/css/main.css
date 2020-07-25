@@ -1,8 +1,35 @@
 .logos img {
-  width: 100px;
-  margin-left: 5px;
+    width: 100px;
+    margin-left: 5px;
 }
 
-body{
+body {
     margin: 0px;
+}
+
+.MuiIconButton-root {
+    -webkit-app-region: none;
+}
+
+.white {
+    color: white !important;
+}
+
+.login-page {
+    align-items: center;
+    flex-direction: column;
+    display: flex;
+    margin-top: 5px;
+}
+
+.signin-button {
+    margin-top: 20px !important;
+}
+
+.loading-off {
+    background-color: transparent !important;
+}
+
+.loading-off > * {
+    background-color: transparent !important;
 }
