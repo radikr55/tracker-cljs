@@ -13,8 +13,10 @@
   [r]
   (let  [dark? (rum/react (citrus/subscription r [:theme]))]
     (if dark?
-      (js/React.createElement Brightness7)
-      (js/React.createElement Brightness4))))
+      (js/React.createElement Brightness7
+                              (clj->js {:className "small-icon"}))
+      (js/React.createElement Brightness4
+                              (clj->js {:className "small-icon"})))))
 
 (rum/defc theme-button [r]
   (js/React.createElement IconButton
@@ -43,8 +45,7 @@
 
 (rum/defc title-bar [r]
   (js/React.createElement TitleBar
-                          (clj->js {:title         "TaskTracker"
-                                    :platform      "linux"
+                          (clj->js {:platform      (.-platform js/process)
                                     :onMinimize    (fn [] (.minimize currentWindow))
                                     :onDoubleClick (fn [] ())
                                     :onMaximize    (fn [] (if (.isMaximized currentWindow)

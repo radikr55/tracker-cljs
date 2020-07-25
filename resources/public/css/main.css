@@ -14,7 +14,9 @@ body {
 .white {
     color: white !important;
 }
-
+.small-icon{
+    font-size: 1rem!important;
+}
 .login-page {
     align-items: center;
     flex-direction: column;
@@ -30,6 +32,6 @@ body {
     background-color: transparent !important;
 }
 
-.loading-off > * {
+.loading-off>* {
     background-color: transparent !important;
 }
