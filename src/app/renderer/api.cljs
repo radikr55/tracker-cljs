@@ -5,35 +5,17 @@
 
 (defmulti ->endpoint (fn [id] id))
 
-(defmethod ->endpoint :articles [_ _]
-  "articles")
-
-(defmethod ->endpoint :tags [_ _]
-  "tags")
-
-(defmethod ->endpoint :article [_ slug]
-  (str "articles/" slug))
-
-(defmethod ->endpoint :comments [_ slug]
-  (str "articles/" slug "/comments"))
-
 (defmethod ->endpoint :comment [_ [article-id comment-id]]
   (str "articles/" article-id "/comments/" comment-id))
 
-(defmethod ->endpoint :users [_ _]
-  "users")
-
 (defmethod ->endpoint :login [_ _]
-  "users/login")
+  "login")
 
-(defmethod ->endpoint :user [_ _]
-  "user")
+(defmethod ->endpoint :oauth [_ _]
+  "oauth")
 
-(defmethod ->endpoint :follow [_ slug]
-  (str "profiles/" slug "/follow"))
-
-(defmethod ->endpoint :favorite [_ slug]
-  (str "articles/" slug "/favorite"))
+(defmethod ->endpoint :project [_ _]
+  "project")
 
 (defn- ->uri [path]
   (str "http://localhost:3000/" path))
@@ -80,7 +62,3 @@
     (-> (->endpoint endpoint slug)
         ->uri
         (->xhr xhr-fn xhr-params))))
-;; (->
-;;   (fetch {:endpoint :user :method :get})
-;;   (p/then #(print %))
-;;   (p/catch #(print %)) )

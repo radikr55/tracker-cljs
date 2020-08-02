@@ -1,6 +1,6 @@
 (ns app.renderer.controllers.loading)
 
-(def initial-state false)
+(def initial-state true)
 
 (defmulti control (fn [event] event))
 

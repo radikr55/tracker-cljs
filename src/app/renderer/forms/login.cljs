@@ -1,72 +1,118 @@
 (ns app.renderer.forms.login
   (:require [rum.core :as rum]
-            [app.renderer.forms.components :as comp]
-            [citrus.core :as citrus]))
+            [citrus.core :as citrus]
+            ["@material-ui/lab" :refer [Alert]]
+            ["@material-ui/core" :refer [TextField
+                                         Container
+                                         Paper
+                                         Snackbar
+                                         Button
+                                         Typography
+                                         DialogTitle
+                                         DialogContent
+                                         DialogActions]]))
 
+(def form-storage (atom {:login    nil
+                         :password nil}))
 
-;; (rum/defc form [child] [:form {:onSubmit #(do (.preventDefault %) (print (.. % -taget -value)))} child])
+(defn on-value-change [key value]
+  (swap! form-storage #(conj % {key value})))
+
+(rum/defc snackbar < rum/reactive [r]
+  (let [{error :error} (rum/react (citrus/subscription r [:user]))]
+    (rum/adapt-class Snackbar
+                     {:open    error
+                      :onClose #(citrus/dispatch! r :user :error-clean)}
+                     (rum/adapt-class Alert
+                                      {:onClose  #(citrus/dispatch! r :user :error-clean)
+                                       :severity "warning"}
+                                      "JIRA login warning"))))
+
 (rum/defc image []
-  [:img {:src "img/icon-big.png" :width 100 :height 100 }])
+  [:img {:src    "img/icon-big.png"
+         :width  100
+         :height 100}])
 
-(def email (comp/text-field
-             {:variant      "outlined"
-              :margin       "normal"
-              :required     true
-              :fullWidth    true
-              :key          "email"
-              :type         "email"
-              :id           "email"
-              :label        "Email Address"
-              :name         "email"
-              :autoComplete "email"
-              :autoFocus    true}))
+(def login
+  (rum/adapt-class   TextField
+                     {:variant   "outlined"
+                      :margin    "normal"
+                      :required  true
+                      :fullWidth true
+                      :key       "login"
+                      :id        "login"
+                      :label     "Login"
+                      :name      "login"
+                      :onChange  #(let [val (.. % -target -value)]
+                                    (on-value-change :login val))}))
 
-(def pass (comp/text-field
-            {:variant   "outlined"
-             :margin    "normal"
-             :required  true
-             :fullWidth true
-             :key       "pass"
-             :id        "password"
-             :label     "Password"
-             :name      "password"
-             :type      "password"
-             :autoFocus true}))
+(def pass
+  (rum/adapt-class    TextField
+                      {:variant   "outlined"
+                       :margin    "normal"
+                       :required  true
+                       :fullWidth true
+                       :key       "pass"
+                       :id        "password"
+                       :label     "Password"
+                       :name      "password"
+                       :type      "password"
+                       :autoFocus true
+                       :onChange  #(let [val (.. % -target -value)]
+                                     (on-value-change :password val))}))
 
-(defn submit1 [r]
-  (comp/button
-    {:className "signin-button"
-     :variant   "contained"
-     :key       "submit1"
-     :color     "primary"
-     :onClick   #(citrus/dispatch! r :loading :off)
-     :fullWidth true}
-    "Sign in1"))
+(def title
+  (rum/adapt-class     Typography
+                       {:component "h1"
+                        :key       "title"
+                        :variant   "h5"}
+                       "TaskTracker"))
 
-(def submit (comp/button
-              {:className "signin-button"
-               :variant   "contained"
-               :key       "submit"
-               :type      "submit"
-               :color     "primary"
-               :fullWidth true}
-              "Sign in"))
+(def submit
+  (rum/adapt-class   Button
+                     {:className "signin-button"
+                      :variant   "contained"
+                      :key       "submit"
+                      :type      "submit"
+                      :color     "primary"
+                      :fullWidth true}
+                     "Sign in"))
 
-(def title (comp/typography {:component "h1"
-                             :key       "title"
-                             :variant   "h5"}
-                            "TaskTracker"))
+(defn container [child]
+  (rum/adapt-class       Container
+                         {:key       "container"
+                          :component "main"
+                          :maxWidth  "xs"}
+                         child))
+
+(rum/defc form < rum/reactive
+  [r child]
+  [:form {:key      "form"
+          :onSubmit #(do (.preventDefault %)
+                         (citrus/dispatch! r :user :login @form-storage r))}
+   child])
+
+(defn paper [child]
+  (rum/adapt-class     Paper
+                       {:elevation 3
+                        :key       "paper"
+                        :className "login-paper"}
+                       child))
+
+(rum/defc div [child]
+  [:div
+   {:class "login-page"
+    :key   "page-div"}
+   child])
 
 (rum/defc Login < rum/reactive
   [r]
-  (comp/container
-    {:component "main" :maxWidth "xs"}
-    (comp/form {:onSubmit #(do (.preventDefault %)
-                               (citrus/dispatch! r :loading :on))}
-               (comp/div {:class "login-page"}
-                         [( image )
-                          title
-                          email
-                          pass
-                          submit
-                          ( submit1 r )]))))
+  (container
+    (form r (paper
+              (rum/with-key (div
+                              [(rum/with-key (image) "image")
+                               (rum/with-key (snackbar r) "snackbar")
+                               title
+                               login
+                               pass
+                               submit]) "div")))))

@@ -5,39 +5,48 @@
             [citrus.core :as citrus]
             [app.renderer.effects :as effects]
             [app.renderer.controllers.user :as user]
+            [app.renderer.controllers.chart :as chart]
+            [app.renderer.controllers.router :as router]
+            [app.renderer.controllers.project :as project]
+            [app.renderer.controllers.refresh :refer [refresh-atom]]
             [app.renderer.controllers.loading :as loading]
             [app.renderer.controllers.theme :as theme]
-            [app.renderer.forms.root :refer [Root]]))
-
+            [app.renderer.controllers.home :as home]
+            [app.renderer.forms.root :refer [Root]]
+            [app.renderer.ipc-listeners :as ipc]))
 
 (enable-console-print!)
-
+(def x (atom 10))
 (defonce reconciler
   (citrus/reconciler
     {:state           (atom {})
      :controllers     {:loading loading/control
                        :user    user/control
+                       :router  router/control
+                       :project project/control
+                       :chart   chart/control
+                       :home    home/control
                        :theme   theme/control}
-     :effect-handlers {:local-storage effects/local-storage}}))
+     :effect-handlers {:local-storage effects/local-storage
+                       :ipc           effects/ipc-renderer
+                       :http          effects/http}}))
 
-;; initialize controllers
 (defonce init-ctrl (citrus/broadcast-sync! reconciler :init))
 
-;; (defn ^:dev/before-load stop []
-;;   (js/console.log "stop"))
+(citrus/dispatch! reconciler :router :push {:handler :home})
 
-(citrus/dispatch! reconciler :user :login {:login "12312" :password "13123"})
-
-(citrus/dispatch! reconciler :user :change {:login "asdfates123t" :password "1pass"})
-
-(citrus/dispatch! reconciler :loading :on)
-
-(citrus/dispatch! reconciler :loading :off)
+(add-watch refresh-atom
+           :watcher
+           #(rum/mount (Root reconciler)
+                       (dom/getElement "app-container")))
 
 (defn start! []
+  (ipc/start! reconciler)
   (rum/mount (Root reconciler)
-             (dom/getElement "app-container"))
-  )
+             (dom/getElement "app-container")))
 
 (defn ^:dev/after-load start []
-  (start!))
+  (rum/mount (Root reconciler)
+             (dom/getElement "app-container")))
+
+

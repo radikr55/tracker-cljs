@@ -5,6 +5,7 @@
     "main": "resources/main.js",
     "scripts": {
         "dev": "./node_modules/.bin/shadow-cljs watch main renderer",
+        "test": "./node_modules/.bin/shadow-cljs compile test",
         "build": "./node_modules/.bin/shadow-cljs compile main renderer",
         "clean": "rm -rf resources/public/js/* && rm -rf target",
         "dist": "electron-builder"
@@ -24,6 +25,7 @@
         "@date-io/moment": "1.3.13",
         "@material-ui/core": "^4.11.0",
         "@material-ui/icons": "4.9.1",
+        "@material-ui/lab": "^4.0.0-alpha.56",
         "@material-ui/pickers": "3.2.10",
         "@material-ui/styles": "4.10.0",
         "create-react-class": "15.6.3",
