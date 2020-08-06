@@ -16,13 +16,14 @@
                    child))
 
 (defn top-panel [{:keys [left right]}]
-  (rum/adapt-class Paper {:elevation 3}
+  (rum/adapt-class Paper {:elevation 5}
                    (rum/adapt-class Box {:display         "flex"
                                          :justify-content "space-between"}
                                     [(center-flex-box (map to-box left))
                                      (center-flex-box (map to-box right))])))
 
-(def picker
+(rum/defc picker < rum/reactive
+  [r]
   (rum/adapt-class DatePicker
                    {:variant   "inline"
                     :className "datapicker"
@@ -30,10 +31,11 @@
                     :format    "dddd, MMMM DD, yyyy"
                     :onChange  #(print %)}))
 
-(def provider
+(rum/defc provider < rum/reactive
+  [r]
   (rum/adapt-class MuiPickersUtilsProvider
                    {:utils #(new MomentUtils %)}
-                   picker))
+                   (picker r)))
 
 (rum/defc previously-day [r]
   (rum/adapt-class     IconButton
@@ -71,7 +73,7 @@
                        {:key     "icon-button"
                         :variant "inline"
                         :title   "Refresh"
-                        :onClick #(citrus/dispatch! r :home :open-dialog)}
+                        :onClick #(citrus/dispatch! r :router :push :search)}
                        (rum/adapt-class   SearchOutlined
                                           {})))
 
@@ -86,12 +88,11 @@
 
 (rum/defc Header < rum/reactive
   [r]
-  (to-box (top-panel {:left  [(previously-day r)
-                              provider
-                              (next-day r)
-                              (today-day r)
-                              (refresh r)
-                              (search r)
-                              (Search r)]
+  (to-box (top-panel {:left  [(rum/with-key (previously-day r) "previously-day")
+                              (rum/with-key (provider r) "provider")
+                              (rum/with-key (next-day r) "next-day")
+                              (rum/with-key (today-day r) "today-day")
+                              (rum/with-key (refresh r) "refresh")
+                              (rum/with-key (search r) "search")]
                       :right [(submit-button r)]})))
 

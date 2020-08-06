@@ -28,9 +28,11 @@
       (for [category f-category]
         (assoc category :list (filter pred-proj (:list category)))))))
 
-(defn to-box [child]
-  (rum/adapt-class Box {:p     1
-                        :width "70%"} child))
+(defn to-box
+  ([child] (rum/adapt-class Box {:p     1
+                                 :width "70%"} child))
+  ([child width] (rum/adapt-class Box {:p     1
+                                       :width width} child)))
 
 (defn paper [child]
   (rum/adapt-class Paper {:elevation 3}
@@ -45,15 +47,16 @@
                                       {:primary title}))))
 
 (rum/defc subheader < rum/reactive
-  [r category]
-  (let [theme (rum/react (citrus/subscription r [:home :theme]))]
-    (rum/adapt-class ((styled  ListSubheader)
-                      #(clj->js {:backgroundColor (-> theme :palette :background :paper)})) {}
-                     category)))
+  [r category paper]
+  (rum/adapt-class ((styled  ListSubheader)
+                    #(clj->js {:backgroundColor paper})) {}
+                   category))
 
 (rum/defc table < rum/reactive
   [r]
   (let [list        (rum/react (citrus/subscription r [:project :left]))
+        theme       (rum/react (citrus/subscription r [:home :theme]))
+        paper       (time (-> theme :palette :background :paper))
         search      (rum/react search-atom)
         result-list (filter-list list search)]
     (rum/adapt-class List {:component "div"
@@ -62,7 +65,7 @@
                             (let [category (:category data)
                                   d-list   (:list data)]
                               [(when (not (clojure.string/blank? category))
-                                 (subheader r category))
+                                 (subheader r category paper))
                                (map #(item r %) d-list)]))
                           result-list))))
 
@@ -71,12 +74,17 @@
   (rum/adapt-class TextField
                    {:variant     "outlined"
                     :onChange    #(reset! search-atom (.. % -target -value))
+                    :widht       "100%"
                     :fullWidth   true
                     :placeholder "Search"}))
 
 (rum/defc Search-box
   [r]
-  (-> [(rum/with-key (search r) "project-search")
-       (rum/with-key (table r) "project-table")]
+  (-> [(->  (rum/with-key (search r) "project-search")
+            paper
+            (to-box "100%"))
+       (->  (rum/with-key (table r) "project-table")
+            paper
+            (to-box "100%"))]
       paper
       to-box))

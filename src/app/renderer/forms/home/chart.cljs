@@ -5,11 +5,11 @@
             [citrus.core :as citrus]))
 
 (rum/defc Chart < rum/reactive
-  [r]
+  [r height]
   (let [data (rum/react (citrus/subscription r [:chart]))]
     (rum/adapt-class Box
                      {:display "flex"
-                      :height  "100px"
+                      :height  (str height "px")
                       :width   "100%"}
                      (map-indexed #(rum/adapt-class Box {:flex    (str "0 0 " (str (:interval %2) "px"))
                                                          :key     (str "task-" %1)

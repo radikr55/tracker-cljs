@@ -23,7 +23,7 @@
            :on-error :error-login}})
 
 (defmethod control :logout [event [reconciler] state]
-  (citrus/dispatch! reconciler :router :push {:handler :login})
+  (citrus/dispatch! reconciler :router :push :login)
   {:state         (dissoc state :token)
    :local-storage {:method :remove
                    :key    :token}})
@@ -40,7 +40,7 @@
 (defmethod control :success-oauth [event [result reconciler] state]
   (let [token  (:oauth_token (:body result))
         secret (:oauth_token_secret (:body result))]
-    (citrus/dispatch! reconciler :router :push {:handler :home})
+    (citrus/dispatch! reconciler :router :push :home)
     {:state         (assoc state :token token :error nil)
      :local-storage {:method :set
                      :data   {:token  token

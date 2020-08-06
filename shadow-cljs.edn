@@ -13,16 +13,20 @@
  :builds {:main     {:target    :node-script
                      :output-to "resources/main.js"
                      :main      app.main.core/main}
-          :renderer {:target      :browser
-                     :repl-pprint true
-                     :output-dir  "resources/public/js"
-                     :asset-path  "js"
-                     :js-options  {:js-provider :require}
-                     :modules     {:renderer {:init-fn app.renderer.core/start!}}
-                     }
+          :renderer {:target     :browser
+                     :output-dir "resources/public/js"
+                     :asset-path "js"
+                     :js-options {:js-provider :require}
+                     :modules    {:renderer {:init-fn app.renderer.core/start!}}}
           :test     {:target    :browser-test
                      :test-dir  "resources/public/js/test"
                      :runner-ns app.renderer.core-test
                      :devtools  {:http-port 8021
-                                 :http-root "resources/public/js/test"}}}}
+                                 :http-root "resources/public/js/test"}}
+          :release  {:target           :browser
+                     :output-dir       "resources/public/js"
+                     :asset-path       "js"
+                     :js-options       {:js-provider :require}
+                     :modules          {:renderer {:init-fn app.renderer.core/start!}}
+                     :compiler-options {:optimizations :simple}}}}
 

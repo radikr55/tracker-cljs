@@ -17,12 +17,3 @@
 
 (defn start! [r]
   (render-secret r))
-
-
-;; (.removeAllListeners ipcRenderer "secret")
-;; (.on ipcRenderer "secret"
-;;      #(fn [event arg]
-;;         (citrus/dispatch! r :router :push {:handler :home}) ))
-
-;; (.on ipcRenderer "secret1" #(print %2))
-;; (citrus/dispatch! @reconciler :router :push {:handler :home})

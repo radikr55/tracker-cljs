@@ -9,32 +9,45 @@
             [app.renderer.forms.header :refer [Header]]
             [app.renderer.forms.search :refer [Search]]))
 
-(defn create-theme [dark?]
-  (createMuiTheme
-    (clj->js {:palette
-              (clj->js {:type      (if dark? "dark" "light")
-                        :primary   {:main (if dark? "#90caf9" "#1976d2")}
-                        :secondary {:main (if dark? "#ff4081" "#c51162")}
-                        :devider   "rgba(255, 255, 255, 0.12)"})})))
+(def dark-theme
+  (let [js-theme (createMuiTheme
+                   (clj->js {:palette
+                             (clj->js {:type      "dark"
+                                       :primary   {:main "#90caf9"}
+                                       :secondary {:main "#ff4081"}
+                                       :devider   "rgba(255, 255, 255, 0.12)"})}))]
+    {:js   js-theme
+     :cljs (js->clj js-theme :keywordize-keys true)}))
+
+(def light-theme
+  (let [js-theme (createMuiTheme
+                   (clj->js {:palette
+                             (clj->js {:type      "light"
+                                       :primary   {:main "#1976d2"}
+                                       :secondary {:main "#c51162"}
+                                       :devider   "rgba(255, 255, 255, 0.12)"})}))]
+    {:js   js-theme
+     :cljs (js->clj js-theme :keywordize-keys true)}))
 
 (rum/defc Root < rum/reactive
   [r]
-  (let  [{route :handler} (rum/react (citrus/subscription r [:router]))
-         token            (js/localStorage.getItem "token")
-         dark?            (rum/react (citrus/subscription r [:theme]))
-         theme            (create-theme dark?)]
+  (let  [route (rum/react (citrus/subscription r [:router]))
+         token (js/localStorage.getItem "token")
+         dark? (rum/react (citrus/subscription r [:theme]))
+         theme (if dark? dark-theme light-theme)]
     (rum/react (citrus/subscription r [:refresh]))
     (citrus/dispatch! r :user :init-token token)
     (citrus/dispatch! r :home :set-theme theme)
     (rum/adapt-class
-      MuiThemeProvider  {:theme theme}
+      MuiThemeProvider  {:theme (:js theme)}
       (js/React.createElement CssBaseline)
       (rum/with-key (Header r) "header")
-      (Home r)
+      (Search r)
       ;; (case route
-      ;;   :login (Login r)
-      ;;   :home  (Home r)
+      ;;   :login  (Login r)
+      ;;   :search (Search r)
+      ;;   :home   (Home r)
       ;;   (if (boolean token)
       ;;     (Search r)
-      ;;     (Login r))
+      ;;     (Login r)))
       )))

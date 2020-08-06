@@ -18,7 +18,7 @@
   [r]
   (rum/adapt-class ListItem {:button true}
                    (rum/adapt-class ListItemText
-                                    {:primary "test"})))
+                                    {:primary "test" :secondary "testasdf"})))
 
 (rum/defc table < rum/reactive
   [r child]
