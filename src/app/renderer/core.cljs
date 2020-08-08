@@ -16,7 +16,7 @@
             [app.renderer.ipc-listeners :as ipc]))
 
 (enable-console-print!)
-(def x (atom 10))
+
 (defonce reconciler
   (citrus/reconciler
     {:state           (atom {})
@@ -34,7 +34,7 @@
 (defonce init-ctrl (citrus/broadcast-sync! reconciler :init))
 
 ;; (citrus/dispatch! reconciler :router :push :home)
-(citrus/dispatch! reconciler :home :plus-line true)
+;; (citrus/dispatch! reconciler :home :plus-line true)
 
 (add-watch refresh-atom
            :watcher
@@ -42,12 +42,12 @@
                        (dom/getElement "app-container")))
 
 (defn start! []
-(ipc/start! reconciler)
-(rum/mount (Root reconciler)
-           (dom/getElement "app-container")))
+  (ipc/start! reconciler)
+  (rum/mount (Root reconciler)
+             (dom/getElement "app-container")))
 
 (defn ^:dev/after-load start []
-(rum/mount (Root reconciler)
-           (dom/getElement "app-container")))
+  (rum/mount (Root reconciler)
+             (dom/getElement "app-container")))
 
 

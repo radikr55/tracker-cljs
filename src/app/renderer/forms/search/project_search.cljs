@@ -3,6 +3,7 @@
             [citrus.core :as citrus]
             ["@material-ui/core/styles" :refer [styled]]
             ["@material-ui/core" :refer [Paper
+                                         Devider
                                          Box
                                          ListSubheader
                                          List
@@ -28,23 +29,14 @@
       (for [category f-category]
         (assoc category :list (filter pred-proj (:list category)))))))
 
-(defn to-box
-  ([child] (rum/adapt-class Box {:p     1
-                                 :width "70%"} child))
-  ([child width] (rum/adapt-class Box {:p     1
-                                       :width width} child)))
-
-(defn paper [child]
-  (rum/adapt-class Paper {:elevation 3}
-                   child))
-
 (rum/defc item < rum/reactive
   [r data]
   (let [title (:title data)
         id    (:id data)]
-    (rum/adapt-class ListItem {:button true}
+    (rum/adapt-class ListItem {:button    true
+                               :className "table-row"}
                      (rum/adapt-class ListItemText
-                                      {:primary title}))))
+                                      {:secondary title}))))
 
 (rum/defc subheader < rum/reactive
   [r category paper]
@@ -55,10 +47,11 @@
 (rum/defc table < rum/reactive
   [r]
   (let [list        (rum/react (citrus/subscription r [:project :left]))
-        theme       (rum/react (citrus/subscription r [:home :theme]))
-        paper       (time (-> theme :palette :background :paper))
+        theme       (rum/react (citrus/subscription r [:theme :cljs]))
+        paper       (-> theme :palette :background :paper)
         search      (rum/react search-atom)
         result-list (filter-list list search)]
+
     (rum/adapt-class List {:component "div"
                            :className "search-list"}
                      (map (fn [data]
@@ -78,13 +71,7 @@
                     :fullWidth   true
                     :placeholder "Search"}))
 
-(rum/defc Search-box
+(defn Search-box
   [r]
-  (-> [(->  (rum/with-key (search r) "project-search")
-            paper
-            (to-box "100%"))
-       (->  (rum/with-key (table r) "project-table")
-            paper
-            (to-box "100%"))]
-      paper
-      to-box))
+  {:search (rum/with-key (search r) "project-search")
+   :table  (rum/with-key (table r) "project-table")})

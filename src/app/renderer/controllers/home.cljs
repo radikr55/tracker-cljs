@@ -19,6 +19,3 @@
 
 (defmethod control :plus-line [_ [show] state]
   {:state (assoc state :show-plus-line? show)})
-
-(defmethod control :set-theme [_ [theme] state]
-  {:state (assoc state :theme (:cljs theme ))})

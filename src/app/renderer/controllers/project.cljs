@@ -6,16 +6,17 @@
 (defmulti control (fn [event] event))
 
 (defmethod control :init [_ [reconciler]]
-  (let [token (effects/local-storage
-                reconciler :project
-                {:method :get
-                 :key    :token})]
-    {:state initial-state
-     :http  {:endpoint :project
-             :params   token
-             :method   :post
-             :on-load  :success
-             :on-error :error}})
+  {:state initial-state}
+  ;; (let [token (effects/local-storage
+  ;;               reconciler :project
+  ;;               {:method :get
+  ;;                :key    :token})]
+  ;;   {:state initial-state
+  ;;    :http  {:endpoint :project
+  ;;            :params   token
+  ;;            :method   :post
+  ;;            :on-load  :success
+  ;;            :on-error :error}})
   )
 
 (defmethod control :get [_ [reconciler]]

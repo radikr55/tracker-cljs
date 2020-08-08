@@ -87,15 +87,16 @@
 ;;     (when element
 ;;       [:div
 ;;        [(tooltip-button hide-tooltip? position)
-;;         ;; (tooltip-line hide-tooltip? mouse-event)
+;;         (tooltip-line hide-tooltip? mouse-event)
 ;;         ]])))
-;; (rum/defc line-cursor < rum/reactive
-;;   [r]
-;;   [:div {:style {:position         "absolute"
-;;                  :z-index          "99999"
-;;                  :width            "10px"
-;;                  :height           (+ timeline-height chart-height)
-;;                  :background-color "black"}}])
+
+(rum/defc line-cursor < rum/reactive
+  [r]
+  [:div {:style {:position         "absolute"
+                 :z-index          "99999"
+                 :width            "10px"
+                 :height           (+ timeline-height chart-height)
+                 :background-color "black"}}])
 
 (defn on-wheel-container [e r]
   (let [delta  (.-deltaY e)

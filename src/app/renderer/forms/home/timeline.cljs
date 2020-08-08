@@ -1,12 +1,11 @@
 (ns app.renderer.forms.home.timeline
   (:require [rum.core :as rum]
             ["@material-ui/core" :refer [Paper Box Tooltip Popper Fade]]
-            ["@material-ui/core/styles" :refer [styled]]
             [citrus.core :as citrus]))
 
 (def ref-container (rum/create-ref))
 
-(def timeline-value ["01:00"  "02:00"  "03:00"  "04:00"  "05:00"  "06:00"  "07:00"  "08:00"  "09:00"  "10:00"  "11:00"  "12:00"  "13:00"  "14:00"  "15:00"  "16:00"  "17:00"  "18:00"  "19:00"  "20:00"  "21:00"  "22:00"  "23:00"])
+(def timeline-value ["" "01:00"  "02:00"  "03:00"  "04:00"  "05:00"  "06:00"  "07:00"  "08:00"  "09:00"  "10:00"  "11:00"  "12:00"  "13:00"  "14:00"  "15:00"  "16:00"  "17:00"  "18:00"  "19:00"  "20:00"  "21:00"  "22:00"  "23:00" ""])
 
 (rum/defc time-cursor < rum/reactive
   [r]
@@ -42,14 +41,14 @@
   [r category]
   (let [theme (rum/react (citrus/subscription r [:home :theme]))]))
 
-(defn get-timeline [r]
+(rum/defc get-timeline [r]
   (map-indexed
     #(let [index %1
            value %2
            width 60]
        (cond
-         (= index 0)                            (box r 90 value)
-         (= (inc index) (count timeline-value)) (box r 90 value)
+         (= index 0)                            (box r 30 value)
+         (= (inc index) (count timeline-value)) (box r 30 value)
          :else                                  (box r width value)))
     timeline-value))
 
@@ -63,8 +62,8 @@
                     :display      "flex"
                     :height       (str height "px")
                     :width        "100%"}
-                   [(time-cursor r)
-                    (get-timeline r)]))
+                   [(rum/with-key (time-cursor r) "time-cursor")
+                    (rum/with-key (get-timeline r) "timeline")]))
 
 (rum/defc Timeline < rum/reactive
   [r height]

@@ -4,7 +4,8 @@
             [citrus.core :as citrus]))
 
 (defn to-box [child]
-  (rum/adapt-class Box {:p 1 :width "100%"} child))
+  (rum/adapt-class Box {:p     1
+                        :width "100%"} child))
 
 (defn paper [child]
 (rum/adapt-class Paper {:elevation 3}

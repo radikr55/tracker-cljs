@@ -28,6 +28,5 @@
 (rum/defc Tasks < rum/reactive
   [r]
   (to-box (paper
-            (table r [(list-item r)
-                      (list-item r)]))))
+            (table r (list-item r)))))
 

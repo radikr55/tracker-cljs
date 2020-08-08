@@ -1,6 +1,7 @@
 (ns app.renderer.forms.search.issue-search
   (:require [rum.core :as rum]
             [citrus.core :as citrus]
+            ["@material-ui/core/styles" :refer [styled]]
             ["@material-ui/core" :refer [Paper
                                          ListSubheader
                                          Box
@@ -11,13 +12,6 @@
 
 (def search-atom (atom ""))
 
-(defn to-box [child]
-  (rum/adapt-class Box {:p 1 :width "100%"} child))
-
-(defn paper [child]
-  (rum/adapt-class Paper {:elevation 3}
-                   child))
-
 (rum/defc list-item < rum/reactive
   [r title]
   (rum/adapt-class ListItem {:button true}
@@ -27,18 +21,22 @@
   [r data]
   (let [title (:title data)
         id    (:id data)]
-    (rum/adapt-class ListItem {:button true}
+    (rum/adapt-class ListItem {:button    true
+                               :className "table-row"}
                      (rum/adapt-class ListItemText
-                                      {:primary title}))))
+                                      {:secondary title}))))
 
 (rum/defc subheader < rum/reactive
-  [r category]
-  (rum/adapt-class ListSubheader
+  [r category paper]
+  (rum/adapt-class ((styled  ListSubheader)
+                    #(clj->js {:backgroundColor paper})) {}
                    category))
 
 (rum/defc table < rum/reactive
   [r]
   (let [{list :right} (rum/react (citrus/subscription r [:project]))
+        theme         (rum/react (citrus/subscription r [:theme :cljs]))
+        paper         (-> theme :palette :background :paper)
         search        (rum/react search-atom)]
     (rum/adapt-class List {:component "nav"
                            :className "search-list"}
@@ -46,7 +44,7 @@
                             (let [category (:category data)
                                   d-list   (:list data)]
                               [(when (not (clojure.string/blank? category))
-                                 (subheader r category))
+                                 (subheader r category paper))
                                (map #(item r %) d-list)]))
                           list))))
 
@@ -57,9 +55,7 @@
                               :margin      "none"
                               :placeholder "Search"}))
 
-(rum/defc Search-box
+(defn Search-box
   [r]
-  (-> [(search r)
-       (table r)]
-      paper
-      to-box))
+  {:search (rum/with-key (search r) "search")
+   :table  (rum/with-key (table r) "table")})

@@ -11,14 +11,32 @@
             [app.renderer.forms.search.project-search :as project-search]
             [app.renderer.forms.search.issue-search :as issue-search]))
 
+(defn get-component [key]
+  (case key
+    :box   Box
+    :paper Paper))
+
+(defn tc [[component-key opts child]]
+  (let [opt  (if opts opts {})
+        comp (get-component component-key)]
+    (js/React.createElement comp (clj->js opts) child)))
+
+(defn to-box-content
+  ([child]
+   (tc [:box {:p 1 :width "100%"} child]))
+  ([child width] (tc [:box {:p     1
+                            :width width} child])))
+
+(defn paper [child]
+  (tc  [:paper {:elevation 3} child]))
+
 (defn to-box [child]
-  (rum/adapt-class Box {:display         "flex"
-                        :justify-content "space-between"} child))
+  (tc [:box {:display         "flex"
+             :justify-content "space-between"} child]))
 
 (defn to-title-box [child]
-  (rum/adapt-class Box {:px 1
-                        :py 1}
-                   (rum/adapt-class Paper {:elevation 5}
+  (rum/adapt-class Box {:p 1}
+                   (rum/adapt-class Paper {:elevation 4}
                                     (rum/adapt-class Box {:p               1
                                                           :display         "flex"
                                                           :alignItems      "center"
@@ -36,13 +54,28 @@
   [r]
   (rum/adapt-class Box {:px 2}
                    (rum/adapt-class Typography {:variant "h6"}
-                                    "Search") ))
+                                    "Search")))
+(rum/defc to-content
+  [child width]
+  (let [search (paper (:search child))
+        table  (paper (:table child))]
+    (to-box-content (paper [(to-box-content search)
+                            (to-box-content table)])  width)))
 
-(rum/defc Search 
+(def load-mixin
+  {:will-mount (fn [{[r] :rum/args :as state}]
+                 (citrus/dispatch! r :project :get)
+                 state)})
+
+(rum/defc loaded-content < load-mixin
+  [r]
+  (to-box
+    [(to-content (project-search/Search-box r) "70%")
+     (to-content (issue-search/Search-box r) "100%")]))
+
+(rum/defc Search
   [r]
   [(to-title-box
      [(rum/with-key (title r) "title")
       (rum/with-key (close-button r) "close-button")])
-   (to-box
-     [(rum/with-key (project-search/Search-box r) "project-search")
-      (rum/with-key (issue-search/Search-box r) "issue-search")])])
+   (loaded-content r)])
