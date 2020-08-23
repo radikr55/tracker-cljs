@@ -72,7 +72,8 @@
         child   (tc {:component :icon-button
                      :opts      {:key     "icon-button"
                                  :ref     button
-                                 :onClick #(reset! show-menu true)}
+                                 :onClick #(do (citrus/dispatch! r :home :show-plus-line false)
+                                               (reset! show-menu true))}
                      :child     {:component :add}})]
     (when (and hide? element) [:div {:style {:position "absolute"
                                              :top      (- (.-bottom (.getBoundingClientRect element)) 45)
