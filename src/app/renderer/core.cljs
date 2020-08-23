@@ -4,11 +4,11 @@
             [goog.dom :as dom]
             [citrus.core :as citrus]
             [app.renderer.effects :as effects]
-            [app.renderer.controllers.user :as user]
+            ;; [app.renderer.controllers.user :as user]
+            [app.renderer.controllers.user-mock :as user]
             [app.renderer.controllers.chart :as chart]
             [app.renderer.controllers.router :as router]
             [app.renderer.controllers.project :as project]
-            [app.renderer.controllers.refresh :refer [refresh-atom]]
             [app.renderer.controllers.loading :as loading]
             [app.renderer.controllers.theme :as theme]
             [app.renderer.controllers.home :as home]
@@ -36,10 +36,10 @@
 ;; (citrus/dispatch! reconciler :router :push :home)
 ;; (citrus/dispatch! reconciler :home :plus-line true)
 
-(add-watch refresh-atom
-           :watcher
-           #(rum/mount (Root reconciler)
-                       (dom/getElement "app-container")))
+;; (add-watch refresh-atom
+;;            :watcher
+;;            #(rum/mount (Root reconciler)
+;;                        (dom/getElement "app-container")))
 
 (defn start! []
   (ipc/start! reconciler)

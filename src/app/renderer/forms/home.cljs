@@ -9,9 +9,11 @@
 
 (rum/defc Home < rum/reactive
   [r]
-  [(rum/with-key (header/Header r) "home-header")
+  [
+   (rum/with-key (header/Header r) "home-header")
    (rum/with-key (chart-box/Chart-box r) "home-chart")
    (rum/adapt-class Box {:display         "flex"
                          :justify-content "space-between"}
                     [(rum/with-key (tasks/Tasks r) "home-tasks")
-                     (rum/with-key (statistic/Statistic r) "home-statistic")])])
+                     (rum/with-key (statistic/Statistic r) "home-statistic")])
+   ])

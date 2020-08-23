@@ -1,32 +1,30 @@
 (ns app.renderer.forms.home.tasks
   (:require [rum.core :as rum]
-            ["@material-ui/core" :refer [Paper
-                                         Box
-                                         List
-                                         ListItem
-                                         ListItemText]]
+            [app.renderer.utils :refer [tc]]
+            [app.renderer.forms.home.tasks.list :as list]
+            [app.renderer.forms.home.tasks.header :as header]
             [citrus.core :as citrus]))
 
-(defn to-box [child]
-  (rum/adapt-class Box {:p 1 :width "100%"} child))
-
-(defn paper [child]
-  (rum/adapt-class Paper {:elevation 3}
-                   child))
-
-(rum/defc list-item < rum/reactive
-  [r]
-  (rum/adapt-class ListItem {:button true}
-                   (rum/adapt-class ListItemText
-                                    {:primary "test" :secondary "testasdf"})))
-
-(rum/defc table < rum/reactive
-  [r child]
-  (rum/adapt-class List {:component "nav"}
-                   child))
+(defn structure [header body]
+  {:component :box
+   :opts      {:p 1 :width "100%"}
+   :child     {:component :paper
+               :opts      {:elevation 1}
+               :child     [{:component :box
+                            :opts      {:pt    1
+                                        :width "100%"
+                                        :key   "header"}
+                            :child     header}
+                           {:component :divider
+                            :opts      {:key "divider"}}
+                           {:component :box
+                            :opts      {:width "100%"
+                                        :key   "body"}
+                            :child     {:component :paper
+                                        :opts      {:elevation 2}
+                                        :child     body}}]}})
 
 (rum/defc Tasks < rum/reactive
   [r]
-  (to-box (paper
-            (table r (list-item r)))))
+  (tc  (structure (header/Header r) (list/Tasks-list r))))
 

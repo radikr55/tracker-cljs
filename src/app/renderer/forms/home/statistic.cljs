@@ -1,17 +1,26 @@
 (ns app.renderer.forms.home.statistic
   (:require [rum.core :as rum]
-            ["@material-ui/core" :refer [Paper Box]]
-            [citrus.core :as citrus]))
+            [app.renderer.utils :refer [tc]]
+            [app.renderer.forms.home.statistic.header :as header]
+            [app.renderer.forms.home.statistic.tabs :as tabs]
+            ))
 
-(defn to-box [child]
-  (rum/adapt-class Box {:p     1
-                        :width "100%"} child))
-
-(defn paper [child]
-(rum/adapt-class Paper {:elevation 3}
-                 child))
+(defn structure [header body]
+  {:component :box
+   :opts      {:p 1 :width "60%"}
+   :child     {:component :paper
+               :opts      {:elevation 2}
+               :child     [{:component :box
+                            :opts      { :pt 1 :width "100%"}
+                            :child     header}
+                           {:component :divider}
+                           {:component :box
+                            :opts      {:width "100%"}
+                            :child     {:component :paper
+                                        :opts      {:elevation 2}
+                                        :child     body}}]}})
 
 (rum/defc Statistic < rum/reactive
   [r]
-  (to-box ( paper "Statistic" )))
+  (tc (structure (header/Header r) (tabs/Tabs r))))
 

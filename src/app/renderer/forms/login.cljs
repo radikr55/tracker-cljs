@@ -25,7 +25,7 @@
                       :onClose #(citrus/dispatch! r :user :error-clean)}
                      (rum/adapt-class Alert
                                       {:onClose  #(citrus/dispatch! r :user :error-clean)
-                                       :severity "warning"}
+                                       :severity "error"}
                                       "JIRA login warning"))))
 
 (rum/defc image []

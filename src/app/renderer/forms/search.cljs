@@ -1,66 +1,48 @@
 (ns app.renderer.forms.search
   (:require [rum.core :as rum]
             [citrus.core :as citrus]
-            ["@material-ui/core" :refer [Typography Box
-                                         DialogTitle Dialog
-                                         AppBar Toolbar
-                                         Paper Collapse
-                                         Slide IconButton]]
-            ["@material-ui/icons" :refer [Close]]
+            [app.renderer.utils :refer [tc]]
             ["@material-ui/core/styles" :refer [styled]]
             [app.renderer.forms.search.project-search :as project-search]
             [app.renderer.forms.search.issue-search :as issue-search]))
 
-(defn get-component [key]
-  (case key
-    :box   Box
-    :paper Paper))
-
-(defn tc [[component-key opts child]]
-  (let [opt  (if opts opts {})
-        comp (get-component component-key)]
-    (js/React.createElement comp (clj->js opts) child)))
-
-(defn to-box-content
-  ([child]
-   (tc [:box {:p 1 :width "100%"} child]))
-  ([child width] (tc [:box {:p     1
-                            :width width} child])))
-
-(defn paper [child]
-  (tc  [:paper {:elevation 3} child]))
-
-(defn to-box [child]
-  (tc [:box {:display         "flex"
-             :justify-content "space-between"} child]))
-
-(defn to-title-box [child]
-  (rum/adapt-class Box {:p 1}
-                   (rum/adapt-class Paper {:elevation 4}
-                                    (rum/adapt-class Box {:p               1
-                                                          :display         "flex"
-                                                          :alignItems      "center"
-                                                          :justify-content "space-between"}
-                                                     child))))
-
 (rum/defc close-button < rum/reactive
+  {:key-fn (fn [_] "close")}
   [r]
   (let [theme (rum/react (citrus/subscription r [:home :theme]))]
-    (rum/adapt-class  IconButton
-                      {:onClick #(citrus/dispatch! r :router :push :home)}
-                      (rum/adapt-class Close {}))))
+    (tc {:component :icon-button
+         :opts      {:onClick #(citrus/dispatch! r :router :push :home)}
+         :child     {:component :close}})))
 
 (rum/defc title < rum/reactive
+  {:key-fn (fn [_] "title")}
   [r]
-  (rum/adapt-class Box {:px 2}
-                   (rum/adapt-class Typography {:variant "h6"}
-                                    "Search")))
-(rum/defc to-content
-  [child width]
-  (let [search (paper (:search child))
-        table  (paper (:table child))]
-    (to-box-content (paper [(to-box-content search)
-                            (to-box-content table)])  width)))
+  (tc {:component :box
+       :opts      {:px 2}
+       :child     {:component :typography
+                   :opts      {:variant "h6"}
+                   :child     "Search"}}))
+
+(defn title-box [r]
+  (tc {:component :box
+       :opts      {:p   1
+                   :key "title-bar"}
+       :child     {:component :paper
+                   :opts      {:elevation 4}
+                   :child     {:component :box
+                               :opts      {:p              1
+                                           :display        "flex"
+                                           :alignItems     "center"
+                                           :justifyContent "space-between"}
+                               :child     [(title r)
+                                           (close-button r)]}}}))
+
+(rum/defc content
+  [component]
+  (tc {:component :paper
+       :child     {:component :box
+                   :opts      {:p 1}
+                   :child     component}}))
 
 (def load-mixin
   {:will-mount (fn [{[r] :rum/args :as state}]
@@ -68,14 +50,25 @@
                  state)})
 
 (rum/defc loaded-content < load-mixin
+  {:key-fn (fn [_] "content")}
   [r]
-  (to-box
-    [(to-content (project-search/Search-box r) "70%")
-     (to-content (issue-search/Search-box r) "100%")]))
+  (tc {:component :box
+       :opts      {:p              1
+                   :display        "flex"
+                   :alignItems     "center"
+                   :justifyContent "space-between"}
+       :child     [{:component :box
+                    :opts      {:pr    1
+                                :key   "project"
+                                :width "60%"}
+                    :child     (content (project-search/Search-box r) )}
+                   {:component :box
+                    :opts      {:pl    1
+                                :key   "issue"
+                                :width "100%"}
+                    :child     (content (issue-search/Search-box r) )}]}))
 
 (rum/defc Search
   [r]
-  [(to-title-box
-     [(rum/with-key (title r) "title")
-      (rum/with-key (close-button r) "close-button")])
+  [(title-box r)
    (loaded-content r)])

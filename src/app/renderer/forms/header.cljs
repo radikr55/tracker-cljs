@@ -3,7 +3,6 @@
             ["electron" :refer [remote]]
             [app.renderer.forms.logout :refer [Logout]]
             [citrus.core :as citrus]
-            [app.renderer.controllers.refresh :refer [refresh-atom]]
             ["@material-ui/core" :refer [IconButton Icon LinearProgress Fade]]
             ["@material-ui/icons" :refer [Brightness4 Brightness7 RefreshOutlined]]
             [frameless-titlebar :default TitleBar]))
@@ -27,14 +26,14 @@
                         :title     "Switch theme"}
                        (button-icon r)))
 
-(rum/defc refresh-button [r]
-  (rum/adapt-class     IconButton
-                       {:key       "icon-button"
-                        :onClick   #(reset! refresh-atom true)
-                        :className "white"
-                        :title     "Refresh"}
-                       (rum/adapt-class   RefreshOutlined
-                                          {:className "small-icon"})))
+;; (rum/defc refresh-button [r]
+;;   (rum/adapt-class     IconButton
+;;                        {:key       "icon-button"
+;;                         :onClick   #(reset! refresh-atom true)
+;;                         :className "white"
+;;                         :title     "Refresh"}
+;;                        (rum/adapt-class   RefreshOutlined
+;;                                           {:className "small-icon"})))
 
 (rum/defc loading  < rum/reactive
   [r]
@@ -54,7 +53,8 @@
                                              (.restore currentWindow)
                                              (.maximize currentWindow)))
                      :onClose       (fn [] (.close currentWindow))}
-                    [(rum/with-key (refresh-button r) "refresh-button")
+                    [
+                     ;; (rum/with-key (refresh-button r) "refresh-button")
                      (rum/with-key (theme-button r) "theme-button")
                      (rum/with-key (Logout r) "logout-button")]))
 

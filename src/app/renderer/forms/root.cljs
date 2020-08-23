@@ -21,11 +21,12 @@
       MuiThemeProvider  {:theme theme}
       (js/React.createElement CssBaseline)
       (rum/with-key (Header r) "header")
-      ;; (Search r)
+      ;; (Home r)
       (case route
         :login  (Login r)
         :search (Search r)
         :home   (Home r)
         (if (boolean token)
-          (Search r)
-          (Login r))))))
+          (Home r)
+          (Login r)))
+      )))

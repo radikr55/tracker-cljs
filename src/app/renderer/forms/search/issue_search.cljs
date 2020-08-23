@@ -1,6 +1,7 @@
 (ns app.renderer.forms.search.issue-search
   (:require [rum.core :as rum]
             [citrus.core :as citrus]
+            [app.renderer.utils :refer [tc]]
             ["@material-ui/core/styles" :refer [styled]]
             ["@material-ui/core" :refer [Paper
                                          ListSubheader
@@ -12,50 +13,57 @@
 
 (def search-atom (atom ""))
 
-(rum/defc list-item < rum/reactive
-  [r title]
-  (rum/adapt-class ListItem {:button true}
-                   (rum/adapt-class ListItemText
-                                    {:primary (str "test" title)})))
 (rum/defc item < rum/reactive
+  {:key-fn (fn [_ data] (:id data))}
   [r data]
   (let [title (:title data)
         id    (:id data)]
-    (rum/adapt-class ListItem {:button    true
-                               :className "table-row"}
-                     (rum/adapt-class ListItemText
-                                      {:secondary title}))))
+    (tc {:component :list-item
+         :opts      {:button    true
+                     :className "table-row"}
+         :child     {:component :list-item-text
+                     :opts      {:secondary title}}})))
 
 (rum/defc subheader < rum/reactive
+  {:key-fn (fn [_ id _] id)}
   [r category paper]
-  (rum/adapt-class ((styled  ListSubheader)
-                    #(clj->js {:backgroundColor paper})) {}
-                   category))
+  (tc {:component :list-subheader
+       :styl      {:backgroundColor paper}
+       :child     category}))
 
 (rum/defc table < rum/reactive
+  {:key-fn (fn [_] "table")}
   [r]
   (let [{list :right} (rum/react (citrus/subscription r [:project]))
         theme         (rum/react (citrus/subscription r [:theme :cljs]))
         paper         (-> theme :palette :background :paper)
         search        (rum/react search-atom)]
-    (rum/adapt-class List {:component "nav"
-                           :className "search-list"}
-                     (map (fn [data]
-                            (let [category (:category data)
-                                  d-list   (:list data)]
-                              [(when (not (clojure.string/blank? category))
-                                 (subheader r category paper))
-                               (map #(item r %) d-list)]))
-                          list))))
+    (tc {:component :box
+         :opts      {:pt 1}
+         :child     {:component :paper
+                     :child     {:component :list
+                                 :opts      {:component "nav"
+                                             :key       "project"
+                                             :className "search-list"}
+                                 :child     (map (fn [data]
+                                                   (let [category (:category data)
+                                                         d-list   (:list data)]
+                                                     [(when (not (clojure.string/blank? category))
+                                                        (subheader r category paper))
+                                                      (map #(item r %) d-list)]))
+                                                 list)}}})))
 
 (rum/defc search < rum/reactive
+  {:key-fn (fn [_] "search")}
   [r]
-  (rum/adapt-class TextField {:variant     "outlined"
-                              :fullWidth   true
-                              :margin      "none"
-                              :placeholder "Search"}))
+  (tc {:component :text-field
+       :opts      {:variant   "outlined"
+                   :fullWidth true
+                   :margin    "none"
+                   :label     "Search"}}))
 
-(defn Search-box
+(rum/defc Search-box
   [r]
-  {:search (rum/with-key (search r) "search")
-   :table  (rum/with-key (table r) "table")})
+  (tc  {:component :box
+        :child     [(search r)
+                    (table r)]}))

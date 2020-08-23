@@ -16,7 +16,7 @@
                    child))
 
 (defn top-panel [{:keys [left right]}]
-  (rum/adapt-class Paper {:elevation 5}
+  (rum/adapt-class Paper {:elevation 4}
                    (rum/adapt-class Box {:display         "flex"
                                          :justify-content "space-between"}
                                     [(center-flex-box (map to-box left))
