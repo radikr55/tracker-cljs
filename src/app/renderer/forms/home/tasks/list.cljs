@@ -44,6 +44,7 @@
         visibility (contains? selected code)]
     (tc {:component :list-item
          :opts      {:button-base (not @delete?)
+                     :button      true
                      :className   "table-row"}
          :child     [{:component :list-item-text
                       :styl      (when @delete? {:filter "blur(2px)"})
@@ -72,10 +73,12 @@
         code       "Away"
         visibility (contains? selected code)]
     (tc {:component :list-item
+         :opts      {:button true}
          :child     [{:component :list-item-text
                       :styl      {:color "orange"}
                       :opts      {:primary   code
                                   :key       "away"
+                                  :onClick   #(citrus/dispatch! r :chart :set-current-task code)
                                   :secondary ""}}
                      {:component :list-item-secondary-action
                       :child     [(task-time r code)

@@ -23,6 +23,7 @@
                                  :container true}
                      :child     [{:component :grid
                                   :opts      {:item true
+                                              :key  "start"
                                               :xs   6}
                                   :child     {:component :text-field
                                               :opts      {:label        "Start"
@@ -30,6 +31,7 @@
                                                           :type         "time"}}}
                                  {:component :grid
                                   :opts      {:item true
+                                              :key  "end"
                                               :xs   6}
                                   :child     {:component :text-field
                                               :opts      {:label        "End"
@@ -37,13 +39,15 @@
                                                           :type         "time"}}}
                                  {:component :grid
                                   :opts      {:item true
+                                              :key  "add"
                                               :xs   12}
                                   :child     {:component :button
-                                              :opts      {:variant "containe"
+                                              :opts      {:variant "contained"
                                                           :width   "100%"}
                                               :child     "Add tasks"}}]}})))
 
 (rum/defc poper < rum/reactive
+  {:key-fn (fn [_] "poper")}
   [r]
   (let [show-menu? (rum/react show-menu)]
     (tc {:component :popover
@@ -60,6 +64,7 @@
                                  :child     (menu r)}}})))
 
 (rum/defc tooltip-button < rum/reactive
+  {:key-fn (fn [_] "button")}
   [r]
   (let [element (.-current  plus-ref)
         hide?   (rum/react (citrus/subscription r [:home :show-plus-line?]))
@@ -69,10 +74,10 @@
                                  :ref     button
                                  :onClick #(reset! show-menu true)}
                      :child     {:component :add}})]
-    (when hide? [:div {:style {:position "absolute"
-                               :top      (- (.-bottom (.getBoundingClientRect element)) 45)
-                               :left     (- (:pageX  mouse) 25)}}
-                 child])))
+    (when (and hide? element) [:div {:style {:position "absolute"
+                                             :top      (- (.-bottom (.getBoundingClientRect element)) 45)
+                                             :left     (- (:pageX  mouse) 25)}}
+                               child])))
 
 (rum/defc plus-line < rum/reactive
   [r height]

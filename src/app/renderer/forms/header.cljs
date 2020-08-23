@@ -26,16 +26,7 @@
                         :title     "Switch theme"}
                        (button-icon r)))
 
-;; (rum/defc refresh-button [r]
-;;   (rum/adapt-class     IconButton
-;;                        {:key       "icon-button"
-;;                         :onClick   #(reset! refresh-atom true)
-;;                         :className "white"
-;;                         :title     "Refresh"}
-;;                        (rum/adapt-class   RefreshOutlined
-;;                                           {:className "small-icon"})))
-
-(rum/defc loading  < rum/reactive
+(rum/defc loading < rum/reactive
   [r]
   (let  [loading? (rum/react (citrus/subscription r [:loading]))]
     (rum/adapt-class Fade
@@ -53,8 +44,7 @@
                                              (.restore currentWindow)
                                              (.maximize currentWindow)))
                      :onClose       (fn [] (.close currentWindow))}
-                    [
-                     ;; (rum/with-key (refresh-button r) "refresh-button")
+                    [;; (rum/with-key (refresh-button r) "refresh-button")
                      (rum/with-key (theme-button r) "theme-button")
                      (rum/with-key (Logout r) "logout-button")]))
 

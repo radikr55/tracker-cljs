@@ -26,15 +26,6 @@
                       :child     current}
                      {:component :box
                       :child     [{:component :icon-button
-                                   :opts      {:onClick #(citrus/dispatch! r :chart :switch-order)}
-                                   :child     {:component (cond
-                                                            (= :asc order)  :sort
-                                                            (= :desc order) :arrow-up
-                                                            :else           :arrow-down)}}
-                                  {:component :box
-                                   :opts      {:width   "48px"
-                                               :display "inline-flex"}}
-                                  {:component :icon-button
                                    :opts      {:onClick #(citrus/dispatch! r :chart :switch-all-selected all-codes)}
                                    :child     {:component (if all-visibility
                                                             :visibility
