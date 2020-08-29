@@ -2,7 +2,7 @@
   (:require [rum.core :as rum]
             ["@date-io/moment" :as MomentUtils]
             ["@material-ui/icons" :refer [ArrowBack ArrowForward Refresh Today SearchOutlined]]
-            ["@material-ui/core" :refer [Button Paper IconButton Box]]
+            ["@material-ui/core" :refer [Button Paper AppBar IconButton Box]]
             [app.renderer.forms.search :refer [Search]]
             ["@material-ui/pickers" :refer [MuiPickersUtilsProvider KeyboardDatePicker DatePicker]]
             [citrus.core :as citrus]))
@@ -16,16 +16,16 @@
                    child))
 
 (defn top-panel [{:keys [left right]}]
-  (rum/adapt-class Paper {:elevation 4}
-                   (rum/adapt-class Box {:display         "flex"
-                                         :justify-content "space-between"}
-                                    [(center-flex-box (map to-box left))
-                                     (center-flex-box (map to-box right))])))
+  (rum/adapt-class  AppBar {:elevation 4}
+                    (rum/adapt-class Box {:display         "flex"
+                                          :justify-content "space-between"}
+                                     [(center-flex-box (map to-box left))
+                                      (center-flex-box (map to-box right))])))
 
 (rum/defc picker < rum/reactive
   [r]
   (rum/adapt-class DatePicker
-                   {:variant   "inline"
+                   {
                     :className "datapicker"
                     :margin    "normal"
                     :format    "dddd, MMMM DD, yyyy"
@@ -34,7 +34,9 @@
 (rum/defc provider < rum/reactive
   [r]
   (rum/adapt-class MuiPickersUtilsProvider
-                   {:utils #(new MomentUtils %)}
+                   {:utils   #(new MomentUtils %)
+                    :variant "outlined"
+                    }
                    (picker r)))
 
 (rum/defc previously-day [r]

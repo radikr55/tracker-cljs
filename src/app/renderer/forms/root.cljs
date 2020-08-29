@@ -20,7 +20,7 @@
     (rum/adapt-class
       MuiThemeProvider  {:theme theme}
       (js/React.createElement CssBaseline)
-      (rum/with-key (Header r) "header")
+      ;; (rum/with-key (Header r) "header")
       ;; (Home r)
       (case route
         :login  (Login r)

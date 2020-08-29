@@ -2,7 +2,9 @@
   (:require
    [goog.string :as gstring]
    [goog.string.format]
+   ["react-draggable" :default Draggable]
    ["@material-ui/core/styles" :refer [styled]]
+   ["@material-ui/pickers" :refer [MuiPickersUtilsProvider KeyboardDatePicker DatePicker]]
    ["@material-ui/core" :refer [Typography Box
                                 DialogTitle Dialog
                                 TextField
@@ -17,9 +19,12 @@
                                 Grid FormGroup
                                 Slide IconButton]]
    ["@material-ui/icons" :refer [Close
+                                 MoreVert
+                                 FiberManualRecord
                                  SettingsEthernetSharp
                                  Visibility Sort
                                  Cancel CheckCircle
+                                 ArrowForward ArrowBack
                                  ArrowDownward
                                  AddCircleOutline ArrowUpward
                                  DeleteForeverOutlined
@@ -27,6 +32,7 @@
 
 (defn get-component [key]
   (case key
+    :draggable                  Draggable
     :list                       List
     :list-item                  ListItem
     :list-subheader             ListSubheader
@@ -55,9 +61,15 @@
     :tooltip                    Tooltip
     :sort                       Sort
     :arrow-up                   ArrowUpward
+    :arrow-left                 ArrowBack
+    :arrow-right                ArrowForward
     :grid                       Grid
     :arrow-down                 ArrowDownward
     :add                        AddCircleOutline
+    :date-provider              MuiPickersUtilsProvider
+    :date-picker                DatePicker
+    :more-vert                  MoreVert
+    :dot                        FiberManualRecord
     nil))
 
 (defn obj-js [component]

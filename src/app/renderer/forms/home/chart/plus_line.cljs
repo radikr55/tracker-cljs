@@ -61,7 +61,8 @@
          :child     {:component :paper
                      :opts      {:elevation 3}
                      :child     {:component :box
-                                 :child     (menu r)}}})))
+                                 :child     (menu r)}
+                     }})))
 
 (rum/defc tooltip-button < rum/reactive
   {:key-fn (fn [_] "button")}
