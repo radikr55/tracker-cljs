@@ -41,6 +41,7 @@
     (tc {:component :box
          :opts      {:pt 1}
          :child     {:component :paper
+                     :opts      {:elevation 3}
                      :child     {:component :list
                                  :opts      {:component "nav"
                                              :key       "project"

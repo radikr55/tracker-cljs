@@ -6,11 +6,15 @@
 (def dark-theme
   (createMuiTheme
     (clj->js {:palette
-              (clj->js {:type      "dark"
-                        :primary   {:main "#90caf9"}
-                        :secondary {:main "#ff4081"}
-                        :devider   "rgba(255, 255, 255, 0.12)"
-                        :text      {:secondary "rgba(255, 255, 255, 0.9)"}})})))
+              (clj->js {:type       "dark"
+                        :primary    {:main "#4698f2"}
+                        :secondary  {:main "#ff4081"}
+                        :success    {:main "#00e578"}
+                        :warning    {:main "#e2a866"}
+                        :background {:paper   "#2a2a2d"
+                                     :default "#202124"}
+                        :devider    "rgba(255, 255, 255, 0.12)"
+                        :text       {:secondary "rgba(255, 255, 255, 0.9)"}})})))
 
 (def light-theme
   (createMuiTheme

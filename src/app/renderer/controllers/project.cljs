@@ -150,7 +150,7 @@
                        {:title "SOFTAREX - FinMatex ChatBot",
                         :code  "SA_CHATBOT",
                         :id    11918}
-                       {:title "Softarex - FINMATEX Marketing", :code "SA_FMM", :id 13203}
+                       {:title "Softgetarex - FINMATEX Marketing", :code "SA_FMM", :id 13203}
                        {:title "Softarex - FinmatexUI", :code "SFUI", :id 12700}
                        {:title "Softarex - GigZone", :code "SA_GIGZONE", :id 10209}
                        {:title "Softarex - GreenVaro", :code "SA_GVARO", :id 11702}

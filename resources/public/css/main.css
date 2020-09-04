@@ -2,70 +2,22 @@
   font-family: Roboto Bold Condensed;
   src: url(/fonts/Roboto-Light.ttf);
 }
-logos img {
-  width: 100px;
-  margin-left: 5px;
-}
-
-body {
-  margin: 0px;
-}
-
-.MuiIconButton-root {
-  -webkit-app-region: none;
-}
-
-.white {
-  color: white !important;
-}
-
-.small-icon {
-  font-size: 1rem !important;
-}
-
-.login-page {
-  align-items: center;
-  flex-direction: column;
-  display: flex;
-  margin-top: 5px;
-}
-
-.signin-button {
-  margin-top: 16px !important;
-}
-
-.loading-off {
-  background-color: transparent !important;
-}
-.loading-off > * {
-  background-color: transparent !important;
-}
-
-.login-paper {
-  padding: 20px;
-  margin-top: 15px;
-}
-
-.MuiFormControl-marginNormal {
-  margin-top: 0 !important;
-}
-
-.timeline-container {
-  user-select: none;
+.away-button {
+  color: #f5aa42;
+  min-inline-size: fit-content;
+  font-size: 15px !important;
+  font-weight: 900 !important;
 }
 
 .search-list {
   overflow: auto;
-  max-height: calc(100vh - 220px);
-  height: calc(100vh - 220px);
+  max-height: calc(100vh - 146px);
+  height: calc(100vh - 146px);
   padding: 0px 0px !important;
 }
-
-.tasks-list {
-  overflow: overlay;
-  max-height: calc(100vh - 455px);
-  min-height: 100px;
-  padding: 0px 0px !important;
+.search-list > .MuiListSubheader-root {
+  color: gray;
+  padding-left: 10px !important;
 }
 
 ::-webkit-scrollbar {
@@ -78,51 +30,121 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background-color: #777;
   border-radius: 5px;
+  background-color: rgba(0, 0, 0, 0.2);
   outline: 1px solid slategrey;
 }
+
 ::-webkit-scrollbar-thumb:hover {
-  border-radius: 5px;
-  background: #777;
+  background: #555;
 }
 
-.subheader {
-  background-color: #424242 !important;
+.header-button {
+  height: 100%;
+  margin: 0px 5px !important;
 }
 
-.search-title {
-  position: relative !important;
+.date-picker {
+  width: 250px;
+  margin: 0px 0px !important;
+  height: 100%;
+}
+.date-picker > .MuiInputBase-root {
+  height: 100%;
+  background-color: gray;
+}
+.date-picker > .MuiInputBase-root > .MuiInputBase-input {
+  padding: 0px 10px !important;
 }
 
-.table-row {
-  padding-top: 0px !important;
-  padding-bottom: 0px !important;
-}
-.table-row > .MuiListItemText-multiline {
-  flex: none;
-  width: 75%;
+.gap-dot {
+  color: #dddddd;
+  height: 10px !important;
+  width: 8px !important;
 }
 
-.brightness {
-  filter: brightness(120%);
+.gap {
+  border-right: solid 1px #dddddd;
+  border-left: solid 1px #dddddd;
+  border-top: solid 1px #dddddd;
+  cursor: ew-resize;
+  width: 10px;
 }
 
-.all-block {
-  height: 24px;
+.left {
+  height: 100%;
+  overflow: hidden;
+  border-top: solid 1px #dddddd;
 }
 
-.away-block {
-  background: linear-gradient(145deg, #ffc55b, #7d6625);
-  box-shadow: 0px 0px 2px #d48d23, 0px 0px 2px #5f5f5f;
+.middle {
+  height: 100%;
+  overflow: hidden;
+  border-top: solid 1px #dddddd;
 }
 
-.task-block {
-  background: linear-gradient(145deg, #5BC6FF, #4da7db);
-  box-shadow: 0px 0px 2px #489dcf, 0px 0px 2px #5f5f5f;
+.right {
+  height: 100%;
+  border-left: solid 1px #dddddd;
+  overflow: hidden;
+  border-top: solid 1px #dddddd;
 }
 
-/* .chart */
-/*   color: black */
+.top-border {
+  border-top: solid 1px #dddddd;
+}
+
+.bottom-border {
+  border-bottom: solid 1px #dddddd;
+}
+
+.task-box-odd {
+  background-color: #1212130f;
+}
+
+.task-box {
+  padding: 0px 15px;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  border-bottom: solid 1px #dddddd;
+  cursor: context-menu;
+}
+
+.timeline-box {
+  height: 100%;
+  display: flex;
+  overflow: hidden;
+  opacity: 0.5;
+  color: #333;
+  font-weight: 500;
+  font-size: 12px;
+  justify-content: center;
+  user-select: none;
+  align-items: center;
+}
+
+.highlight-task {
+  background-color: #f2f2f2;
+}
+
+.menu-item-icon {
+  font-size: 18px !important;
+  min-width: 40px !important;
+}
+
+.menu-item-typography {
+  font-size: 14px !important;
+}
+
+.header-task-list {
+  justify-content: center;
+  user-select: none;
+  align-items: center;
+  color: #1255cc;
+  cursor: pointer;
+}
 
 /*# sourceMappingURL=main.css.map */

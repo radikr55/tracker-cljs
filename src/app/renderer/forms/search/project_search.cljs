@@ -60,6 +60,7 @@
     (tc {:component :box
          :opts      {:pt 1}
          :child     {:component :paper
+                     :opts      {:elevation 3}
                      :child     {:component :list
                                  :opts      {:key       "project"
                                              :className "search-list"}

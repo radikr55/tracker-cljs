@@ -10,7 +10,7 @@
             [app.renderer.forms.search :refer [Search]]))
 
 
-(rum/defc Root < rum/reactive
+(rum/defc Root <  rum/reactive
   [r]
   (let  [route (rum/react (citrus/subscription r [:router]))
          token (js/localStorage.getItem "token")
@@ -20,13 +20,10 @@
     (rum/adapt-class
       MuiThemeProvider  {:theme theme}
       (js/React.createElement CssBaseline)
-      ;; (rum/with-key (Header r) "header")
-      ;; (Home r)
       (case route
         :login  (Login r)
         :search (Search r)
         :home   (Home r)
         (if (boolean token)
           (Home r)
-          (Login r)))
-      )))
+          (Login r))))))

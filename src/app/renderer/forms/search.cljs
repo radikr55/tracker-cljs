@@ -25,24 +25,13 @@
 
 (defn title-box [r]
   (tc {:component :box
-       :opts      {:p   1
-                   :key "title-bar"}
-       :child     {:component :paper
-                   :opts      {:elevation 4}
-                   :child     {:component :box
-                               :opts      {:p              1
-                                           :display        "flex"
-                                           :alignItems     "center"
-                                           :justifyContent "space-between"}
-                               :child     [(title r)
-                                           (close-button r)]}}}))
-
-(rum/defc content
-  [component]
-  (tc {:component :paper
-       :child     {:component :box
-                   :opts      {:p 1}
-                   :child     component}}))
+       :opts      {:p              1
+                   :display        "flex"
+                   :key            "title-bar"
+                   :alignItems     "center"
+                   :justifyContent "space-between"}
+       :child     [(title r)
+                   (close-button r)]}))
 
 (def load-mixin
   {:will-mount (fn [{[r] :rum/args :as state}]
@@ -52,21 +41,23 @@
 (rum/defc loaded-content < load-mixin
   {:key-fn (fn [_] "content")}
   [r]
-  (tc {:component :box
-       :opts      {:p              1
-                   :display        "flex"
-                   :alignItems     "center"
-                   :justifyContent "space-between"}
-       :child     [{:component :box
-                    :opts      {:pr    1
-                                :key   "project"
-                                :width "60%"}
-                    :child     (content (project-search/Search-box r) )}
-                   {:component :box
-                    :opts      {:pl    1
-                                :key   "issue"
-                                :width "100%"}
-                    :child     (content (issue-search/Search-box r) )}]}))
+  (tc {:component :paper
+       :opts      {:variant "outlined"
+                   :square  true}
+       :child     {:component :box
+                   :opts      {:p              1
+                               :display        "flex"
+                               :alignItems     "center"
+                               :justifyContent "space-between"}
+                   :child     [{:component :box
+                                :opts      {:key   "project"
+                                            :pr    1
+                                            :width "60%"}
+                                :child     (project-search/Search-box r)}
+                               {:component :box
+                                :opts      {:key   "issue"
+                                            :width "100%"}
+                                :child     (issue-search/Search-box r)}]}}))
 
 (rum/defc Search
   [r]

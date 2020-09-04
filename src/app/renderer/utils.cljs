@@ -8,25 +8,26 @@
    ["@material-ui/core" :refer [Typography Box
                                 DialogTitle Dialog
                                 TextField
+                                Popper Menu MenuItem
                                 ListItemSecondaryAction
+                                ListItemIcon
                                 Popover Divider
                                 Switch List ListItem
                                 Button ButtonBase Tooltip
                                 ListItemText ListSubheader
                                 AppBar Toolbar FormControl
                                 FormGroup FormControlLabel
-                                Paper Collapse
+                                Paper Collapse Fab
                                 Grid FormGroup
                                 Slide IconButton]]
-   ["@material-ui/icons" :refer [Close
-                                 MoreVert
+   ["@material-ui/icons" :refer [Close Add
+                                 MoreVert OpenInNew
                                  FiberManualRecord
                                  SettingsEthernetSharp
                                  Visibility Sort
                                  Cancel CheckCircle
                                  ArrowForward ArrowBack
-                                 ArrowDownward
-                                 AddCircleOutline ArrowUpward
+                                 ArrowDownward ArrowUpward
                                  DeleteForeverOutlined
                                  VisibilityOutlined]]))
 
@@ -58,18 +59,24 @@
     :close                      Close
     :cancel                     Cancel
     :check                      CheckCircle
+    :fab                        Fab
+    :add                        Add
     :tooltip                    Tooltip
+    :popper                     Popper
     :sort                       Sort
     :arrow-up                   ArrowUpward
     :arrow-left                 ArrowBack
     :arrow-right                ArrowForward
     :grid                       Grid
     :arrow-down                 ArrowDownward
-    :add                        AddCircleOutline
     :date-provider              MuiPickersUtilsProvider
     :date-picker                DatePicker
     :more-vert                  MoreVert
     :dot                        FiberManualRecord
+    :list-item-icon             ListItemIcon
+    :menu                       Menu
+    :menu-item                  MenuItem
+    :open-in-new                OpenInNew
     nil))
 
 (defn obj-js [component]
@@ -106,3 +113,17 @@
     (if time (gstring/format "%dh %dm" hour minutes)
         "0h 0m")))
 
+(defn scroll-vertical-box
+  [posr ref]
+  (let [current (.-current ref)]
+    (when (not (nil? current))
+      (let [scroll-position (.-scrollTop current)
+            pos             (+ posr scroll-position)]
+        (set! (.-scrollTop current) pos)))))
+
+(defn on-wheel-vertical [e boxes]
+  (let [delta (.-deltaY e)]
+    (doseq [box boxes]
+      (if (> delta 0)
+        (scroll-vertical-box 30 box)
+        (scroll-vertical-box -30 box)))))

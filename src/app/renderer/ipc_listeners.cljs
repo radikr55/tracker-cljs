@@ -15,5 +15,12 @@
                                                    :oauth-verifier oauth-verifier}))
            ))))
 
+;; (defn theme  [r]
+;;   (.on ipcRenderer "theme"
+;;        (fn [event arg]
+;;          (citrus/dispatch! r :theme :n {:oauth-token    oauth-token
+;;                                         :oauth-verifier oauth-verifier}))
+;;        )))
+
 (defn start! [r]
-  (render-secret r))
+(render-secret r))

@@ -17,7 +17,6 @@
           :renderer {:target     :browser
                      :devtools   {:watch-dir   "resources/public"
                                   :repl-pprint true}
-                     ;; :devtools   {:preloads [punk.adapter.web.preload]}
                      :output-dir "resources/public/js"
                      :asset-path "js"
                      :js-options {:js-provider :require}

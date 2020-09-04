@@ -42,8 +42,3 @@
 
 (defn ipc-renderer [r c {:keys [type args]}]
   (.send ipcRenderer type args))
-
-;; (defmethod ipc-renderer false [{:keys [type fun]}]
-;;   (.on ipcRenderer type fun))
-;; (ipc-renderer {:send? true} {:type "oauth"
-;;                              :args "123"})
