@@ -6,10 +6,18 @@
 
 (def middle-list-ref (js/React.createRef))
 
+;; (rum/defc popover < rum/reactive
+;;   [r]
+;;   (let []
+;;     (tc {:component :popper
+;;          :opts      {:op}}) ) )
+
 (rum/defc box < rum/reactive
   {:key-fn (fn [_ row index] (str index))}
   [r row index gray?]
   (let [not-nil? (not (nil? (:code row)))
+        scale    (rum/react (citrus/subscription r [:home :scale]))
+        width    (str (* scale (:interval row)) "px")
         class    (cond
                    not-nil? "chart-block-blue"
                    gray?    "chart-block-grey"
@@ -24,7 +32,7 @@
                    :styl      {:fontWeight "bold"}
                    :child     (str "(" interval ")")}]]
     (tc {:component :box
-         :opts      {:width     (str (* 2 (:interval row)) "px")
+         :opts      {:width     width
                      :height    "100%"
                      :display   "flex"
                      :className (str "chart-block " class)
@@ -35,6 +43,8 @@
   {:key-fn (fn [_ row] (:code row))}
   [r row h-body index]
   (let [chart (rum/react (citrus/subscription r [:chart :chart]))
+        scale (rum/react (citrus/subscription r [:home :scale]))
+        width (str (* scale 1440) "px")
         list  (->> chart
                    (filter #(= (:code %) (:code row)))
                    first
@@ -42,7 +52,7 @@
     (tc {:component :box
          :opts      {:height  (str h-body "px")
                      :display "flex"
-                     :width   "2880px"}
+                     :width   width}
          :child     (map-indexed #(box r %2 %1 (odd? index)) list)})))
 
 (rum/defc body  < rum/reactive

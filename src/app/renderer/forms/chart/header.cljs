@@ -5,15 +5,19 @@
             ["@material-ui/pickers" :refer [MuiPickersUtilsProvider KeyboardDatePicker DatePicker]]
             [citrus.core :as citrus]))
 
+(def date-atom (atom (js/Date.)))
+
 (rum/defc picker < rum/reactive
   [r]
-  (tc  {:component :date-picker
-        :opts      {:margin       "normal"
-                    :className    "date-picker"
-                    :variant      "inline"
-                    :inputVariant "outlined"
-                    :format       "dddd, MMMM DD, yyyy"
-                    :onChange     #(print %)}}))
+  (let [date (rum/react date-atom)]
+    (tc  {:component :date-picker
+          :opts      {:margin       "normal"
+                      :className    "date-picker"
+                      :variant      "inline"
+                      :inputVariant "outlined"
+                      :value        date
+                      :format       "dddd, MMMM DD, yyyy"
+                      :onChange     #(reset! date-atom %)}})))
 
 (rum/defc provider < rum/reactive
   {:key-fn (fn [_] "provider")}
@@ -33,12 +37,12 @@
        :child     [(provider r)
                    {:component :button
                     :opts      {:key       "left-button"
-                                :className "header-button"}
+                                :className "header-button calendar-button"}
                     :child     {:component :arrow-left}}
                    {:component :button
                     :opts      {:key       "right-button"
                                 :onClick   #(citrus/dispatch! r :theme :switch)
-                                :className "header-button"}
+                                :className "header-button calendar-button"}
                     :child     {:component :arrow-right}}
                    {:component :button
                     :styl      {:font-weight "900"}
@@ -58,10 +62,10 @@
        :child     [{:component :button
                     :styl      {:font-weight "900"}
                     :opts      {:variant   "contained"
-                                :className "header-button"
+                                :className "header-button submit"
                                 :key       "submit"
                                 :color     "primary"}
-                    :child     "submit"}]}))
+                    :child     "submit all"}]}))
 
 (rum/defc Header < rum/reactive
   {:key-fn (fn [_] "header")}

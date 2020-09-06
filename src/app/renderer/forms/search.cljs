@@ -11,7 +11,8 @@
   [r]
   (let [theme (rum/react (citrus/subscription r [:home :theme]))]
     (tc {:component :icon-button
-         :opts      {:onClick #(citrus/dispatch! r :router :push :home)}
+         :opts      {:className "search-close"
+                     :onClick   #(citrus/dispatch! r :router :push :home)}
          :child     {:component :close}})))
 
 (rum/defc title < rum/reactive
@@ -21,7 +22,7 @@
        :opts      {:px 2}
        :child     {:component :typography
                    :opts      {:variant "h6"}
-                   :child     "Search"}}))
+                   :child     "Select Task"}}))
 
 (defn title-box [r]
   (tc {:component :box
@@ -41,23 +42,20 @@
 (rum/defc loaded-content < load-mixin
   {:key-fn (fn [_] "content")}
   [r]
-  (tc {:component :paper
-       :opts      {:variant "outlined"
-                   :square  true}
-       :child     {:component :box
-                   :opts      {:p              1
-                               :display        "flex"
-                               :alignItems     "center"
-                               :justifyContent "space-between"}
-                   :child     [{:component :box
-                                :opts      {:key   "project"
-                                            :pr    1
-                                            :width "60%"}
-                                :child     (project-search/Search-box r)}
-                               {:component :box
-                                :opts      {:key   "issue"
-                                            :width "100%"}
-                                :child     (issue-search/Search-box r)}]}}))
+  (tc {:component :box
+       :opts      {:p              1
+                   :display        "flex"
+                   :alignItems     "center"
+                   :justifyContent "space-between"}
+       :child     [{:component :box
+                    :opts      {:key   "project"
+                                :pr    1
+                                :width "60%"}
+                    :child     (project-search/Search-box r)}
+                   {:component :box
+                    :opts      {:key   "issue"
+                                :width "100%"}
+                    :child     (issue-search/Search-box r)}]}))
 
 (rum/defc Search
   [r]

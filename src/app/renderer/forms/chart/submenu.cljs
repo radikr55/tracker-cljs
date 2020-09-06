@@ -15,6 +15,7 @@
                      :anchorPosition  {:top  (:mouseY p)
                                        :left (:mouseX p)}
                      :keepMounted     true
+                     :className       "submenu"
                      :variant         "selectedMenu"}
          :child     [{:component :menu-item
                       :opts      {:key "view"}

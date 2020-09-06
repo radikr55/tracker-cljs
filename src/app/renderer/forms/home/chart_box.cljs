@@ -89,6 +89,7 @@
 (rum/defc container < rum/reactive
   [r]
   (let [ref-chart    (rum/react (citrus/subscription r [:home :ref-chart]))
+        scale        (rum/react (citrus/subscription r [:home :scale]))
         ref-timeline (rum/react (citrus/subscription r [:home :ref-timeline]))]
     (reset! local-chart-ref ref-chart)
     (reset! local-timeline-ref ref-timeline)
@@ -98,7 +99,7 @@
                                  :className "chart"}
                      :child     [(header/Header r)
                                  {:component :box
-                                  :opts      {:onWheel     #(on-wheel-container % r)
+                                  :opts      {:onWheel     #(on-wheel-container % r scale)
                                               :ref         ref-chart
                                               :onMouseMove #(on-mouse-move % r)
                                               :overflow    "hidden"}

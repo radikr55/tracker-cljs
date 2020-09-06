@@ -40,14 +40,16 @@
   {:key-fn (fn [_] "middle")}
   [r h-top]
   (citrus/dispatch! r :home :set-chart-ref chart-ref)
-  (tc {:component :box
-       :opts      {:width     (str (- @atom-width @left-width) "px")
-                   :onWheel   #(timeline/on-wheel-container % chart-ref)
-                   :ref       chart-ref
-                   :className "middle"}
-       :child     {:component :box
-                   :opts      {:width "2880px"}
-                   :child     (chart-list/ChartList r h-top h-header h-body)}}))
+  (let [scale (rum/react (citrus/subscription r [:home :scale]))
+        width (str (* scale 1440) "px")]
+    (tc {:component :box
+         :opts      {:width     (str (- @atom-width @left-width) "px")
+                     :onWheel   #(timeline/on-wheel-container % chart-ref scale)
+                     :ref       chart-ref
+                     :className "middle"}
+         :child     {:component :box
+                     :opts      {:width width}
+                     :child     (chart-list/ChartList r h-top h-header h-body)}})))
 
 (rum/defc gap < rum/reactive
   {:key-fn (fn [_] "gap")}
@@ -87,11 +89,10 @@
                    :className "right"}
        :child     (stat-list/StatList r h-top h-header h-body)}))
 
-
 (def load-mixin
   {:will-mount  (fn [{[r] :rum/args :as state}]
-                   (citrus/dispatch! r :chart :load)
-                   state)
+                  (citrus/dispatch! r :chart :load)
+                  state)
    :will-update (fn [{[r] :rum/args :as state}]
                   (citrus/dispatch! r :chart :load)
                   state)})

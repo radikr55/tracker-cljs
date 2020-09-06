@@ -60,6 +60,7 @@
   (tc {:component :text-field
        :opts      {:variant     "outlined"
                    :fullWidth   true
+                   :className   "search-field"
                    :margin      "none"
                    :label       "Search"
                    :placeholder "Task"

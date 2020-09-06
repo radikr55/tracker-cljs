@@ -16,7 +16,8 @@
          token (js/localStorage.getItem "token")]
     (rum/react (citrus/subscription r [:refresh]))
     (citrus/dispatch! r :user :init-token token)
-    [:div (js/React.createElement CssBaseline)
+    [:div
+     (js/React.createElement CssBaseline)
      (case route
        :login  (Login r)
        :search (Search r)

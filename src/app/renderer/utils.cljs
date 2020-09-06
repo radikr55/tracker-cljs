@@ -26,10 +26,11 @@
                                  SettingsEthernetSharp
                                  Visibility Sort
                                  Cancel CheckCircle
-                                 ArrowForward ArrowBack
+                                 ArrowForwardIos ArrowBackIos
                                  ArrowDownward ArrowUpward
                                  DeleteForeverOutlined
-                                 VisibilityOutlined]]))
+                                 VisibilityOutlined
+                                 ZoomIn ZoomOut]]))
 
 (defn get-component [key]
   (case key
@@ -65,8 +66,8 @@
     :popper                     Popper
     :sort                       Sort
     :arrow-up                   ArrowUpward
-    :arrow-left                 ArrowBack
-    :arrow-right                ArrowForward
+    :arrow-left                 ArrowBackIos
+    :arrow-right                ArrowForwardIos
     :grid                       Grid
     :arrow-down                 ArrowDownward
     :date-provider              MuiPickersUtilsProvider
@@ -79,6 +80,8 @@
     :open-in-new                OpenInNew
     :search                     Search
     :input-adornment            InputAdornment
+    :zoom-in                    ZoomIn
+    :zoom-out                   ZoomOut
     nil))
 
 (defn obj-js [component]
