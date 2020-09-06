@@ -76,11 +76,16 @@
   {:key-fn (fn [_] "search")}
   [r]
   (tc {:component :text-field
-       :opts      {:variant   "outlined"
-                   :onChange  #(reset! search-atom (.. % -target -value))
-                   :fullWidth true
-                   :margin    "none"
-                   :label     "Search"}}))
+       :opts      {:variant    "outlined"
+                   :onChange   #(reset! search-atom (.. % -target -value))
+                   :fullWidth  true
+                   :margin     "none"
+                   :label      "Search"
+                   :placeholder "Project"
+                   :InputProps {:startAdornment
+                                (tc {:component :input-adornment
+                                     :opts      {:position "start"}
+                                     :child     {:component :search}})}}}))
 
 (rum/defc Search-box
   [r]

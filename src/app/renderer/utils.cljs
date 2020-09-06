@@ -7,7 +7,7 @@
    ["@material-ui/pickers" :refer [MuiPickersUtilsProvider KeyboardDatePicker DatePicker]]
    ["@material-ui/core" :refer [Typography Box
                                 DialogTitle Dialog
-                                TextField
+                                InputAdornment TextField
                                 Popper Menu MenuItem
                                 ListItemSecondaryAction
                                 ListItemIcon
@@ -20,7 +20,7 @@
                                 Paper Collapse Fab
                                 Grid FormGroup
                                 Slide IconButton]]
-   ["@material-ui/icons" :refer [Close Add
+   ["@material-ui/icons" :refer [Close Add Search
                                  MoreVert OpenInNew
                                  FiberManualRecord
                                  SettingsEthernetSharp
@@ -77,6 +77,8 @@
     :menu                       Menu
     :menu-item                  MenuItem
     :open-in-new                OpenInNew
+    :search                     Search
+    :input-adornment            InputAdornment
     nil))
 
 (defn obj-js [component]
@@ -110,8 +112,8 @@
 (defn format-time [time]
   (let [hour    (/ time 60)
         minutes (rem time 60)]
-    (if time (gstring/format "%dh %dm" hour minutes)
-        "0h 0m")))
+    (if time (gstring/format "%02dh %02dm" hour minutes)
+        "00h 00m")))
 
 (defn scroll-vertical-box
   [posr ref]

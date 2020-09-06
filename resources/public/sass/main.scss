@@ -1,157 +1,252 @@
-$orange-away: #f5aa42;
-$border-color: #dddddd;
-$blue: #1255cc;
+$themes: (light: ('orange-away': #f5aa42,
+        'border-color': #dddddd,
+        'blue': #1255cc,
+        'text': black,
+        'odd-emtry-block': #f8f8f8,
+        'empty-block': white,
+        'timeine-text': white,
+        'background-color': #fff),
+    dark: ('orange-away': #f5aa42,
+        'border-color': #565656,
+        'blue': #4698f2,
+        'empty-block': #202124,
+        'odd-emtry-block': #242528,
+        'text': white,
+        'timeine-text': black,
+        'background-color': #202124));
 
 
-@font-face {
-    font-family: Roboto Bold Condensed;
-    src: url(/fonts/Roboto-Light.ttf);
-}
+@mixin themify($themes) {
 
-.away-button {
-    color: $orange-away;
-    min-inline-size: fit-content;
-    font-size: 15px !important;
-    font-weight: 900 !important;
-}
+    @each $theme,
+    $map in $themes {
+        .theme-#{$theme} {
+            $theme-map: () !global;
 
-.search-list {
-    overflow: auto;
-    max-height: calc(100vh - 146px);
-    height: calc(100vh - 146px);
-    padding: 0px 0px !important;
+            @each $key,
+            $submap in $map {
+                $value: map-get(map-get($themes, $theme), '#{$key}');
+                $theme-map: map-merge($theme-map, ($key: $value)) !global;
+            }
 
-    &>.MuiListSubheader-root {
-        color: gray;
-        padding-left: 10px !important;
-    }
-}
-
-::-webkit-scrollbar {
-    width: 10px;
-}
-
-::-webkit-scrollbar-track {
-    box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.00);
-    webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.00);
-}
-
-::-webkit-scrollbar-thumb {
-    border-radius: 5px;
-    background-color: rgba(0, 0, 0, .2);
-    outline: 1px solid slategrey;
-}
-
-::-webkit-scrollbar-thumb:hover {
-    background: #555;
-}
-
-.header-button {
-    height: 100%;
-    margin: 0px 5px !important;
-}
-
-.date-picker {
-    width: 250px;
-    margin: 0px 0px !important;
-    height: 100%;
-
-    &>.MuiInputBase-root {
-        height: 100%;
-        background-color: gray;
-
-        &>.MuiInputBase-input {
-            padding: 0px 10px !important;
+            @content;
+            $theme-map: null !global;
         }
     }
 }
 
-.gap-dot {
-    color: $border-color;
-    height: 10px !important;
-    width: 8px !important;
+@function themed($key) {
+    @return map-get($theme-map, $key);
 }
 
-.gap {
-    border-right: solid 1px $border-color;
-    border-left: solid 1px $border-color;
-    border-top: solid 1px $border-color;
-    cursor: ew-resize;
-    width: 10px;
+@mixin themed {
+    @include themify($themes) {
+        $orange-away: themed('text') !global;
+        $border-color: themed('border-color') !global;
+        $blue: themed('blue') !global;
+        $empty-block: themed('empty-block') !global;
+        $odd-emtry-block: themed('odd-emtry-block') !global;
+        $text: themed('text') !global;
+        $timeline-text: themed('timeline-text') !global;
+        $background-color: themed('background-color') !global;
+        @content;
+    }
 }
 
-.left {
-    height: 100%;
-    overflow: hidden;
-    border-top: solid 1px $border-color;
-}
+@include themed {
 
-.middle {
-    height: 100%;
-    overflow: hidden;
-    border-top: solid 1px $border-color;
-}
+    body {
+        color: $text;
+        background-color: $background-color;
+    }
 
-.right {
-    height: 100%;
-    border-left: solid 1px $border-color;
-    overflow: hidden;
-    border-top: solid 1px $border-color;
-}
+    @font-face {
+        font-family: Roboto Bold Condensed;
+        src: url(/fonts/Roboto-Light.ttf);
+    }
 
-.top-border {
-    border-top: solid 1px $border-color;
-}
+    .away-button {
+        color: $orange-away;
+        min-inline-size: fit-content;
+        font-size: 15px !important;
+        font-weight: 900 !important;
+    }
 
-.bottom-border {
-    border-bottom: solid 1px $border-color;
-}
+    .search-list {
+        overflow: auto;
+        max-height: calc(100vh - 146px);
+        height: calc(100vh - 146px);
+        padding: 0px 0px !important;
 
-.task-box-odd {
-    background-color: #1212130f;
-}
+        &>.MuiListSubheader-root {
+            color: gray;
+            padding-left: 10px !important;
+        }
+    }
 
-.task-box {
-    padding: 0px 15px;
-    flex-direction: column;
-    height: 100%;
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    border-bottom: solid 1px $border-color;
-    cursor: context-menu
-}
+    ::-webkit-scrollbar {
+        width: 10px;
+    }
 
-.timeline-box {
-    height: 100%;
-    display: flex;
-    overflow: hidden;
-    opacity: 0.5;
-    color: #333;
-    font-weight: 500;
-    font-size: 12px;
-    justify-content: center;
-    user-select: none;
-    align-items: center;
-}
+    ::-webkit-scrollbar-track {
+        box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.00);
+        webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.00);
+    }
 
-.highlight-task{
-    background-color: #f2f2f2
-}
+    ::-webkit-scrollbar-thumb {
+        border-radius: 5px;
+        background-color: rgba(0, 0, 0, .2);
+        outline: 1px solid slategrey;
+    }
 
-.menu-item-icon {
-    font-size: 18px !important;
-    min-width: 40px !important;
-}
+    ::-webkit-scrollbar-thumb:hover {
+        background: #555;
+    }
 
-.menu-item-typography {
-    font-size: 14px !important;
-}
+    .header-button {
+        height: 100%;
+        margin: 0px 5px !important;
+    }
 
-.header-task-list {
-    justify-content: center;
-    user-select: none;
-    align-items: center;
-    color: $blue;
-    cursor: pointer;
+    .date-picker {
+        width: 250px;
+        margin: 0px 0px !important;
+        height: 100%;
+
+        &>.MuiInputBase-root {
+            height: 100%;
+            background-color: gray;
+
+            &>.MuiInputBase-input {
+                padding: 0px 10px !important;
+            }
+        }
+    }
+
+    .gap-dot {
+        color: $border-color;
+        height: 10px !important;
+        width: 8px !important;
+    }
+
+    .gap {
+        border-right: solid 1px $border-color;
+        border-left: solid 1px $border-color;
+        border-top: solid 1px $border-color;
+        cursor: ew-resize;
+        width: 10px;
+    }
+
+    .left {
+        height: 100%;
+        overflow: hidden;
+        border-top: solid 1px $border-color;
+    }
+
+    .middle {
+        height: 100%;
+        overflow: hidden;
+        border-top: solid 1px $border-color;
+    }
+
+    .right {
+        height: 100%;
+        border-left: solid 1px $border-color;
+        overflow: hidden;
+        border-top: solid 1px $border-color;
+    }
+
+    .top-border {
+        border-top: solid 1px $border-color;
+    }
+
+    .bottom-border {
+        border-bottom: solid 1px $border-color;
+    }
+
+    .task-box-odd {
+        background-color: #1212130f;
+    }
+
+    .task-box {
+        padding: 0px 15px;
+        flex-direction: column;
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        border-bottom: solid 1px $border-color;
+        cursor: context-menu
+    }
+
+    .timeline-box {
+        height: 100%;
+        display: flex;
+        overflow: hidden;
+        opacity: 0.5;
+        color: $timeline-text;
+        font-weight: 500;
+        font-size: 12px;
+        justify-content: center;
+        user-select: none;
+        align-items: center;
+    }
+
+    .highlight-task {
+        background-color: #f2f2f2
+    }
+
+    .menu-item-icon {
+        font-size: 18px !important;
+        min-width: 40px !important;
+    }
+
+    .menu-item-typography {
+        font-size: 14px !important;
+    }
+
+    .header-task-list {
+        justify-content: center;
+        user-select: none;
+        align-items: center;
+        color: $blue;
+        cursor: pointer;
+    }
+
+    .stat-box {
+        padding: 0px 15px;
+        color: $blue;
+        font-size: 12px;
+        font-weight: bold;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border-bottom: solid 1px $border-color;
+        cursor: pointer;
+    }
+
+    .chart-block-blue {
+        background-color: $blue;
+    }
+
+    .chart-block-grey {
+        background-color: $odd-emtry-block;
+    }
+
+    .chart-block-white {
+        background-color: $empty-block;
+    }
+
+    .chart-block {
+        flex-direction: column;
+        justify-content: center;
+        color: white;
+
+        &>.MuiTypography-root{
+            overflow: hidden;
+            white-space: nowrap;
+            margin-left: 5px;
+            font-size: 12px;
+        }
+
+    }
 }

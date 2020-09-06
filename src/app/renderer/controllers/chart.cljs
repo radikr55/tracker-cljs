@@ -1,5 +1,7 @@
 (ns app.renderer.controllers.chart
-  (:require [cljs-time.core :as t]))
+  (:require [cljs-time.core :as t]
+            [cljs-time.format :as ft]
+            [app.renderer.utils :as ut]))
 
 (def away "Away (Not working)")
 
@@ -18,6 +20,9 @@
                               {:start (t/today-at 12 00)
                                :end   (t/today-at 13 00)
                                :code  "WELKIN-125"}
+                              {:start (t/today-at 15 00)
+                               :end   (t/today-at 15 30)
+                               :code  "WELKIN-125"}
                               {:start (t/today-at 13 00)
                                :end   (t/today-at 14 00)
                                :code  "WELKIN-124"}]
@@ -29,17 +34,6 @@
 
 (defn get-interval [start end]
   (t/in-minutes (t/interval start end)))
-
-(defn add-stubs [origin]
-  (let [start     (:start (first origin))
-        end       (:end (last origin))
-        start-day (t/at-midnight start)
-        end-day   (t/at-midnight (t/plus- end (t/days 1)))]
-    (cond-> origin
-      (t/after? start start-day) (->> (concat [{:start start-day
-                                                :end   start}]))
-      (t/before? end end-day)    (concat [{:start end
-                                           :end   end-day}]))))
 
 (defn calc-interval [origin]
   (mapv (fn [origin]
@@ -62,38 +56,84 @@
                 first
                 :desc))))
 
+(defn format-time [row]
+  (assoc row :format (ut/format-time (:interval row))))
+
 (defn away-on-top [a b]
   (cond
-    (= away (:code a )) -1
-    (= away (:code b )) 1
-    :else               0))
+    (= away (:code a)) -1
+    (= away (:code b)) 1
+    :else              0))
 
-;; (let [state      (->> initial-state
-;;                       :chart
-;;                       add-stubs
-;;                       calc-interval)
-;;       state-list (->> state
-;;                       (filter #(not (nil? (:code %))))
-;;                       ;; (filter #(not (= (:code %) "Away")))
-;;                       time-merge
-;;                       (desc-merge (:desc initial-state))
-;;                       (sort away-on-top))]
-;;   state-list)
+(defn add-stubs [[key origin]]
+  (let [start     (:start (first origin))
+        end       (:end (last origin))
+        start-day (t/at-midnight start)
+        end-day   (t/at-midnight (t/plus- end (t/days 1)))]
+    (cond-> origin
+      (t/after? start start-day) (->> (concat [{:start start-day
+                                                :end   start}]))
+      (t/before? end end-day)    (concat [{:start end
+                                           :end   end-day}]))))
+
+(defn add-middle-stubs [origin]
+  (loop [origin     origin
+         previously nil
+         result     []]
+    (let [current (first origin)]
+      (cond
+        (nil? origin)     result
+        (nil? previously) (recur (next origin) current (conj result current))
+        :else             (let [previously-end (:end previously)
+                                current-start  (:start current)]
+                            (if (not (= previously-end current-start))
+                              (recur (next origin) current (conj result {:start previously-end
+                                                                         :end   current-start}
+                                                                 current))
+                              (recur (next origin) current (conj result current))))))))
+
+(defn map-by-code [origin]
+  (let [code (->> origin
+                  (map :code)
+                  (filter #(not (nil? %)))
+                  first)]
+    {:code code :chart origin}))
+
+(defn add-format-time [origin]
+  (->> origin
+       (map #(let [format-start    (ft/unparse (ft/formatter "HH:mm") (:start %))
+                   format-end      (ft/unparse (ft/formatter "HH:mm") (:end %))
+                   format-interval (ut/format-time (:interval %))]
+               (assoc % :format-start format-start
+                      :format-end format-end
+                      :format-interval format-interval)))))
+
+(let [state (->> initial-state
+                 :chart
+                 (group-by :code)
+                 (map add-stubs)
+                 (map add-middle-stubs)
+                 (map calc-interval)
+                 (map add-format-time)
+                 (map map-by-code))]
+  state)
+
+(let [state      (->> initial-state
+                      :chart
+                      calc-interval)
+      state-list (->> state
+                      (filter #(not (nil? (:code %))))
+                      ;; (filter #(not (= (:code %) "Away")))
+                      time-merge
+                      (desc-merge (:desc initial-state))
+                      (sort away-on-top)
+                      (map format-time))]
+  state-list)
 
 (defmulti control (fn [event] event))
 
 (defmethod control :init []
-  (let [state      (->> initial-state
-                        :chart
-                        add-stubs
-                        calc-interval)
-        state-list (->> state
-                        (filter #(not (nil? (:code %))))
-                        ;; (filter #(not (= (:code %) "Away")))
-                        time-merge
-                        (desc-merge (:desc initial-state))
-                        (sort away-on-top))]
-    {:state (assoc initial-state :chart state :list state-list)}))
+  {:state initial-state})
 
 ;; (defmethod control :switch-all-selected [_ [val] state]
 ;;   (let [selected (:selected state)
@@ -125,5 +165,21 @@
 ;;                                      :order :asc)})))
 
 (defmethod control :load [_ _ state]
-  {:state state})
+  (let [state      (->> initial-state
+                        :chart
+                        (group-by :code)
+                        (map add-stubs)
+                        (map add-middle-stubs)
+                        (map calc-interval)
+                        (map add-format-time)
+                        (map map-by-code))
+        state-list (->> initial-state
+                        :chart
+                        calc-interval
+                        (filter #(not (nil? (:code %))))
+                        time-merge
+                        (desc-merge (:desc initial-state))
+                        (sort away-on-top)
+                        (map format-time))]
+    {:state (assoc initial-state :chart state :list state-list)}))
 

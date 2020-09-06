@@ -16,9 +16,9 @@
   {:key-fn (fn [_ row] (:code row))}
   [r row h-body]
   (tc {:component :box
-       ;; :styl      {:background-color (when (odd? index) "grey")}
-       :opts      {:height (str h-body "px")}
-       :child     (:interval row)}))
+       :opts      {:height    (str h-body "px")
+                   :className "stat-box"}
+       :child     (:format row)}))
 
 (rum/defc body < rum/reactive
   {:key-fn (fn [_] "body")}

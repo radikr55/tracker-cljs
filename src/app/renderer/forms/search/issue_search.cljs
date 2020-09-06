@@ -58,10 +58,15 @@
   {:key-fn (fn [_] "search")}
   [r]
   (tc {:component :text-field
-       :opts      {:variant   "outlined"
-                   :fullWidth true
-                   :margin    "none"
-                   :label     "Search"}}))
+       :opts      {:variant     "outlined"
+                   :fullWidth   true
+                   :margin      "none"
+                   :label       "Search"
+                   :placeholder "Task"
+                   :InputProps  {:startAdornment
+                                 (tc {:component :input-adornment
+                                      :opts      {:position "start"}
+                                      :child     {:component :search}})}}}))
 
 (rum/defc Search-box
   [r]

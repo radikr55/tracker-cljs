@@ -37,6 +37,7 @@
                     :child     {:component :arrow-left}}
                    {:component :button
                     :opts      {:key       "right-button"
+                                :onClick   #(citrus/dispatch! r :theme :switch)
                                 :className "header-button"}
                     :child     {:component :arrow-right}}
                    {:component :button

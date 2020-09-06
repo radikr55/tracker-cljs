@@ -46,6 +46,7 @@
                    :ref       chart-ref
                    :className "middle"}
        :child     {:component :box
+                   :opts      {:width "2880px"}
                    :child     (chart-list/ChartList r h-top h-header h-body)}}))
 
 (rum/defc gap < rum/reactive
@@ -88,9 +89,12 @@
 
 
 (def load-mixin
-  {:will-mount (fn [{[r] :rum/args :as state}]
-                 (citrus/dispatch! r :chart :load)
-                 state)})
+  {:will-mount  (fn [{[r] :rum/args :as state}]
+                   (citrus/dispatch! r :chart :load)
+                   state)
+   :will-update (fn [{[r] :rum/args :as state}]
+                  (citrus/dispatch! r :chart :load)
+                  state)})
 
 (rum/defc Table < rum/reactive
   load-mixin

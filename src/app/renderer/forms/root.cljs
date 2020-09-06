@@ -13,17 +13,15 @@
 (rum/defc Root <  rum/reactive
   [r]
   (let  [route (rum/react (citrus/subscription r [:router]))
-         token (js/localStorage.getItem "token")
-         theme (rum/react (citrus/subscription r [:theme :js]))]
+         token (js/localStorage.getItem "token")]
     (rum/react (citrus/subscription r [:refresh]))
     (citrus/dispatch! r :user :init-token token)
-    (rum/adapt-class
-      MuiThemeProvider  {:theme theme}
-      (js/React.createElement CssBaseline)
-      (case route
-        :login  (Login r)
-        :search (Search r)
-        :home   (Home r)
-        (if (boolean token)
-          (Home r)
-          (Login r))))))
+    [:div (js/React.createElement CssBaseline)
+     (case route
+       :login  (Login r)
+       :search (Search r)
+       :home   (Home r)
+       (if (boolean token)
+         (Home r)
+         (Login r)))]
+    ))
