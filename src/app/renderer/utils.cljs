@@ -3,6 +3,7 @@
    [goog.string :as gstring]
    [goog.string.format]
    ["react-draggable" :default Draggable]
+   ["react-simple-timefield" :default TimeField]
    ["@material-ui/core/styles" :refer [styled]]
    ["@material-ui/pickers" :refer [MuiPickersUtilsProvider KeyboardDatePicker DatePicker]]
    ["@material-ui/core" :refer [Typography Box
@@ -35,6 +36,7 @@
 (defn get-component [key]
   (case key
     :draggable                  Draggable
+    :time-field                 TimeField
     :list                       List
     :list-item                  ListItem
     :list-subheader             ListSubheader

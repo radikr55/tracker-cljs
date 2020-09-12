@@ -37,7 +37,7 @@
        :child     [(provider r)
                    {:component :button
                     :opts      {:key       "left-button"
-                                :className "header-button calendar-button"}
+                                :className "header-button left-button calendar-button"}
                     :child     {:component :arrow-left}}
                    {:component :button
                     :opts      {:key       "right-button"

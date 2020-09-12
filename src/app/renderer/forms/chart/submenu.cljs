@@ -5,11 +5,12 @@
 
 (rum/defc SubMenu < rum/reactive
   [r]
-  (let [p (rum/react (citrus/subscription r [:home :position-submenu]))]
+  (let [p     (rum/react (citrus/subscription r [:home :position-submenu]))
+        open? (rum/react (citrus/subscription r [:home :open-left]))]
     (when (not (nil? (:mouseX p)))
       (tc
         {:component :menu
-         :opts      {:open            (not (nil? (:mouseX p)))
+         :opts      {:open            open?
                      :onClose         #(citrus/dispatch! r :home :close-submenu)
                      :anchorReference "anchorPosition"
                      :anchorPosition  {:top  (:mouseY p)

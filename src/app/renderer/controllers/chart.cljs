@@ -30,7 +30,8 @@
                               {:code "WELKIN-123" :desc "dec task"}
                               {:code "WELKIN-124" :desc "dec task 124"}
                               {:code "WELKIN-125" :desc "[L3] [Dev] [Risalto] Behavior of Assessment Responses endpoint"}]
-                    :current "WELKIN-123"})
+                    :current "WELKIN-123"
+                    })
 
 (defn get-interval [start end]
   (t/in-minutes (t/interval start end)))

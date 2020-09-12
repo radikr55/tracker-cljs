@@ -20,6 +20,9 @@
 .theme-light .search-field > .MuiInputBase-root > fieldset {
   border-color: black;
 }
+.theme-light .search-field > .MuiInputBase-root {
+  color: black;
+}
 .theme-light .search-field > .MuiInputLabel-outlined {
   color: black;
 }
@@ -40,29 +43,36 @@
   padding-left: 10px !important;
 }
 .theme-light ::-webkit-scrollbar {
-  width: 10px;
+  width: 5px;
+  height: 5px;
 }
 .theme-light ::-webkit-scrollbar-track {
-  box-shadow: inset 0 0 6px rgba(0, 0, 0, 0);
-  webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0);
+  box-shadow: inset 0 0 1px rgba(0, 0, 0, 0);
+  webkit-box-shadow: inset 0 0 1px rgba(0, 0, 0, 0);
 }
 .theme-light ::-webkit-scrollbar-thumb {
-  border-radius: 5px;
-  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 2px;
+  background-color: #565656;
   outline: 1px solid slategrey;
 }
 .theme-light ::-webkit-scrollbar-thumb:hover {
-  background: #555;
+  background: rgba(0, 0, 0, 0.4);
 }
 .theme-light .calendar-button {
   min-width: 36px;
+}
+.theme-light .left-button {
+  margin-right: 0px !important;
+}
+.theme-light .left-button > .MuiButton-label {
+  margin-right: -10px;
 }
 .theme-light .header-button {
   color: black;
   text-transform: capitalize;
   background-color: #f2f2f2;
   height: 100%;
-  margin: 0px 5px !important;
+  margin: 0px 5px;
 }
 .theme-light .date-picker {
   width: 250px;
@@ -122,7 +132,7 @@
   border-top: solid 1px #dddddd;
 }
 .theme-light .middle::-webkit-scrollbar {
-  width: 5x;
+  width: 5px;
   height: 5px;
 }
 .theme-light .middle::-webkit-scrollbar-track {
@@ -258,6 +268,9 @@
 .theme-dark .search-field > .MuiInputBase-root > fieldset {
   border-color: white;
 }
+.theme-dark .search-field > .MuiInputBase-root {
+  color: white;
+}
 .theme-dark .search-field > .MuiInputLabel-outlined {
   color: white;
 }
@@ -278,29 +291,36 @@
   padding-left: 10px !important;
 }
 .theme-dark ::-webkit-scrollbar {
-  width: 10px;
+  width: 5px;
+  height: 5px;
 }
 .theme-dark ::-webkit-scrollbar-track {
-  box-shadow: inset 0 0 6px rgba(0, 0, 0, 0);
-  webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0);
+  box-shadow: inset 0 0 1px rgba(0, 0, 0, 0);
+  webkit-box-shadow: inset 0 0 1px rgba(0, 0, 0, 0);
 }
 .theme-dark ::-webkit-scrollbar-thumb {
-  border-radius: 5px;
-  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 2px;
+  background-color: #ddd;
   outline: 1px solid slategrey;
 }
 .theme-dark ::-webkit-scrollbar-thumb:hover {
-  background: #555;
+  background: rgba(0, 0, 0, 0.4);
 }
 .theme-dark .calendar-button {
   min-width: 36px;
+}
+.theme-dark .left-button {
+  margin-right: 0px !important;
+}
+.theme-dark .left-button > .MuiButton-label {
+  margin-right: -10px;
 }
 .theme-dark .header-button {
   color: white;
   text-transform: capitalize;
   background-color: #37373d;
   height: 100%;
-  margin: 0px 5px !important;
+  margin: 0px 5px;
 }
 .theme-dark .date-picker {
   width: 250px;
@@ -360,7 +380,7 @@
   border-top: solid 1px #565656;
 }
 .theme-dark .middle::-webkit-scrollbar {
-  width: 5x;
+  width: 5px;
   height: 5px;
 }
 .theme-dark .middle::-webkit-scrollbar-track {

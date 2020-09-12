@@ -2,15 +2,16 @@
   (:require [rum.core :as rum]
             [app.renderer.utils :refer [tc format-time]]
             [citrus.core :as citrus]
-            [app.renderer.forms.chart.timeline :as timeline]))
+            [app.renderer.forms.chart.timeline :as timeline]
+            [app.renderer.forms.chart.chart-popper :as popper]))
 
 (def middle-list-ref (js/React.createRef))
 
-;; (rum/defc popover < rum/reactive
-;;   [r]
-;;   (let []
-;;     (tc {:component :popper
-;;          :opts      {:op}}) ) )
+(defn open-dialog [r event row]
+  (citrus/dispatch! r :home :open-chart-menu
+                    {:position-submenu {:mouseX (.-clientX event)
+                                        :mouseY (.-clientY event)}
+                     :row-box          row}))
 
 (rum/defc box < rum/reactive
   {:key-fn (fn [_ row index] (str index))}
@@ -25,7 +26,7 @@
         start    (:format-start row)
         end      (:format-end row)
         interval (:format-interval row)
-        title    (when not-nil? (str "start: " start "\nend: " end) )
+        title    (when not-nil? (str "start: " start "\nend: " end))
         child    [{:component :typography
                    :child     (str start " - " end)}
                   {:component :typography
@@ -34,6 +35,7 @@
     (tc {:component :box
          :opts      {:width     width
                      :height    "100%"
+                     :onClick   #(open-dialog r % row)
                      :display   "flex"
                      :className (str "chart-block " class)
                      :title     title}
@@ -70,4 +72,5 @@
   [r h-top h-header h-body]
   (vector (timeline/Timeline r h-header true)
           (body r h-top h-header h-body)
+          (popper/Popper r)
           (timeline/Timeline r h-header false)))

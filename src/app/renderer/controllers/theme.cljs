@@ -7,7 +7,13 @@
 (defmulti control (fn [event] event))
 
 (defmethod control :init []
-  {:state {}})
+  (let [dark? (edn/read-string (js/localStorage.getItem "dark"))
+        theme (if dark? "theme-dark" "theme-light")]
+    (-> js/document
+        (.getElementsByTagName "html")
+        first
+        (.-className)
+        (set! theme))))
 
 (defmethod control :switch [_ _ state]
   (let [dark? (not (edn/read-string (js/localStorage.getItem "dark")))

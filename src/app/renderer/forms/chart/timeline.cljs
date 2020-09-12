@@ -82,6 +82,7 @@
         format      (rum/react f-time)]
     (tc {:component :box
          :styl      {:position "absolute"
+                     :z-index  1000
                      :top      (str (+ top (:clientY mouse-event)) "px")
                      :left     (str (:clientX mouse-event) "px")}
          :opts      {:display (when (not show?) "none")

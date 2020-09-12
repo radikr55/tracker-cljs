@@ -20,7 +20,7 @@
 
 (add-watch atom-width :window-width
            (fn  [_ _ old new]
-             (when @left-width
+             (when (and (.-current chart-ref) @left-width )
                (set! (.-width (.-style (.-current chart-ref))) (str (- new @left-width) "px")))))
 
 (add-watch left-width :resize-width
@@ -44,7 +44,9 @@
         width (str (* scale 1440) "px")]
     (tc {:component :box
          :opts      {:width     (str (- @atom-width @left-width) "px")
-                     :onWheel   #(timeline/on-wheel-container % chart-ref scale)
+                     :onWheel   #(do
+                                   (citrus/dispatch! r :home :close-chart-menu)
+                                   (timeline/on-wheel-container % chart-ref scale) )
                      :ref       chart-ref
                      :className "middle"}
          :child     {:component :box
