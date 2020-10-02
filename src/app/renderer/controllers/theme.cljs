@@ -3,7 +3,6 @@
    [cljs.tools.reader.edn :as edn]
    ["@material-ui/core/styles" :refer [createMuiTheme]]))
 
-
 (defmulti control (fn [event] event))
 
 (defmethod control :init []
@@ -13,16 +12,19 @@
         (.getElementsByTagName "html")
         first
         (.-className)
-        (set! theme))))
+        (set! theme))
+    {:state {:dark? dark?}}))
 
-(defmethod control :switch [_ _ state]
-  (let [dark? (not (edn/read-string (js/localStorage.getItem "dark")))
-        theme (if dark? "theme-dark" "theme-light")]
+(defmethod control :set-dark [_ [dark?] state]
+  (let [theme (if dark? "theme-dark" "theme-light")]
     (-> js/document
         (.getElementsByTagName "html")
         first
         (.-className)
         (set! theme))
-    {:local-storage {:method :set
+    {:state         {:dark? dark?}
+     :ipc           {:type "update-title-bar-menu"}
+     :local-storage {:method :set
                      :data   dark?
                      :key    :dark}}))
+

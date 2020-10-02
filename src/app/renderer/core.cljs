@@ -4,13 +4,15 @@
             [goog.dom :as dom]
             [citrus.core :as citrus]
             [app.renderer.effects :as effects]
-            [app.renderer.controllers.user-mock :as user]
-            ;; [app.renderer.controllers.user :as user]
+            [app.renderer.controllers.user :as user]
             [app.renderer.controllers.chart :as chart]
             [app.renderer.controllers.router :as router]
             [app.renderer.controllers.project :as project]
             [app.renderer.controllers.loading :as loading]
             [app.renderer.controllers.theme :as theme]
+            [app.renderer.controllers.chart-popper :as chart-popper]
+            [app.renderer.controllers.task-popper :as task-popper]
+            [app.renderer.controllers.stat-popper :as stat-popper]
             [app.renderer.controllers.home :as home]
             [app.renderer.forms.root :refer [Root]]
             [app.renderer.ipc-listeners :as ipc]))
@@ -20,13 +22,16 @@
 (defonce reconciler
   (citrus/reconciler
     {:state           (atom {})
-     :controllers     {:loading loading/control
-                       :user    user/control
-                       :router  router/control
-                       :project project/control
-                       :chart   chart/control
-                       :home    home/control
-                       :theme   theme/control}
+     :controllers     {:loading      loading/control
+                       :user         user/control
+                       :router       router/control
+                       :project      project/control
+                       :chart        chart/control
+                       :home         home/control
+                       :theme        theme/control
+                       :chart-popper chart-popper/control
+                       :stat-popper  stat-popper/control
+                       :task-popper  task-popper/control}
      :effect-handlers {:local-storage effects/local-storage
                        :ipc           effects/ipc-renderer
                        :http          effects/http}}))

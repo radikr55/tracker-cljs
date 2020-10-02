@@ -1,46 +1,23 @@
 (ns app.renderer.controllers.home)
 
-(def initial-state {:chart-ref        nil
-                    :position-submenu {:mouseX nil
-                                       :mouseY nil}
-                    :open-popover     false
-                    :open-left        false
-                    :row-box          nil
-                    :submenu-code     nil
-                    :middle-list-ref  nil
-                    :left-list-ref    nil
-                    :right-list-ref   nil
-                    :scale            2
-                    :mouse-resize     false})
+(def initial-state {:chart-ref       nil
+                    :middle-list-ref nil
+                    :left-list-ref   nil
+                    :right-list-ref  nil
+                    :scale           2
+                    :logout          false
+                    :mouse-resize    false})
 
 (defmulti control (fn [event] event))
 
 (defmethod control :init []
   {:state initial-state})
 
-(defmethod control :close-submenu [_ [val] state]
-  {:state (assoc state
-                 :position-submenu (:position-submenu initial-state)
-                 :open-left    false
-                 :submenu-code nil)})
+(defmethod control :close-logout [_ _ state]
+  {:state (assoc state :logout false)})
 
-(defmethod control :open-submenu [_ [val] state]
-  {:state (assoc state
-                 :position-submenu (:position-submenu val)
-                 :open-left  true
-                 :submenu-code (:submenu-code val))})
-
-(defmethod control :close-chart-menu [_ [val] state]
-  {:state (assoc state
-                 :position-submenu (:position-submenu initial-state)
-                 :row-box nil
-                 :open-popover false)})
-
-(defmethod control :open-chart-menu [_ [val] state]
-  {:state (assoc state
-                 :position-submenu (:position-submenu val)
-                 :row-box (:row-box val)
-                 :open-popover true)})
+(defmethod control :open-logout [_ _ state]
+  {:state (assoc state :logout true)})
 
 (defmethod control :set-chart-ref [_ [val] state]
   {:state (assoc state :chart-ref val)})

@@ -12,15 +12,19 @@
                oauth-verifier (get url-obj "oauth_verifier")]
            (if (not=  "denied" oauth-verifier)
              (citrus/dispatch! r :user :get-token {:oauth-token    oauth-token
-                                                   :oauth-verifier oauth-verifier}))
-           ))))
+                                                   :oauth-verifier oauth-verifier}))))))
 
-;; (defn theme  [r]
-;;   (.on ipcRenderer "theme"
-;;        (fn [event arg]
-;;          (citrus/dispatch! r :theme :n {:oauth-token    oauth-token
-;;                                         :oauth-verifier oauth-verifier}))
-;;        )))
+(defn theme  [r]
+  (.on ipcRenderer "theme"
+       (fn [event arg]
+         (citrus/dispatch! r :theme :set-dark arg))))
+
+(defn logout  [r]
+  (.on ipcRenderer "logout"
+       (fn [event arg]
+         (citrus/dispatch! r :home :open-logout))))
 
 (defn start! [r]
-(render-secret r))
+  (render-secret r)
+  (theme r)
+  (logout r))

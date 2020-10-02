@@ -17,9 +17,12 @@
   {:key-fn (fn [_ data] (:id data))}
   [r data]
   (let [title (:title data)
+        code  (:code data)
         id    (:id data)]
     (tc {:component :list-item
          :opts      {:button    true
+                     :onClick   #(do (citrus/dispatch! r :chart :set-current-task code)
+                                     (citrus/dispatch! r :router :push :home))
                      :className "table-row"}
          :child     {:component :list-item-text
                      :opts      {:secondary title}}})))
@@ -36,8 +39,7 @@
   [r]
   (let [{list :right} (rum/react (citrus/subscription r [:project]))
         theme         (rum/react (citrus/subscription r [:theme :cljs]))
-        paper         (-> theme :palette :background :paper)
-        search        (rum/react search-atom)]
+        paper         (-> theme :palette :background :paper)]
     (tc {:component :box
          :opts      {:pt 1}
          :child     {:component :paper
@@ -58,12 +60,14 @@
   {:key-fn (fn [_] "search")}
   [r]
   (tc {:component :text-field
-       :opts      {:variant     "outlined"
+       :opts      {
+                   ;; :variant     "outlined"
                    :fullWidth   true
                    :className   "search-field"
                    :margin      "none"
                    :label       "Search"
                    :placeholder "Task"
+                   :onChange    #(citrus/dispatch! r :project :get-tasks (.. % -target -value))
                    :InputProps  {:startAdornment
                                  (tc {:component :input-adornment
                                       :opts      {:position "start"}

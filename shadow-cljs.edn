@@ -9,16 +9,22 @@
                 [lilactown/punk-adapter-web "0.0.10"]
                 [bidi "2.1.6"]
                 [cider/cider-nrepl "0.25.0"]]
- :dev-http     {8080 "resources/public/"}
 
- :builds {:main     {:target    :node-script
-                     :output-to "resources/main.js"
-                     :main      app.main.core/main}
+ :dev-http {8080 "resources/public/"}
+
+ :modules {:common {:entries [app.common]}}
+
+ :builds {
+          :main     {:target     :node-script
+                     :output-to  "resources/main.js"
+                     :depends-on #{:common}
+                     :main       app.main.core/main}
           :renderer {:target     :browser
                      :devtools   {:watch-dir   "resources/public"
                                   :repl-pprint true}
                      :output-dir "resources/public/js"
                      :asset-path "js"
+                     :depends-on #{:common}
                      :js-options {:js-provider :require}
                      :modules    {:renderer {:init-fn app.renderer.core/start!}}}
           :test     {:target    :browser-test

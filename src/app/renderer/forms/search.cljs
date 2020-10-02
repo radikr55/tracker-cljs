@@ -12,7 +12,8 @@
   (let [theme (rum/react (citrus/subscription r [:home :theme]))]
     (tc {:component :icon-button
          :opts      {:className "search-close"
-                     :onClick   #(citrus/dispatch! r :router :push :home)}
+                     :onClick   #(do (citrus/dispatch! r :project :init)
+                                     (citrus/dispatch! r :router :push :home))}
          :child     {:component :close}})))
 
 (rum/defc title < rum/reactive
@@ -21,6 +22,7 @@
   (tc {:component :box
        :opts      {:px 2}
        :child     {:component :typography
+                   :styl      {:fontWeight "bold"}
                    :opts      {:variant "h6"}
                    :child     "Select Task"}}))
 
@@ -36,7 +38,7 @@
 
 (def load-mixin
   {:will-mount (fn [{[r] :rum/args :as state}]
-                 (citrus/dispatch! r :project :get)
+                 (citrus/dispatch! r :project :get-projects)
                  state)})
 
 (rum/defc loaded-content < load-mixin
@@ -50,11 +52,11 @@
        :child     [{:component :box
                     :opts      {:key   "project"
                                 :pr    1
-                                :width "60%"}
+                                :width "40%"}
                     :child     (project-search/Search-box r)}
                    {:component :box
                     :opts      {:key   "issue"
-                                :width "100%"}
+                                :width "60%"}
                     :child     (issue-search/Search-box r)}]}))
 
 (rum/defc Search

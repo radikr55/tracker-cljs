@@ -8,11 +8,39 @@
     src: url(/fonts/Roboto-Light.ttf);
   }
 }
+.theme-light .login-container {
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.theme-light .login-box {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  justify-content: center;
+  width: 200px;
+}
+.theme-light .login-button {
+  color: white;
+  background-color: #1255cc;
+  font-weight: bold;
+  font-size: 14px;
+  text-transform: capitalize;
+  margin: 20px;
+}
 .theme-light .away-button {
-  color: black;
+  color: #ffab40;
   min-inline-size: fit-content;
   font-size: 15px !important;
   font-weight: 900 !important;
+}
+.theme-light .away {
+  color: #ffab40 !important;
+}
+.theme-light .submitted {
+  color: #239f28 !important;
 }
 .theme-light .search-field {
   color: black;
@@ -101,6 +129,13 @@
 .theme-light .search-close {
   color: #635f5f;
 }
+.theme-light .popper-close {
+  color: #635f5f;
+  padding: 0;
+}
+.theme-light .popper-close > .MuiIconButton-label > .MuiSvgIcon-root {
+  font-size: 13px;
+}
 .theme-light .submit {
   color: white;
   background-color: #1255cc;
@@ -159,9 +194,6 @@
 .theme-light .bottom-border {
   border-bottom: solid 1px #dddddd;
 }
-.theme-light .task-box-odd {
-  background-color: #1212130f;
-}
 .theme-light .task-box {
   padding: 0px 15px;
   flex-direction: column;
@@ -183,7 +215,24 @@
   align-items: center;
 }
 .theme-light .highlight-task {
-  background-color: #f2f2f2;
+  background-color: whitesmoke;
+}
+.theme-light .task-badge {
+  font-weight: bold;
+  color: #1255cc;
+  font-size: 9px;
+}
+.theme-light .selected-task {
+  color: #fff;
+  background-color: #1255cc;
+}
+.theme-light .badge-box {
+  display: flex;
+  justify-content: center;
+  width: 58px;
+  background-color: #fff;
+  border-radius: 7px;
+  height: 12px;
 }
 .theme-light .menu-item-icon {
   font-size: 18px !important;
@@ -208,18 +257,21 @@
   justify-content: center;
   align-items: center;
   border-bottom: solid 1px #dddddd;
+  flex-direction: column;
   cursor: pointer;
 }
 .theme-light .chart-block-blue {
+  cursor: pointer;
   background-color: #1255cc;
 }
 .theme-light .chart-block-grey {
-  background-color: #f8f8f8;
+  background: whitesmoke;
 }
 .theme-light .chart-block-white {
   background-color: white;
 }
 .theme-light .chart-block {
+  user-select: none;
   flex-direction: column;
   justify-content: center;
   color: white;
@@ -229,6 +281,18 @@
   white-space: nowrap;
   margin-left: 5px;
   font-size: 12px;
+}
+.theme-light .chart-popper-box {
+  padding: 12px 14px;
+  color: black;
+  background-color: #fff;
+}
+.theme-light .chart-popper-paper {
+  background-color: #fff;
+}
+.theme-light .popper-title {
+  font-size: 14px;
+  font-weight: bold;
 }
 .theme-light .submenu > .MuiMenu-paper {
   color: black;
@@ -245,6 +309,57 @@
 .theme-light .stat-footer > .MuiIconButton-root > .MuiIconButton-label {
   color: black;
 }
+.theme-light .table-row {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.theme-light .time-field,
+.theme-light textarea {
+  color: black;
+  border: none;
+  border-radius: 4px;
+  font-size: 14px;
+  padding: 7px 8px;
+  background: #ededed;
+}
+.theme-light .time-field {
+  width: 45% !important;
+}
+.theme-light .popper-interval {
+  font-size: 14px;
+  padding-right: 10px;
+}
+.theme-light .popper-save {
+  color: white;
+  height: 30px !important;
+  font-weight: bold;
+  text-transform: capitalize;
+  background-color: #1255cc;
+  height: 100%;
+  margin: 0px 5px;
+}
+.theme-light .sum-statistic-logged {
+  color: #848484;
+}
+.theme-light .sum-statistic-submitted {
+  color: #239f28;
+}
+.theme-light .sum-statistic-tracked {
+  color: #1255cc;
+}
+.theme-light .sum-time {
+  font-size: 12px;
+  font-weight: bold;
+}
+.theme-light .sum-title {
+  font-size: 12px;
+  font-weight: bold;
+  text-transform: capitalize;
+}
+.theme-light .sum-statistic {
+  padding: 0px 10px;
+}
 
 .theme-dark body {
   color: white;
@@ -256,11 +371,39 @@
     src: url(/fonts/Roboto-Light.ttf);
   }
 }
-.theme-dark .away-button {
+.theme-dark .login-container {
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.theme-dark .login-box {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  justify-content: center;
+  width: 200px;
+}
+.theme-dark .login-button {
   color: white;
+  background-color: #4698f2;
+  font-weight: bold;
+  font-size: 14px;
+  text-transform: capitalize;
+  margin: 20px;
+}
+.theme-dark .away-button {
+  color: #f5aa42;
   min-inline-size: fit-content;
   font-size: 15px !important;
   font-weight: 900 !important;
+}
+.theme-dark .away {
+  color: #f5aa42 !important;
+}
+.theme-dark .submitted {
+  color: #00e578 !important;
 }
 .theme-dark .search-field {
   color: white;
@@ -349,6 +492,13 @@
 .theme-dark .search-close {
   color: #635f5f;
 }
+.theme-dark .popper-close {
+  color: #635f5f;
+  padding: 0;
+}
+.theme-dark .popper-close > .MuiIconButton-label > .MuiSvgIcon-root {
+  font-size: 13px;
+}
 .theme-dark .submit {
   color: white;
   background-color: #4698f2;
@@ -407,9 +557,6 @@
 .theme-dark .bottom-border {
   border-bottom: solid 1px #565656;
 }
-.theme-dark .task-box-odd {
-  background-color: #1212130f;
-}
 .theme-dark .task-box {
   padding: 0px 15px;
   flex-direction: column;
@@ -431,7 +578,24 @@
   align-items: center;
 }
 .theme-dark .highlight-task {
-  background-color: #37373d;
+  background-color: #292a2d;
+}
+.theme-dark .task-badge {
+  font-weight: bold;
+  color: #4698f2;
+  font-size: 9px;
+}
+.theme-dark .selected-task {
+  color: #fff;
+  background-color: #4698f2;
+}
+.theme-dark .badge-box {
+  display: flex;
+  justify-content: center;
+  width: 58px;
+  background-color: #fff;
+  border-radius: 7px;
+  height: 12px;
 }
 .theme-dark .menu-item-icon {
   font-size: 18px !important;
@@ -456,18 +620,21 @@
   justify-content: center;
   align-items: center;
   border-bottom: solid 1px #565656;
+  flex-direction: column;
   cursor: pointer;
 }
 .theme-dark .chart-block-blue {
+  cursor: pointer;
   background-color: #4698f2;
 }
 .theme-dark .chart-block-grey {
-  background-color: #242528;
+  background: #292a2d;
 }
 .theme-dark .chart-block-white {
   background-color: #202124;
 }
 .theme-dark .chart-block {
+  user-select: none;
   flex-direction: column;
   justify-content: center;
   color: white;
@@ -477,6 +644,18 @@
   white-space: nowrap;
   margin-left: 5px;
   font-size: 12px;
+}
+.theme-dark .chart-popper-box {
+  padding: 12px 14px;
+  color: white;
+  background-color: #202124;
+}
+.theme-dark .chart-popper-paper {
+  background-color: #202124;
+}
+.theme-dark .popper-title {
+  font-size: 14px;
+  font-weight: bold;
 }
 .theme-dark .submenu > .MuiMenu-paper {
   color: white;
@@ -492,6 +671,57 @@
 }
 .theme-dark .stat-footer > .MuiIconButton-root > .MuiIconButton-label {
   color: white;
+}
+.theme-dark .table-row {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.theme-dark .time-field,
+.theme-dark textarea {
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 14px;
+  padding: 7px 8px;
+  background: #303133;
+}
+.theme-dark .time-field {
+  width: 45% !important;
+}
+.theme-dark .popper-interval {
+  font-size: 14px;
+  padding-right: 10px;
+}
+.theme-dark .popper-save {
+  color: white;
+  height: 30px !important;
+  font-weight: bold;
+  text-transform: capitalize;
+  background-color: #4698f2;
+  height: 100%;
+  margin: 0px 5px;
+}
+.theme-dark .sum-statistic-logged {
+  color: #848484;
+}
+.theme-dark .sum-statistic-submitted {
+  color: #00e578;
+}
+.theme-dark .sum-statistic-tracked {
+  color: #4698f2;
+}
+.theme-dark .sum-time {
+  font-size: 12px;
+  font-weight: bold;
+}
+.theme-dark .sum-title {
+  font-size: 12px;
+  font-weight: bold;
+  text-transform: capitalize;
+}
+.theme-dark .sum-statistic {
+  padding: 0px 10px;
 }
 
 /*# sourceMappingURL=main.css.map */

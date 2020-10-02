@@ -8,14 +8,32 @@
 (defmethod ->endpoint :comment [_ [article-id comment-id]]
   (str "articles/" article-id "/comments/" comment-id))
 
-(defmethod ->endpoint :login [_ _]
-  "login")
+(defmethod ->endpoint :auth-link [_ _]
+  "auth-link")
+
+(defmethod ->endpoint :user-name [_ _]
+  "user-name")
 
 (defmethod ->endpoint :oauth [_ _]
   "oauth")
 
 (defmethod ->endpoint :project [_ _]
   "project")
+
+(defmethod ->endpoint :tasks [_ _]
+  "tasks")
+
+(defmethod ->endpoint :submit [_ _]
+  "submit")
+
+(defmethod ->endpoint :load-track-logs [_ _]
+  "track-logs")
+
+(defmethod ->endpoint :save-ping [_ _]
+  "ping")
+
+(defmethod ->endpoint :by-project-id [_ _]
+  "by-project-id")
 
 (defn- ->uri [path]
   (str "http://localhost:3000/" path))

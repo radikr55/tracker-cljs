@@ -1,17 +1,17 @@
-(ns app.renderer.forms.chart.chart-list
+(ns app.renderer.forms.chart.middle.chart-list
   (:require [rum.core :as rum]
-            [app.renderer.utils :refer [tc format-time]]
+            [app.renderer.utils :refer [tc]]
             [citrus.core :as citrus]
-            [app.renderer.forms.chart.timeline :as timeline]
-            [app.renderer.forms.chart.chart-popper :as popper]))
+            [app.renderer.forms.chart.middle.timeline :as timeline]
+            [app.renderer.forms.chart.middle.chart-popper :as popper]))
 
 (def middle-list-ref (js/React.createRef))
 
 (defn open-dialog [r event row]
-  (citrus/dispatch! r :home :open-chart-menu
-                    {:position-submenu {:mouseX (.-clientX event)
-                                        :mouseY (.-clientY event)}
-                     :row-box          row}))
+  (citrus/dispatch! r :chart-popper :open-popper
+                    {:position {:mouseX (.-clientX event)
+                                :mouseY (.-clientY event)}
+                     :row      row}))
 
 (rum/defc box < rum/reactive
   {:key-fn (fn [_ row index] (str index))}
@@ -35,7 +35,7 @@
     (tc {:component :box
          :opts      {:width     width
                      :height    "100%"
-                     :onClick   #(open-dialog r % row)
+                     :onClick   (when not-nil? #(open-dialog r % row))
                      :display   "flex"
                      :className (str "chart-block " class)
                      :title     title}

@@ -1,26 +1,33 @@
-$themes: (light: ('orange-away': #f5aa42,
+$themes: (light: ('orange-away': #ffab40,
         'border-color': #dddddd,
         'blue': #1255cc,
+        'opponent': black,
         'text': black,
         'scroll-color': #565656,
         'odd-emtry-block': #f8f8f8,
         'highlight-task': #f2f2f2,
         'empty-block': white,
         'timeine-text': white,
+        'logged': #848484,
+        'submitted': #239f28,
         'background-color': #fff),
     dark: ('orange-away': #f5aa42,
         'border-color': #565656,
+        'opponent': white,
         'blue': #4698f2,
         'scroll-color': #ddd,
         'highlight-task': #37373d,
         'empty-block': #202124,
         'odd-emtry-block': #242528,
         'text': white,
+        'logged': #848484,
+        'submitted': #00e578,
         'timeine-text': black,
         'background-color': #202124));
 
 
 @mixin themify($themes) {
+
     @each $theme,
     $map in $themes {
         .theme-#{$theme} {
@@ -44,12 +51,15 @@ $themes: (light: ('orange-away': #f5aa42,
 
 @mixin themed {
     @include themify($themes) {
-        $orange-away: themed('text') !global;
+        $orange-away: themed('orange-away') !global;
         $border-color: themed('border-color') !global;
         $blue: themed('blue') !global;
+        $logged: themed('logged') !global;
+        $tracked: themed('tracked') !global;
+        $submitted: themed('submitted') !global;
+        $opponent: themed('opponent') !global;
         $scroll-color: themed('scroll-color') !global;
         $empty-block: themed('empty-block') !global;
-        $odd-emtry-block: themed('odd-emtry-block') !global;
         $text: themed('text') !global;
         $timeline-text: themed('timeline-text') !global;
         $background-color: themed('background-color') !global;
@@ -70,11 +80,44 @@ $themes: (light: ('orange-away': #f5aa42,
         src: url(/fonts/Roboto-Light.ttf);
     }
 
+    .login-container {
+        width: 100%;
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .login-box {
+        display: flex;
+        align-items: center;
+        flex-direction: column;
+        justify-content: center;
+        width: 200px;
+    }
+
+    .login-button {
+        color: white;
+        background-color: $blue;
+        font-weight: bold;
+        font-size: 14px;
+        text-transform: capitalize;
+        margin: 20px;
+    }
+
     .away-button {
         color: $orange-away;
         min-inline-size: fit-content;
         font-size: 15px !important;
         font-weight: 900 !important;
+    }
+
+    .away {
+        color: $orange-away !important;
+    }
+
+    .submitted {
+        color: $submitted !important;
     }
 
     .search-field {
@@ -139,7 +182,8 @@ $themes: (light: ('orange-away': #f5aa42,
 
     .left-button {
         margin-right: 0px !important;
-        &>.MuiButton-label{
+
+        &>.MuiButton-label {
             margin-right: -10px;
         }
     }
@@ -182,6 +226,15 @@ $themes: (light: ('orange-away': #f5aa42,
 
     .search-close {
         color: #635f5f;
+    }
+
+    .popper-close {
+        color: #635f5f;
+        padding: 0;
+
+        &>.MuiIconButton-label>.MuiSvgIcon-root {
+            font-size: 13px;
+        }
     }
 
     .submit {
@@ -256,10 +309,6 @@ $themes: (light: ('orange-away': #f5aa42,
         border-bottom: solid 1px $border-color;
     }
 
-    .task-box-odd {
-        background-color: #1212130f;
-    }
-
     .task-box {
         padding: 0px 15px;
         flex-direction: column;
@@ -284,7 +333,27 @@ $themes: (light: ('orange-away': #f5aa42,
     }
 
     .highlight-task {
-        background-color: $highlight-task;
+        background-color: mix($opponent, $background-color, 4%);
+    }
+
+    .task-badge {
+        font-weight: bold;
+        color: $blue;
+        font-size: 9px;
+    }
+
+    .selected-task {
+        color: #fff;
+        background-color: $blue;
+    }
+
+    .badge-box {
+        display: flex;
+        justify-content: center;
+        width: 58px;
+        background-color: #fff;
+        border-radius: 7px;
+        height: 12px;
     }
 
     .menu-item-icon {
@@ -313,15 +382,17 @@ $themes: (light: ('orange-away': #f5aa42,
         justify-content: center;
         align-items: center;
         border-bottom: solid 1px $border-color;
+        flex-direction: column;
         cursor: pointer;
     }
 
     .chart-block-blue {
+        cursor: pointer;
         background-color: $blue;
     }
 
     .chart-block-grey {
-        background-color: $odd-emtry-block;
+        background: mix($opponent, $background-color, 4%);
     }
 
     .chart-block-white {
@@ -329,6 +400,7 @@ $themes: (light: ('orange-away': #f5aa42,
     }
 
     .chart-block {
+        user-select: none;
         flex-direction: column;
         justify-content: center;
         color: white;
@@ -340,6 +412,21 @@ $themes: (light: ('orange-away': #f5aa42,
             font-size: 12px;
         }
 
+    }
+
+    .chart-popper-box {
+        padding: 12px 14px;
+        color: $text;
+        background-color: $background-color;
+    }
+
+    .chart-popper-paper {
+        background-color: $background-color;
+    }
+
+    .popper-title {
+        font-size: 14px;
+        font-weight: bold;
     }
 
     .submenu {
@@ -363,4 +450,65 @@ $themes: (light: ('orange-away': #f5aa42,
         }
     }
 
+    .table-row {
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+    }
+
+    .time-field,
+    textarea {
+        color: $text;
+        border: none;
+        border-radius: 4px;
+        font-size: 14px;
+        padding: 7px 8px;
+        background: mix($opponent, $background-color, 7%);
+    }
+
+    .time-field {
+        width: 45% !important;
+    }
+
+    .popper-interval {
+        font-size: 14px;
+        padding-right: 10px;
+    }
+
+    .popper-save {
+        color: white;
+        height: 30px !important;
+        font-weight: bold;
+        text-transform: capitalize;
+        background-color: $blue;
+        height: 100%;
+        margin: 0px 5px;
+    }
+
+    .sum-statistic-logged {
+        color: $logged;
+    }
+
+    .sum-statistic-submitted {
+        color: $submitted;
+    }
+
+    .sum-statistic-tracked {
+        color: $blue;
+    }
+
+    .sum-time {
+        font-size: 12px;
+        font-weight: bold;
+    }
+
+    .sum-title {
+        font-size: 12px;
+        font-weight: bold;
+        text-transform: capitalize;
+    }
+
+    .sum-statistic {
+        padding: 0px 10px;
+    }
 }

@@ -1,14 +1,14 @@
 (ns app.renderer.utils
   (:require
-   [goog.string :as gstring]
-   [goog.string.format]
    ["react-draggable" :default Draggable]
    ["react-simple-timefield" :default TimeField]
    ["@material-ui/core/styles" :refer [styled]]
    ["@material-ui/pickers" :refer [MuiPickersUtilsProvider KeyboardDatePicker DatePicker]]
    ["@material-ui/core" :refer [Typography Box
-                                DialogTitle Dialog
+                                Fade LinearProgress
                                 InputAdornment TextField
+                                DialogTitle Dialog
+                                DialogContent DialogActions
                                 Popper Menu MenuItem
                                 ListItemSecondaryAction
                                 ListItemIcon
@@ -35,6 +35,12 @@
 
 (defn get-component [key]
   (case key
+    :dialog-title               DialogTitle
+    :dialog                     Dialog
+    :dialog-content             DialogContent
+    :dialog-actions             DialogActions
+    :fade                       Fade
+    :linear-progress            LinearProgress
     :draggable                  Draggable
     :time-field                 TimeField
     :list                       List
@@ -114,11 +120,6 @@
         (vector? child)     (js/React.createElement comp (clj->js opts) (map tc child))
         :else               (js/React.createElement comp (clj->js opts) child)))))
 
-(defn format-time [time]
-  (let [hour    (/ time 60)
-        minutes (rem time 60)]
-    (if time (gstring/format "%02dh %02dm" hour minutes)
-        "00h 00m")))
 
 (defn scroll-vertical-box
   [posr ref]

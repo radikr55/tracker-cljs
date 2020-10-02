@@ -1,25 +1,29 @@
-(ns app.renderer.forms.chart.submenu
+(ns app.renderer.forms.chart.left.task-popper
   (:require [rum.core :as rum]
             [app.renderer.utils :refer [tc]]
+            ["electron" :refer [shell]]
             [citrus.core :as citrus]))
 
 (rum/defc SubMenu < rum/reactive
   [r]
-  (let [p     (rum/react (citrus/subscription r [:home :position-submenu]))
-        open? (rum/react (citrus/subscription r [:home :open-left]))]
-    (when (not (nil? (:mouseX p)))
+  (let [p        (rum/react (citrus/subscription r [:task-popper]))
+        open?    (:open p)
+        position (:position p)
+        link     (:link p)]
+    (when (not (nil? (:mouseX position)))
       (tc
         {:component :menu
          :opts      {:open            open?
-                     :onClose         #(citrus/dispatch! r :home :close-submenu)
+                     :onClose         #(citrus/dispatch! r :task-popper :close-popper)
                      :anchorReference "anchorPosition"
-                     :anchorPosition  {:top  (:mouseY p)
-                                       :left (:mouseX p)}
+                     :anchorPosition  {:top  (:mouseY position)
+                                       :left (:mouseX position)}
                      :keepMounted     true
                      :className       "submenu"
                      :variant         "selectedMenu"}
          :child     [{:component :menu-item
-                      :opts      {:key "view"}
+                      :opts      {:key     "view"
+                                  :onClick #(.openExternal shell link)}
                       :child     [{:component :list-item-icon
                                    :opts      {:key "icon"}
                                    :child     {:component :open-in-new

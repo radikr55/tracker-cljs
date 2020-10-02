@@ -11,6 +11,10 @@
       :set    (js/localStorage.setItem (name key) data)
       :remove (js/localStorage.removeItem (name key))
       :get    (edn/read-string (js/localStorage.getItem (name key)))
+      :add    (js/localStorage.setItem (name key)
+                                       (merge
+                                         data
+                                         (edn/read-string (js/localStorage.getItem (name key)))))
       nil)))
 
 (defmulti dispatch! (fn [_ _ effect]
@@ -38,7 +42,7 @@
               (dispatch! r c on-load e r)))
     (p/catch (fn [e]
                (citrus/dispatch! r :loading :off)
-               (dispatch! r c on-error e)))))
+               (dispatch! r c on-error e r)))))
 
 (defn ipc-renderer [r c {:keys [type args]}]
   (.send ipcRenderer type args))

@@ -1,11 +1,12 @@
 (ns app.renderer.forms.chart.table
   (:require [rum.core :as rum]
+            [cljs-time.core :as t]
             [app.renderer.utils :refer [tc]]
             [citrus.core :as citrus]
-            [app.renderer.forms.chart.task-list :as task-list]
-            [app.renderer.forms.chart.stat-list :as stat-list]
-            [app.renderer.forms.chart.chart-list :as chart-list]
-            [app.renderer.forms.chart.timeline :as timeline]))
+            [app.renderer.forms.chart.left.task-list :as task-list]
+            [app.renderer.forms.chart.right.stat-list :as stat-list]
+            [app.renderer.forms.chart.middle.chart-list :as chart-list]
+            [app.renderer.forms.chart.middle.timeline :as timeline]))
 
 (def right-width 100)
 (def h-header 30)
@@ -20,7 +21,7 @@
 
 (add-watch atom-width :window-width
            (fn  [_ _ old new]
-             (when (and (.-current chart-ref) @left-width )
+             (when (and (.-current chart-ref) @left-width)
                (set! (.-width (.-style (.-current chart-ref))) (str (- new @left-width) "px")))))
 
 (add-watch left-width :resize-width
@@ -45,8 +46,8 @@
     (tc {:component :box
          :opts      {:width     (str (- @atom-width @left-width) "px")
                      :onWheel   #(do
-                                   (citrus/dispatch! r :home :close-chart-menu)
-                                   (timeline/on-wheel-container % chart-ref scale) )
+                                   (citrus/dispatch! r :chart-popper :close-popper)
+                                   (timeline/on-wheel-container % chart-ref scale))
                      :ref       chart-ref
                      :className "middle"}
          :child     {:component :box
@@ -91,21 +92,13 @@
                    :className "right"}
        :child     (stat-list/StatList r h-top h-header h-body)}))
 
-(def load-mixin
-  {:will-mount  (fn [{[r] :rum/args :as state}]
-                  (citrus/dispatch! r :chart :load)
-                  state)
-   :will-update (fn [{[r] :rum/args :as state}]
-                  (citrus/dispatch! r :chart :load)
-                  state)})
-
 (rum/defc Table < rum/reactive
-  load-mixin
   {:key-fn (fn [_] "table")}
   [r h-header]
-  (tc {:component :box
-       :opts      {:display "flex"}
-       :child     [(left r h-header)
-                   (gap r h-header)
-                   (middle r h-header)
-                   (right r h-header)]}))
+  (let [date (rum/react (citrus/subscription r [:chart :date]))]
+    (tc {:component :box
+         :opts      {:display "flex"}
+         :child     [(left r h-header)
+                     (gap r h-header)
+                     (middle r h-header)
+                     (right r h-header)]})))

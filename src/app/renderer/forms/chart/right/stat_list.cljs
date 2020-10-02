@@ -1,6 +1,8 @@
-(ns app.renderer.forms.chart.stat-list
+(ns app.renderer.forms.chart.right.stat-list
   (:require [rum.core :as rum]
             [app.renderer.utils :refer [tc on-wheel-vertical]]
+            [app.renderer.time-utils :as tu]
+            [app.renderer.forms.chart.right.stat-popper :as stat-popper]
             [citrus.core :as citrus]))
 
 (def right-list-ref (js/React.createRef))
@@ -28,13 +30,32 @@
                                 :onClick #(citrus/dispatch! r :home :inc-scale)}
                     :child     {:component :zoom-in}}]}))
 
+(defn open-menu [r event code field]
+  (citrus/dispatch! r :stat-popper :open-popper
+                    {:position {:mouseX (.-clientX event)
+                                :mouseY (.-clientY event)}
+                     :code     code
+                     :time     (/ field 60)}))
+
 (rum/defc item < rum/reactive
   {:key-fn (fn [_ row] (:code row))}
   [r row h-body]
-  (tc {:component :box
-       :opts      {:height    (str h-body "px")
-                   :className "stat-box"}
-       :child     (:format row)}))
+  (let [code       (:code row)
+        class-name (str "stat-box " (when (empty? code) "away"))
+        submitted  (->> (rum/react (citrus/subscription r [:chart :desc]))
+                        (filter #(= code (:code %)))
+                        first
+                        :submitted)]
+    (tc {:component :box
+         :opts      {:height    (str h-body "px")
+                     :onClick   #(open-menu r % code (:format-field row))
+                     :className class-name}
+         :child     [{:component :box
+                      :child     (:format row)}
+                     (when (not (nil? submitted))
+                       {:component :box
+                        :opts      {:className "submitted"}
+                        :child     (tu/format-time (/ submitted 60))} )]})))
 
 (rum/defc body < rum/reactive
   {:key-fn (fn [_] "body")}
@@ -44,13 +65,13 @@
         list            (rum/react (citrus/subscription r [:chart :list]))]
     (citrus/dispatch! r :home :set-right-list-ref right-list-ref)
     (tc {:component :box
-         :opts      {:overflow "hidden"
+         :opts      {:overflow  "hidden"
                      :className "right-list"
-                     :ref      right-list-ref
-                     :onWheel  #(on-wheel-vertical % [middle-list-ref
+                     :ref       right-list-ref
+                     :onWheel   #(on-wheel-vertical % [middle-list-ref
                                                        left-list-ref
                                                        right-list-ref])
-                     :height   (str "calc(100vh - " (+ 2 h-top (* 2 h-header)) "px)")}
+                     :height    (str "calc(100vh - " (+ 2 h-top (* 2 h-header)) "px)")}
          :child     (for [row list]
                       (item r row h-body))})))
 
@@ -58,5 +79,6 @@
   [r h-top h-header h-body]
   (vector (header h-header)
           (body r h-top h-header h-body)
+          (stat-popper/Popper r)
           (footer r h-header)))
 

@@ -12,8 +12,6 @@
                                          ListItemText
                                          TextField]]))
 
-(def search-atom (atom ""))
-
 (defn title-includes?
   [base str]
   (clojure.string/includes? (clojure.string/upper-case base)
@@ -38,6 +36,7 @@
     (tc {:component :list-item
          :opts      {:button    true
                      :key       (str id)
+                     :onClick   #(citrus/dispatch! r :project :get-by-project-id id)
                      :className "table-row"}
          :child     {:component :list-item-text
                      :opts      {:secondary title}}})))
@@ -55,7 +54,7 @@
   (let [list   (rum/react (citrus/subscription r [:project :left]))
         theme  (rum/react (citrus/subscription r [:theme :cljs]))
         paper  (-> theme :palette :background :paper)
-        search (rum/react search-atom)
+        search (rum/react (citrus/subscription r [:project :search-project]))
         f-list (filter-list list search)]
     (tc {:component :box
          :opts      {:pt 1}
@@ -77,7 +76,7 @@
   [r]
   (tc {:component :text-field
        :opts      {:variant     "outlined"
-                   :onChange    #(reset! search-atom (.. % -target -value))
+                   :onChange    #(citrus/dispatch! r :project :set-search-project (.. % -target -value))
                    :fullWidth   true
                    :className   "search-field"
                    :margin      "none"

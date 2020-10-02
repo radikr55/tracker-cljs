@@ -1,4 +1,4 @@
-(ns app.renderer.forms.chart.timeline
+(ns app.renderer.forms.chart.middle.timeline
   (:require [rum.core :as rum]
             [cljs-time.core :as t]
             [cljs-time.format :as ft]
@@ -10,6 +10,9 @@
 (def show?       (atom false))
 (def container-ref (js/React.createRef))
 (def tooltip-ref (js/React.createRef))
+
+(def timeline-value-1x ["" "01:00" "02:00" "03:00" "04:00" "05:00" "06:00" "07:00" "08:00" "09:00" "10:00" "11:00" "12:00" "13:00" "14:00" "15:00" "16:00" "17:00" "18:00" "19:00" "20:00" "21:00" "22:00" "23:00"])
+
 (def timeline-value ["" ":30" "01:00" ":30" "02:00" ":30" "03:00" ":30" "04:00" ":30" "05:00" ":30" "06:00" ":30" "07:00" ":30" "08:00" ":30" "09:00" ":30" "10:00" ":30" "11:00" ":30" "12:00" ":30" "13:00" ":30" "14:00" ":30" "15:00" ":30" "16:00" ":30" "17:00" ":30" "18:00" ":30" "19:00" ":30" "20:00" ":30" "21:00" ":30" "22:00" ":30" "23:00" ":30" ""])
 
 (defn format-time [time scale]
@@ -61,8 +64,9 @@
 
 (defn get-timeline [r]
   (let [scale           (rum/react (citrus/subscription r [:home :scale]))
-        width           (str (* scale 30))
-        start-end-width (str (* scale 15))]
+        mock-scale      (if (= 1 scale ) 2 scale)
+        width           (str (* mock-scale 30))
+        start-end-width (str (* mock-scale 15))]
     (map-indexed
       #(let [index %1
              value %2]
@@ -70,7 +74,7 @@
            (= index 0)                            (box r start-end-width value index)
            (= (inc index) (count timeline-value)) (box r start-end-width value index)
            :else                                  (box r width value index)))
-      timeline-value)))
+      (if (= scale 1) timeline-value-1x timeline-value))))
 
 (rum/defc tooltip  < rum/reactive
   {:key-fn (fn [_ _ x] (str "tooltip" x))}
@@ -98,7 +102,7 @@
     [:div {:style        {:width   width
                           :height  (str height "px")
                           :display "flex"}
-           :class        [(when (not top? ) "bottom-scroll")(if top? "bottom-border" "top-border")]
+           :class        [(when (not top?) "bottom-scroll") (if top? "bottom-border" "top-border")]
            :ref          container-ref
            :onMouseLeave #(reset! show? false)
            :onMouseMove  #(on-mouse-move % chart-ref scale)

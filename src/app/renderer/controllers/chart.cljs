@@ -1,46 +1,27 @@
 (ns app.renderer.controllers.chart
-  (:require [cljs-time.core :as t]
-            [cljs-time.format :as ft]
-            [app.renderer.utils :as ut]))
+  (:require [app.renderer.effects :as effects]
+            [cljs-time.core :as t]
+            [cljs.tools.reader.edn :as edn]
+            [citrus.core :as citrus]
+            [cljs-time.format :as f]
+            [cljs-time.coerce :as c]
+            [app.renderer.time-utils :as tu]))
 
-(def away "Away (Not working)")
-
-(def initial-state {:chart   [{:start (t/today-at 5 59)
-                               :end   (t/today-at 6 00)
-                               :code  "WELKIN-123"}
-                              {:start (t/today-at 6 00)
-                               :end   (t/today-at 8 00)
-                               :code  "WELKIN-124"}
-                              {:start (t/today-at 8 00)
-                               :end   (t/today-at 10 00)
-                               :code  "WELKIN-123"}
-                              {:start (t/today-at 10 00)
-                               :end   (t/today-at 12 00)
-                               :code  away}
-                              {:start (t/today-at 12 00)
-                               :end   (t/today-at 13 00)
-                               :code  "WELKIN-125"}
-                              {:start (t/today-at 15 00)
-                               :end   (t/today-at 15 30)
-                               :code  "WELKIN-125"}
-                              {:start (t/today-at 13 00)
-                               :end   (t/today-at 14 00)
-                               :code  "WELKIN-124"}]
-                    :desc    [{:code away}
-                              {:code "WELKIN-123" :desc "dec task"}
-                              {:code "WELKIN-124" :desc "dec task 124"}
-                              {:code "WELKIN-125" :desc "[L3] [Dev] [Risalto] Behavior of Assessment Responses endpoint"}]
-                    :current "WELKIN-123"
-                    })
-
-(defn get-interval [start end]
-  (t/in-minutes (t/interval start end)))
+(def initial-state
+  {:chart     [{:code nil}]
+   :desc      []
+   :list      []
+   :current   "WELKIN-76"
+   :submitted nil
+   :tracked   nil
+   :logged    nil
+   :date      (t/date-time 2020 07 15)})
 
 (defn calc-interval [origin]
   (mapv (fn [origin]
           (let [{:keys [start end]} origin]
             (assoc origin :interval
-                   (get-interval start end))))
+                   (tu/get-interval start end))))
         origin))
 
 (defn time-merge [chart]
@@ -49,21 +30,15 @@
        (map (fn [[key val]]
               (assoc {} :code key :interval (reduce + (map :interval val)))))))
 
-(defn desc-merge [state chart]
-  (for [c chart]
-    (assoc c :desc
-           (->> state
-                (filter #(= (:code %) (:code c)))
-                first
-                :desc))))
-
 (defn format-time [row]
-  (assoc row :format (ut/format-time (:interval row))))
+  (assoc row
+         :format (tu/format-time (:interval row))
+         :format-field (* 60  (:interval row))))
 
 (defn away-on-top [a b]
   (cond
-    (= away (:code a)) -1
-    (= away (:code b)) 1
+    (empty? (:code a)) -1
+    (empty? (:code b)) 1
     :else              0))
 
 (defn add-stubs [[key origin]]
@@ -76,7 +51,6 @@
                                                 :end   start}]))
       (t/before? end end-day)    (concat [{:start end
                                            :end   end-day}]))))
-
 (defn add-middle-stubs [origin]
   (loop [origin     origin
          previously nil
@@ -102,71 +76,93 @@
 
 (defn add-format-time [origin]
   (->> origin
-       (map #(let [format-start    (ft/unparse (ft/formatter "HH:mm") (:start %))
-                   format-end      (ft/unparse (ft/formatter "HH:mm") (:end %))
-                   format-interval (ut/format-time (:interval %))]
+       (map #(let [format-start    (f/unparse (f/formatter "HH:mm") (:start %))
+                   format-end      (f/unparse (f/formatter "HH:mm") (:end %))
+                   format-interval (tu/format-time (:interval %))]
                (assoc % :format-start format-start
                       :format-end format-end
                       :format-interval format-interval)))))
 
-(let [state (->> initial-state
-                 :chart
-                 (group-by :code)
-                 (map add-stubs)
-                 (map add-middle-stubs)
-                 (map calc-interval)
-                 (map add-format-time)
-                 (map map-by-code))]
-  state)
-
-(let [state      (->> initial-state
-                      :chart
-                      calc-interval)
-      state-list (->> state
-                      (filter #(not (nil? (:code %))))
-                      ;; (filter #(not (= (:code %) "Away")))
-                      time-merge
-                      (desc-merge (:desc initial-state))
-                      (sort away-on-top)
-                      (map format-time))]
-  state-list)
-
 (defmulti control (fn [event] event))
 
 (defmethod control :init []
-  {:state initial-state})
+  (let [current-task (edn/read-string (js/localStorage.getItem "current-task"))]
+    {:state (assoc initial-state :current-task (:code current-task))}))
 
-;; (defmethod control :switch-all-selected [_ [val] state]
-;;   (let [selected (:selected state)
-;;         exist?   (every? selected val)]
-;;     {:state (assoc state :selected (if exist? #{} val))}))
+(defmethod control :set-date [_ [date] state]
+  {:state (assoc state :date date)})
 
-;; (defmethod control :switch-selected [_ [val] state]
-;;   (let [selected (:selected state)
-;;         exist?   (contains? selected val)]
-;;     {:state (assoc state :selected
-;;                    (if exist?
-;;                      (disj selected val)
-;;                      (conj selected val)))}))
+(defmethod control :submit-all [_ _ state]
+  (let [token (effects/local-storage
+                nil
+                :poject
+                {:method :get
+                 :key    :token})
+        date  (:date state)
+        list  (->> (:list state)
+                   (filter #(not (empty? (:code %))))
+                   (map #(assoc {}
+                                :issueCode (:code %)
+                                :timeSpent (:format-field %)
+                                :date      (c/to-string (tu/merge-date-time date "12:00"))
+                                :offset    (.getTimezoneOffset (js/Date.)))))]
+    {:state state
+     :http  {:endpoint :submit
+             :params   (assoc token :query
+                              list)
+             :method   :post
+             :on-load  :success-submit
+             :on-error :error}}))
 
-(defmethod control :set-current-task [_ [task-code] state]
-  {:state (assoc state :current task-code)})
+(defmethod control :success-submit [event [args r] state]
+  (citrus/dispatch! r :chart :load-track-logs args)
+  state)
 
-;; (defmethod control :switch-order [_ _ state]
-;;   (let [order (:order state)]
-;;     (cond
-;;       (= :asc order)  {:state (assoc state
-;;                                      :list (sort-by :interval (:list state))
-;;                                      :order :desc)}
-;;       (= :desc order) {:state (assoc state
-;;                                      :list (sort-by :interval #(compare %2 %1) (:list state))
-;;                                      :order nil)}
-;;       :else           {:state (assoc state
-;;                                      :list (sort-by :code (:list state))
-;;                                      :order :asc)})))
+(defmethod control :set-current-task [_ [code] state]
+  {:state         (assoc state :current-task code)
+   :local-storage {:method :set
+                   :data   {:code code}
+                   :key    :current-task}})
 
-(defmethod control :load [_ _ state]
-  (let [state      (->> initial-state
+(defmethod control :inc-date [_ _ state]
+  {:state (assoc state :date (t/plus- (:date state) (t/days 1)))})
+
+(defmethod control :dec-date [_ _ state]
+  {:state (assoc state :date (t/minus- (:date state) (t/days 1)))})
+
+(defmethod control :load-track-logs [_ _ state]
+  (let [date      (:date state)
+        start-day (t/at-midnight date)
+        end-day   (t/at-midnight (t/plus- date (t/days 1)))
+        token     (effects/local-storage
+                    nil
+                    :project
+                    {:method :get
+                     :key    :token})]
+    {:http {:endpoint :load-track-logs
+            :params   (assoc token
+                             :offset (.getTimezoneOffset (js/Date.))
+                             :start (c/to-string start-day)
+                             :end   (c/to-string end-day))
+            :method   :post
+            :on-load  :success-track-log-load
+            :on-error :error}}))
+
+(defmethod control :success-track-log-load [_ [result] init-state]
+  (let [arr        (->> (:data result)
+                        (map #(assoc {}
+                                     :start  (tu/to-local (:start_date %))
+                                     :end  (tu/to-local (:end_date %))
+                                     :code  (:task %)))
+                        (assoc {} :chart))
+        descs      (->> (:desc result)
+                        :issueWithSummary
+                        (map #(vector {:code      (name (first %))
+                                       :desc      (:summary (second %))
+                                       :link      (:link (second %))
+                                       :submitted (:timeSpent (second %))}))
+                        flatten)
+        state      (->> arr
                         :chart
                         (group-by :code)
                         (map add-stubs)
@@ -174,13 +170,26 @@
                         (map calc-interval)
                         (map add-format-time)
                         (map map-by-code))
-        state-list (->> initial-state
+        state-list (->> arr
                         :chart
                         calc-interval
                         (filter #(not (nil? (:code %))))
                         time-merge
-                        (desc-merge (:desc initial-state))
                         (sort away-on-top)
-                        (map format-time))]
-    {:state (assoc initial-state :chart state :list state-list)}))
+                        (map format-time))
+        submitted  (-> result :desc :timeSpent (/ 60))
+        tracked    (->> state-list
+                        (filter #(not (empty? (:code %))))
+                        (map :format-field)
+                        (reduce + 0))
+        logged     (->> state-list
+                        (map :format-field)
+                        (reduce + 0))]
+    {:state (assoc init-state
+                   :chart state
+                   :list state-list
+                   :desc descs
+                   :submitted submitted
+                   :tracked (/ tracked 60)
+                   :logged (/ logged 60))}))
 

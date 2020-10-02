@@ -1,26 +1,23 @@
 (ns app.renderer.controllers.user
-  (:require
-   [citrus.core :as citrus]
-   [goog.string :as gstring]
-   [goog.string.format]))
+  (:require [citrus.core :as citrus]
+            [goog.string :as gstring]
+            ["electron" :refer [shell]]
+            [goog.string.format]))
 
 (def initial-state {:login    nil
                     :token    nil
-                    :password nil
-                    :error    nil})
+                    :password nil})
 
 (defmulti control (fn [event] event))
 
 (defmethod control :init []
   {:state initial-state})
 
-(defmethod control :login [event [form] state]
-  {:state (merge state form)
-   :http  {:endpoint :login
-           :params   form
-           :method   :post
-           :on-load  :success-login
-           :on-error :error-login}})
+(defmethod control :get-link [event [_] state]
+  {:http {:endpoint :auth-link
+          :method   :get
+          :on-load  :success-get-link
+          :on-error :error-login}})
 
 (defmethod control :logout [event [reconciler] state]
   (citrus/dispatch! reconciler :router :push :login)
@@ -35,35 +32,43 @@
              :params   tokens
              :method   :post
              :on-load  :success-oauth
-             :on-error :error}}))
+             :on-error :error-oauth}}))
+
+(defmethod control :error-oauth [event [result reconciler] state]
+  (citrus/dispatch! reconciler :router :push :login))
 
 (defmethod control :success-oauth [event [result reconciler] state]
-  (let [token  (:oauth_token (:body result))
-        secret (:oauth_token_secret (:body result))]
+  (let [token  (-> result :body :oauth_token)
+        secret (-> result :body :oauth_token_secret)]
     (citrus/dispatch! reconciler :router :push :home)
-    {:state         (assoc state :token token :error nil)
+    {:state         (assoc state :token token)
+     :http          {:endpoint :user-name
+                     :params   {:token  token
+                                :secret secret}
+                     :method   :post
+                     :on-load  :success-get-name
+                     :on-error :error}
      :local-storage {:method :set
                      :data   {:token  token
                               :secret secret}
                      :key    :token}}))
 
+(defmethod control :success-get-name [event [result reconciler] state]
+  (let [user-name (-> result :name)]
+    {:ipc           {:type "update-title-bar-menu"}
+     :local-storage {:method :add
+                     :data   {:name user-name}
+                     :key    :token}
+     :state         state}))
+
 (defmethod control :init-token [_ [token] state]
   {:state (assoc state :token token)})
 
-(defmethod control :success-login [event args state]
-  (let [url       (first args)
-        with-cred (gstring/format "%s&os_username=%s&os_password=%s"
-                                  (:url url)
-                                  (js/encodeURIComponent (:login state))
-                                  (js/encodeURIComponent (:password state)))]
-    {:ipc {:type "oauth"
-           :args with-cred}}))
-
-(defmethod control :error-login [_ [error] state]
-  {:state (assoc  state :error (boolean error))})
-
-(defmethod control :error-clean [_ _ state]
-  {:state (dissoc state :error)})
+(defmethod control :success-get-link [event [args ] state]
+  (let [link (:url args)]
+    {:ipc   {:type "oauth"
+             :args link}
+     :state state}))
 
 (defmethod control :error [_ [error] state]
   (print error))
