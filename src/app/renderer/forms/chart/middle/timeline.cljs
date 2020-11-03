@@ -64,7 +64,7 @@
 
 (defn get-timeline [r]
   (let [scale           (rum/react (citrus/subscription r [:home :scale]))
-        mock-scale      (if (= 1 scale ) 2 scale)
+        mock-scale      (if (= 1 scale) 2 scale)
         width           (str (* mock-scale 30))
         start-end-width (str (* mock-scale 15))]
     (map-indexed
@@ -79,9 +79,9 @@
 (rum/defc tooltip  < rum/reactive
   {:key-fn (fn [_ _ x] (str "tooltip" x))}
   [r height top?]
-  (let [show?       (rum/react show?)
+  (let [show        (rum/react show?)
         mouse-event (rum/react mouse-event)
-        top         (if top? 20 (- 25))
+        top         (if top? 25 (- 30))
         chart-ref   (rum/react (citrus/subscription r [:home :chart-ref]))
         format      (rum/react f-time)]
     (tc {:component :box
@@ -89,12 +89,14 @@
                      :z-index  1000
                      :top      (str (+ top (:clientY mouse-event)) "px")
                      :left     (str (:clientX mouse-event) "px")}
-         :opts      {:display (when (not show?) "none")
-                     :ref     tooltip-ref}
+         :opts      {:display     (when (not show) "none")
+                     :onMouseOver #(reset! show? false)
+                     :ref         tooltip-ref}
          :child     {:component :paper
                      :child     format}})))
 
 (rum/defc container < rum/reactive
+  {:key-fn (fn [_] "timeline-container")}
   [r height top?]
   (let [chart-ref (rum/react (citrus/subscription r [:home :chart-ref]))
         scale     (rum/react (citrus/subscription r [:home :scale]))
@@ -102,14 +104,51 @@
     [:div {:style        {:width   width
                           :height  (str height "px")
                           :display "flex"}
-           :class        [(when (not top?) "bottom-scroll") (if top? "bottom-border" "top-border")]
+           :class        (when (not top?) "bottom-scroll")
            :ref          container-ref
            :onMouseLeave #(reset! show? false)
+           :onMouseOut   #(reset! show? false)
            :onMouseMove  #(on-mouse-move % chart-ref scale)
            :onMouseOver  #(reset! show? true)}
      [(tooltip r top?)
       (get-timeline r)]]))
 
+(rum/defc activity < rum/reactive
+  {:key-fn (fn [_ row index] (str index))}
+  [r row index]
+  (let [inactive? (:inactive-log row)
+        scale     (rum/react (citrus/subscription r [:home :scale]))
+        width     (str (* scale (:interval row)) "px")
+        class     (cond
+                    (nil? inactive?) "chart-activity-block-grey"
+                    inactive?        "chart-activity-block-inactive"
+                    :else            "chart-activity-block-active")]
+    [:div {:style {:min-width width
+                   :height    "100%"
+                   :display   "flex"}
+           :class class}]
+    ))
+
+(rum/defc activity-container < rum/reactive
+  {:key-fn (fn [_] "acivity-container")}
+  [r height top?]
+  (let [scale         (rum/react (citrus/subscription r [:home :scale]))
+        activity-list (rum/react (citrus/subscription r [:chart :activity]))
+        width         (str (* scale 1440) "px")]
+    [:div {:style {:width   width
+                   :height  (str height "px")
+                   :display "flex"}
+           :class (if top? "bottom-border" "top-border")}
+     (map-indexed #(activity r %2 %1) (first activity-list))]))
+
 (rum/defc Timeline < rum/reactive
   [r height top?]
-  (container r height top?))
+  (let [activity-height    5
+        timeline-height    (- height activity-height)
+        timeline-container (container r timeline-height top?)
+        activity-container (activity-container r activity-height top?)]
+    (if top?
+      [timeline-container
+       activity-container]
+      [activity-container
+       timeline-container])))

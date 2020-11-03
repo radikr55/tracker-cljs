@@ -1,6 +1,7 @@
 (ns app.renderer.utils
   (:require
    ["react-draggable" :default Draggable]
+   ["react-beautiful-dnd" :as dnd]
    ["react-simple-timefield" :default TimeField]
    ["@material-ui/core/styles" :refer [styled]]
    ["@material-ui/pickers" :refer [MuiPickersUtilsProvider KeyboardDatePicker DatePicker]]
@@ -90,6 +91,9 @@
     :input-adornment            InputAdornment
     :zoom-in                    ZoomIn
     :zoom-out                   ZoomOut
+    :dnd-draggable              dnd/Draggable
+    :dnd-droppable              dnd/Droppable
+    :dnd-context                dnd/DragDropContext
     nil))
 
 (defn obj-js [component]
@@ -135,3 +139,4 @@
       (if (> delta 0)
         (scroll-vertical-box 30 box)
         (scroll-vertical-box -30 box)))))
+

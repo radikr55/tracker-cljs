@@ -2,28 +2,25 @@
   (:require [rum.core :as rum]
             [citrus.core :as citrus]
             [app.renderer.utils :refer [tc]]
-            ["@material-ui/core/styles" :refer [styled]]
             [app.renderer.forms.search.project-search :as project-search]
             [app.renderer.forms.search.issue-search :as issue-search]))
 
 (rum/defc close-button < rum/reactive
   {:key-fn (fn [_] "close")}
   [r]
-  (let [theme (rum/react (citrus/subscription r [:home :theme]))]
-    (tc {:component :icon-button
-         :opts      {:className "search-close"
-                     :onClick   #(do (citrus/dispatch! r :project :init)
-                                     (citrus/dispatch! r :router :push :home))}
-         :child     {:component :close}})))
+  (tc {:component :icon-button
+       :opts      {:className "search-close"
+                   :onClick   #(do (citrus/dispatch! r :project :init)
+                                   (citrus/dispatch! r :router :push :home))}
+       :child     {:component :close}}))
 
 (rum/defc title < rum/reactive
   {:key-fn (fn [_] "title")}
-  [r]
+  [_]
   (tc {:component :box
-       :opts      {:px 2}
+       :opts      {:px 1}
        :child     {:component :typography
-                   :styl      {:fontWeight "bold"}
-                   :opts      {:variant "h6"}
+                   :opts      {:className "search-title"}
                    :child     "Select Task"}}))
 
 (defn title-box [r]
@@ -45,7 +42,8 @@
   {:key-fn (fn [_] "content")}
   [r]
   (tc {:component :box
-       :opts      {:p              1
+       :opts      {:px             2
+                   :pb             1
                    :display        "flex"
                    :alignItems     "center"
                    :justifyContent "space-between"}

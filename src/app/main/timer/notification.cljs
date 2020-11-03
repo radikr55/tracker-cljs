@@ -1,7 +1,6 @@
 (ns app.main.timer.notification
-  (:require ["electron" :as electron :refer [Notification]]
-            [cljs-time.core :as t]
-            [cljs-time.format :as ft]
+  (:require ["electron" :as electron]
+            [app.main.window :as w]
             [goog.string :as gstring]
             [goog.string.format]))
 
@@ -13,12 +12,11 @@
                      (clj->js {:title "TaskTracker"
                                :body  body
                                :icon  icon-path}))]
+    (.on notific "click" #(do (when (.isMinimized @w/main-window) (.restore @w/main-window) )
+                              (.focus @w/main-window)))
     (.show notific)))
 
 (add-watch inactive-interval :show-notify
-           (fn [_ _ old new]
+           (fn [_ _ _ new]
              (show (gstring/format "You were not present for %s minutes" new))))
 
-(reset! inactive-interval 1231)
-
-;; (.-electorn (.-versions js/process ) )

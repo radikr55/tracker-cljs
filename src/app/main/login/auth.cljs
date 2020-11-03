@@ -1,5 +1,5 @@
 (ns app.main.login.auth
-  (:require ["electron" :refer [BrowserWindow ipcMain session]]
+  (:require ["electron" :refer [ipcMain session]]
             [goog.string :as gstring]
             [goog.string.format]
             [app.main.window :as w]
@@ -15,12 +15,11 @@
     (.remove cookies path "JSESSIONID1")))
 
 (defn open-auth-window [redirectUri]
-  (let [web-contents (.-webContents @w/main-window)]
-    (-> (clear-cookies redirectUri)
-        (p/then (fn [e]
-                  (.loadURL @w/main-window redirectUri)
-                  (.setMenu @w/main-window nil)))
-        (p/catch #(print %)))))
+  (-> (clear-cookies redirectUri)
+      (p/then (fn [e]
+                (.loadURL @w/main-window redirectUri)
+                (.setMenu @w/main-window nil)))
+      (p/catch #(print %))))
 
 (defonce on-auth
   (.on ipcMain "oauth"

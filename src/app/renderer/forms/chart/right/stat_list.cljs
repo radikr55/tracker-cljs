@@ -11,8 +11,9 @@
   [h-header]
   (tc {:component :box
        :opts      {:height    (str h-header "px")
-                   :className "bottom-border"
-                   :width     "100%"}}))
+                   :className "bottom-border stat-header"
+                   :width     "100%"}
+       :child     "Total"}))
 
 (rum/defc footer < rum/reactive
   {:key-fn (fn [_ x] "footer")}
@@ -39,23 +40,31 @@
 
 (rum/defc item < rum/reactive
   {:key-fn (fn [_ row] (:code row))}
-  [r row h-body]
-  (let [code       (:code row)
-        class-name (str "stat-box " (when (empty? code) "away"))
-        submitted  (->> (rum/react (citrus/subscription r [:chart :desc]))
-                        (filter #(= code (:code %)))
-                        first
-                        :submitted)]
+  [r row h-body index]
+  (let [code         (:code row)
+        away?        (not (empty? code))
+        current-task (rum/react (citrus/subscription r [:chart :current-task]))
+        class        (cond-> "stat-box "
+                       (empty? code)         (str " away ")
+                       (not (empty? code))   (str " stat-blue ")
+                       (odd? index)          (str " chart-block-gray ")
+                       (= code current-task) (str " selected-row "))
+        context-menu (when away?
+                       #(open-menu r % code (:format-field row)))
+        submitted    (->> (rum/react (citrus/subscription r [:chart :desc]))
+                          (filter #(= code (:code %)))
+                          first
+                          :submitted)]
     (tc {:component :box
          :opts      {:height    (str h-body "px")
-                     :onClick   #(open-menu r % code (:format-field row))
-                     :className class-name}
+                     :onClick   context-menu
+                     :className class}
          :child     [{:component :box
                       :child     (:format row)}
-                     (when (not (nil? submitted))
+                     (when (and away? (not (= 0 submitted)))
                        {:component :box
                         :opts      {:className "submitted"}
-                        :child     (tu/format-time (/ submitted 60))} )]})))
+                        :child     (tu/format-time (/ submitted 60))})]})))
 
 (rum/defc body < rum/reactive
   {:key-fn (fn [_] "body")}
@@ -72,8 +81,7 @@
                                                        left-list-ref
                                                        right-list-ref])
                      :height    (str "calc(100vh - " (+ 2 h-top (* 2 h-header)) "px)")}
-         :child     (for [row list]
-                      (item r row h-body))})))
+         :child     (map-indexed #(item r %2 h-body %1) list)})))
 
 (rum/defc StatList < rum/reactive
   [r h-top h-header h-body]

@@ -1,5 +1,6 @@
 (ns app.main.api
   (:require ["axios" :as axios]
+            [cljs.pprint :refer [pprint]]
             [promesa.core :as p]))
 
 (def url "http://localhost:3000/")
@@ -27,13 +28,15 @@
     "get"))
 
 (defn fetch [{:keys [endpoint params data method headers]}]
-  (-> (axios (clj->js {:method  (->method method)
-                       :baseURL url
-                       :url     (->endpoint endpoint)
-                       :params  params
-                       :data    data}))
-      (p/then #(parse-body %))
-      (p/catch #(print %))))
+  (let [param (clj->js {:method  (->method method)
+                        :baseURL url
+                        :url     (->endpoint endpoint)
+                        :params  params
+                        :data    data})]
+    (pprint param)
+    (-> (axios param)
+        (p/then #(parse-body %))
+        (p/catch #(print %)))))
 
 (comment
   (-> (fetch {:method   :POST

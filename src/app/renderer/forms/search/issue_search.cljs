@@ -21,16 +21,24 @@
         id    (:id data)]
     (tc {:component :list-item
          :opts      {:button    true
-                     :onClick   #(do (citrus/dispatch! r :chart :set-current-task code)
+                     :onClick   #(do (citrus/dispatch! r :chart :new-current-task code)
                                      (citrus/dispatch! r :router :push :home))
                      :className "table-row"}
          :child     {:component :list-item-text
-                     :opts      {:secondary title}}})))
+                     :child     [{:component :typography
+                                  :opts      {:className "search-item search-item-code"
+                                              :key       "code"}
+                                  :child     code}
+                                 {:component :typography
+                                  :opts      {:className "search-item search-item-title"
+                                              :key       "title"}
+                                  :child     title}]}})))
 
 (rum/defc subheader < rum/reactive
   {:key-fn (fn [_ id _] id)}
   [r category paper]
   (tc {:component :list-subheader
+       :opts      {:className "search-list-subheader"}
        :styl      {:backgroundColor paper}
        :child     category}))
 
@@ -60,12 +68,10 @@
   {:key-fn (fn [_] "search")}
   [r]
   (tc {:component :text-field
-       :opts      {
-                   ;; :variant     "outlined"
+       :opts      {:variant     "outlined"
                    :fullWidth   true
                    :className   "search-field"
                    :margin      "none"
-                   :label       "Search"
                    :placeholder "Task"
                    :onChange    #(citrus/dispatch! r :project :get-tasks (.. % -target -value))
                    :InputProps  {:startAdornment

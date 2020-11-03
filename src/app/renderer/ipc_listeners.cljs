@@ -24,7 +24,13 @@
        (fn [event arg]
          (citrus/dispatch! r :home :open-logout))))
 
+(defn refresh  [r]
+  (.on ipcRenderer "refresh"
+       (fn [event arg]
+         (citrus/dispatch! r :chart :load-track-logs))))
+
 (defn start! [r]
   (render-secret r)
+  (refresh r)
   (theme r)
   (logout r))

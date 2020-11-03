@@ -1,12 +1,16 @@
 (ns app.renderer.forms.chart.left.task-popper
   (:require [rum.core :as rum]
             [app.renderer.utils :refer [tc]]
+            [app.renderer.time-utils :as tu]
             ["electron" :refer [shell]]
+            [cljs-time.core :as t]
             [citrus.core :as citrus]))
 
 (rum/defc SubMenu < rum/reactive
   [r]
   (let [p        (rum/react (citrus/subscription r [:task-popper]))
+        date     (rum/react (citrus/subscription r [:chart :date]))
+        code     (:code p)
         open?    (:open p)
         position (:position p)
         link     (:link p)]
@@ -32,14 +36,15 @@
                                    :opts      {:className "menu-item-typography"
                                                :key       "typography"}
                                    :child     "View in JIRA"}]}
-                     {:component :menu-item
-                      :opts      {:key "remove"}
-                      :child     [{:component :list-item-icon
-                                   :opts      {:key "icon"}
-                                   :child     {:component :close
-                                               :opts      {:className "menu-item-icon"}}}
-                                  {:component :typography
-                                   :opts      {:key       "typography"
-                                               :className "menu-item-typography"}
-                                   :child     "Remove Task"}]}]}))))
-
+                     (when (tu/eq-by-date date (t/now))
+                       {:component :menu-item
+                        :opts      {:key     "remove"
+                                    :onClick #(citrus/dispatch! r :chart :delete-current-task code)}
+                        :child     [{:component :list-item-icon
+                                     :opts      {:key "icon"}
+                                     :child     {:component :close
+                                                 :opts      {:className "menu-item-icon"}}}
+                                    {:component :typography
+                                     :opts      {:key       "typography"
+                                                 :className "menu-item-typography"}
+                                     :child     "Remove Task"}]} )]}))))

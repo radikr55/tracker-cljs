@@ -6,6 +6,7 @@
             [cljs-time.core :as t]
             [cljs-time.format :as ft]))
 
+
 (rum/defc body  < rum/reactive
   {:key-fn (fn [_] "body")}
   [r start end task date]
@@ -42,17 +43,25 @@
                         :pb             2
                         :justifyContent "space-between"}
             :child     [{:component :time-field
-                         :opts      {:value     start-str
-                                     :key       "start"
-                                     :className "time-field"
-                                     :onChange  #(citrus/dispatch! r :chart-popper :set-start (tu/merge-date-time date %2))
-                                     :colon     ":"}}
+                         :opts      {:value       start-str
+                                     :key         "start"
+                                     :className   "time-field"
+                                     :onWheel     #(tu/wheel->time-field r % date start :set-start :chart-popper)
+                                     :onMouseOver #(.focus (.-target %))
+                                     :onChange    #(citrus/dispatch! r :chart-popper :set-start
+                                                                     (tu/merge-date-time date
+                                                                                         (tu/field->to-time %2)))
+                                     :colon       ":"}}
                         {:component :time-field
-                         :opts      {:value     end-str
-                                     :key       "end"
-                                     :onChange  #(citrus/dispatch! r :chart-popper :set-end (tu/merge-date-time date %2))
-                                     :className "time-field"
-                                     :colon     ":"}}]}
+                         :opts      {:value       end-str
+                                     :key         "end"
+                                     :onWheel     #(tu/wheel->time-field r % date end :set-end :chart-popper)
+                                     :onMouseOver #(.focus (.-target %))
+                                     :onChange    #(citrus/dispatch! r :chart-popper :set-end
+                                                                     (tu/merge-date-time date
+                                                                                         (tu/field->to-time %2)))
+                                     :className   "time-field"
+                                     :colon       ":"}}]}
            {:component :box
             :opts      {:display        "flex"
                         :key            "footer"
@@ -66,7 +75,8 @@
                         {:component :button
                          :opts      {:variant   "contained"
                                      :key       "save"
-                                     ;; :onClick   #(save-time task)
+                                     :onClick   #(citrus/dispatch! r :chart-popper :save-time
+                                                                   start end task)
                                      :className "popper-save"
                                      :color     "primary"}
                          :child     "Save"}]}]}})))

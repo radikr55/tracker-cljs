@@ -39,12 +39,16 @@
                      :onClick   #(citrus/dispatch! r :project :get-by-project-id id)
                      :className "table-row"}
          :child     {:component :list-item-text
-                     :opts      {:secondary title}}})))
+                     :child     {:component :typography
+                                 :opts      {:className "search-item search-item-title"
+                                             :key       "title"}
+                                 :child     title}}})))
 
 (rum/defc subheader < rum/reactive
   {:key-fn (fn [_ id _] id)}
   [r category paper]
   (tc {:component :list-subheader
+       :opts      {:className "search-list-subheader"}
        :styl      {:backgroundColor paper}
        :child     category}))
 
@@ -75,12 +79,11 @@
   {:key-fn (fn [_] "search")}
   [r]
   (tc {:component :text-field
-       :opts      {:variant     "outlined"
-                   :onChange    #(citrus/dispatch! r :project :set-search-project (.. % -target -value))
+       :opts      {:onChange    #(citrus/dispatch! r :project :set-search-project (.. % -target -value))
                    :fullWidth   true
+                   :variant     "outlined"
                    :className   "search-field"
                    :margin      "none"
-                   :label       "Search"
                    :placeholder "Project"
                    :InputProps  {:startAdornment
                                  (tc {:component :input-adornment

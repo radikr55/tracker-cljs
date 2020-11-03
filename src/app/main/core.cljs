@@ -1,6 +1,5 @@
 (ns app.main.core
   (:require
-   [app.main.local-storage :as ls]
    [app.main.login.server :as login-server]
    [app.main.login.auth :as auth]
    [app.main.window :as w]

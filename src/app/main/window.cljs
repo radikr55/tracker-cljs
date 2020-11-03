@@ -23,11 +23,11 @@
                        {:label "Clear Inactive Tasks"}
                        {:type "separator"}
                        {:label   "Light theme"
-                        :type    "checkbox"
+                        :type    "radio"
                         :checked (not dark?)
                         :click   #(set-dark false)}
                        {:label   "Dark theme"
-                        :type    "checkbox"
+                        :type    "radio"
                         :checked dark?
                         :click   #(set-dark true)}
                        {:type "separator"}

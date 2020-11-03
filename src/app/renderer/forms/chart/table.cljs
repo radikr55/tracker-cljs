@@ -41,13 +41,14 @@
   {:key-fn (fn [_] "middle")}
   [r h-top]
   (citrus/dispatch! r :home :set-chart-ref chart-ref)
-  (let [scale (rum/react (citrus/subscription r [:home :scale]))
-        width (str (* scale 1440) "px")]
+  (let [scale             (rum/react (citrus/subscription r [:home :scale]))
+        chart-popper-open (rum/react (citrus/subscription r [:chart-popper :open]))
+        wheel             (when (not chart-popper-open)
+                            #(timeline/on-wheel-container % chart-ref scale))
+        width             (str (* scale 1440) "px")]
     (tc {:component :box
          :opts      {:width     (str (- @atom-width @left-width) "px")
-                     :onWheel   #(do
-                                   (citrus/dispatch! r :chart-popper :close-popper)
-                                   (timeline/on-wheel-container % chart-ref scale))
+                     :onWheel   wheel
                      :ref       chart-ref
                      :className "middle"}
          :child     {:component :box
@@ -92,7 +93,14 @@
                    :className "right"}
        :child     (stat-list/StatList r h-top h-header h-body)}))
 
+(def load-mixin
+  {:will-mount (fn [{[r] :rum/args :as state}]
+                 (citrus/dispatch! r :chart :set-date (t/now))
+                 (citrus/dispatch! r :chart :load-track-logs)
+                 state)})
+
 (rum/defc Table < rum/reactive
+  load-mixin
   {:key-fn (fn [_] "table")}
   [r h-header]
   (let [date (rum/react (citrus/subscription r [:chart :date]))]

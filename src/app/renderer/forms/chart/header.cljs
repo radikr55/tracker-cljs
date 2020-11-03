@@ -5,7 +5,6 @@
             [app.renderer.utils :refer [tc]]
             [app.renderer.time-utils :as tu]
             ["@date-io/moment" :as MomentUtils]
-            ["@material-ui/pickers" :refer [MuiPickersUtilsProvider KeyboardDatePicker DatePicker]]
             [citrus.core :as citrus]))
 
 (rum/defc picker < rum/reactive

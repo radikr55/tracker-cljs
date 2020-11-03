@@ -1,6 +1,5 @@
 (ns app.renderer.core
   (:require [rum.core :as rum]
-            ["electron" :refer [remote]]
             [goog.dom :as dom]
             [citrus.core :as citrus]
             [app.renderer.effects :as effects]

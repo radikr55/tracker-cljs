@@ -17,6 +17,9 @@
 (defmethod ->endpoint :oauth [_ _]
   "oauth")
 
+(defmethod ->endpoint :active-task [_ _]
+  "active-task")
+
 (defmethod ->endpoint :project [_ _]
   "project")
 
@@ -74,8 +77,8 @@
 
 (defn fetch [{:keys [endpoint params slug method type headers token]}]
   (let [xhr-fn     (method->xhr-fn method)
-        xhr-params {:query-params (when-not (contains? #{:post :put :patch} method) params)
-                    :body         (when (contains? #{:post :put :patch} method) (->json params))
+        xhr-params {:query-params (when-not (contains? #{:post :put :patch :delete} method) params)
+                    :body         (when (contains? #{:post :put :patch :delete} method) (->json params))
                     :headers      (merge headers (type->header type) (token->header token))}]
     (-> (->endpoint endpoint slug)
         ->uri

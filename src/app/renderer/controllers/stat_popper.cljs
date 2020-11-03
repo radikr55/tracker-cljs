@@ -1,8 +1,6 @@
 (ns app.renderer.controllers.stat-popper
-  (:require [cljs-time.core :as t]
-            [app.renderer.effects :as effects]
+  (:require [app.renderer.effects :as effects]
             [citrus.core :as citrus]
-            [cljs-time.format :as f]
             [app.renderer.time-utils :as tu]
             [cljs-time.coerce :as c]))
 
@@ -43,7 +41,7 @@
             :params   (assoc token :query
                              [{:issueCode (:code state)
                                :timeSpent (* (:time state) 60)
-                               :date      (c/to-string (tu/merge-date-time date "12:00"))
+                               :date      (c/to-string (tu/merge-date-time date (tu/field->to-time "12:00")))
                                :offset    (.getTimezoneOffset (js/Date.))}])
             :method   :post
             :on-load  :success-submit

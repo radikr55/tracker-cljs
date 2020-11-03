@@ -10,8 +10,11 @@ $themes: (light: ('orange-away': #ffab40,
         'timeine-text': white,
         'logged': #848484,
         'submitted': #239f28,
+        'active':#1255cc,
+        'inactive':#ff0000,
+        'active-grey': #dddddd,
         'background-color': #fff),
-    dark: ('orange-away': #f5aa42,
+    dark: ('orange-away': #ebb064,
         'border-color': #565656,
         'opponent': white,
         'blue': #4698f2,
@@ -23,6 +26,9 @@ $themes: (light: ('orange-away': #ffab40,
         'logged': #848484,
         'submitted': #00e578,
         'timeine-text': black,
+        'active':#4698f2,
+        'inactive':#ff453a,
+        'active-grey':#848484,
         'background-color': #202124));
 
 
@@ -64,8 +70,22 @@ $themes: (light: ('orange-away': #ffab40,
         $timeline-text: themed('timeline-text') !global;
         $background-color: themed('background-color') !global;
         $highlight-task: themed('highlight-task') !global;
+        $active: themed('active') !global;
+        $inactive: themed('inactive') !global;
+        $active-grey: themed('active-grey') !global;
         @content;
     }
+}
+
+@font-face {
+    font-size: 14px;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.14;
+    letter-spacing: normal;
+    font-family: Roboto;
+    src: url(../font/Roboto-Regular.ttf),
+         url(../font/Roboto-Bold.ttf);
 }
 
 @include themed {
@@ -73,11 +93,6 @@ $themes: (light: ('orange-away': #ffab40,
     body {
         color: $text;
         background-color: $background-color;
-    }
-
-    @font-face {
-        font-family: Roboto Bold Condensed;
-        src: url(/fonts/Roboto-Light.ttf);
     }
 
     .login-container {
@@ -114,7 +129,28 @@ $themes: (light: ('orange-away': #ffab40,
 
     .away {
         color: $orange-away !important;
+
+        &>.MuiBox-root {
+            justify-content: center;
+        }
+
+        &.selected-task {
+            color: #fff !important;
+            background-color: $orange-away;
+        }
+
+        &.selected-row {
+            background-color: rgba(235, 176, 100, 0.1);
+        }
     }
+
+    .stat-blue {
+        &.selected-row {
+            background-color: rgba(70, 152, 242, 0.1);
+        }
+    }
+
+
 
     .submitted {
         color: $submitted !important;
@@ -122,6 +158,8 @@ $themes: (light: ('orange-away': #ffab40,
 
     .search-field {
         color: $text;
+        background-color: $highlight-task;
+        border-radius: 5px;
 
         &>.MuiInputBase-root>fieldset {
             border-color: $text;
@@ -129,17 +167,28 @@ $themes: (light: ('orange-away': #ffab40,
 
         &>.MuiInputBase-root {
             color: $text;
+
+            &>.MuiOutlinedInput-input {
+                padding: 14px 14px;
+                font-size: 14px;
+                border: none;
+            }
+
+            &>.MuiOutlinedInput-notchedOutline {
+                border: none;
+            }
         }
 
         &>.MuiInputLabel-outlined {
             color: $text;
         }
+
     }
 
     .search-list {
         overflow: auto;
-        max-height: calc(100vh - 146px);
-        height: calc(100vh - 146px);
+        max-height: calc(100vh - 110px);
+        height: calc(100vh - 110px);
         padding: 0px 0px !important;
         background-color: $background-color;
 
@@ -225,6 +274,7 @@ $themes: (light: ('orange-away': #ffab40,
     }
 
     .search-close {
+        padding: 10px;
         color: #635f5f;
     }
 
@@ -316,8 +366,11 @@ $themes: (light: ('orange-away': #ffab40,
         display: flex;
         justify-content: center;
         border-bottom: solid 1px $border-color;
-        cursor: context-menu
+        &.active{
+            cursor: context-menu;
+        }
     }
+
 
     .timeline-box {
         height: 100%;
@@ -337,9 +390,14 @@ $themes: (light: ('orange-away': #ffab40,
     }
 
     .task-badge {
-        font-weight: bold;
-        color: $blue;
+        font-family: Roboto;
         font-size: 9px;
+        font-weight: bold;
+        font-stretch: normal;
+        font-style: normal;
+        line-height: normal;
+        letter-spacing: normal;
+        color: $blue;
     }
 
     .selected-task {
@@ -347,9 +405,26 @@ $themes: (light: ('orange-away': #ffab40,
         background-color: $blue;
     }
 
+    .chart-row-away {
+        &.chart-block-empty {
+            &.selected-row {
+                background-color: rgba(235, 176, 100, 0.1);
+            }
+        }
+    }
+
+    .chart-row-blue {
+        &.chart-block-empty {
+            &.selected-row {
+                background-color: rgba(70, 152, 242, 0.1);
+            }
+        }
+    }
+
     .badge-box {
         display: flex;
         justify-content: center;
+        align-items: center;
         width: 58px;
         background-color: #fff;
         border-radius: 7px;
@@ -383,7 +458,33 @@ $themes: (light: ('orange-away': #ffab40,
         align-items: center;
         border-bottom: solid 1px $border-color;
         flex-direction: column;
-        cursor: pointer;
+        &.stat-blue{
+            cursor: pointer;
+        }
+    }
+
+    .stat-header {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        opacity: 0.5;
+        color: $timeline-text;
+        font-size: 12px;
+    }
+
+    .chart-activity-block-active {
+        opacity: 0.4;
+        background-color: $active;
+    }
+
+    .chart-activity-block-inactive {
+        opacity: 0.4;
+        background-color: $inactive;
+    }
+
+    .chart-activity-block-grey {
+        background-color: $active-grey;
     }
 
     .chart-block-blue {
@@ -391,7 +492,7 @@ $themes: (light: ('orange-away': #ffab40,
         background-color: $blue;
     }
 
-    .chart-block-grey {
+    .chart-block-gray {
         background: mix($opponent, $background-color, 4%);
     }
 
@@ -399,10 +500,24 @@ $themes: (light: ('orange-away': #ffab40,
         background-color: $empty-block;
     }
 
+    .chart-block-away {
+        background-color: $orange-away;
+    }
+
+    .chart-line-dragg {
+        &>.chart-block {
+            -webkit-box-shadow: inset 0px 1px 5px 0px rgba(2, 119, 189, 1);
+            -moz-box-shadow: inset 0px 1px 5px 0px rgba(2, 119, 189, 1);
+            box-shadow: inset 0px 1px 5px 0px rgba(2, 119, 189, 1);
+            z-index: 1;
+        }
+    }
+
     .chart-block {
         user-select: none;
         flex-direction: column;
         justify-content: center;
+        z-index: 100;
         color: white;
 
         &>.MuiTypography-root {
@@ -412,6 +527,13 @@ $themes: (light: ('orange-away': #ffab40,
             font-size: 12px;
         }
 
+    }
+
+    .chart-highlight{
+        -webkit-box-shadow: inset 0px 1px 5px 0px rgba(2, 119, 189, 1);
+        -moz-box-shadow: inset 0px 1px 5px 0px rgba(2, 119, 189, 1);
+        box-shadow: inset 0px 1px 5px 0px rgba(2, 119, 189, 1);
+        z-index: 1;
     }
 
     .chart-popper-box {
@@ -450,10 +572,53 @@ $themes: (light: ('orange-away': #ffab40,
         }
     }
 
+    .search-list-subheader {
+        font-size: 12px;
+        font-weight: 500;
+        font-stretch: normal;
+        font-style: normal;
+        letter-spacing: normal;
+    }
+
     .table-row {
+        &>.MuiListItemText-root {
+            &>.MuiTypography-root {
+                display: flex;
+                justify-content: flex-start;
+            }
+        }
+    }
+
+    .search-item-title {
         overflow: hidden;
         white-space: nowrap;
         text-overflow: ellipsis;
+        display: inherit;
+    }
+
+    .search-item-code {
+        font-weight: bold;
+        width: 130px;
+        min-width: 130px;
+        max-width: 130px;
+    }
+
+    .search-item {
+        font-stretch: normal;
+        font-style: normal;
+        line-height: 1.14;
+        letter-spacing: normal;
+        font-size: 14px;
+    }
+
+    .search-title {
+        font-size: 20px;
+        font-weight: bold;
+        font-stretch: normal;
+        font-style: normal;
+        line-height: 0.9;
+        letter-spacing: normal;
+        font: Roboto-Bold
     }
 
     .time-field,
@@ -503,6 +668,7 @@ $themes: (light: ('orange-away': #ffab40,
     }
 
     .sum-title {
+        float:right;
         font-size: 12px;
         font-weight: bold;
         text-transform: capitalize;
