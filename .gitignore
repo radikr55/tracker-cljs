@@ -3,6 +3,8 @@
 .shadow-cljs/
 node_modules/
 .nrepl-port
+yarn.lock
+.clj-kondo/
 
 resources/public/js
 resources/main.js
