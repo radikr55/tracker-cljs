@@ -12,11 +12,13 @@
 
 (defn create-theme [dark?]
   (createMuiTheme
-    (clj->js {:palette
-              (clj->js {:type      (if dark? "dark" "light")
-                        :primary   {:main (if dark? "#90caf9" "#1976d2")}
-                        :secondary {:main (if dark? "#ff4081" "#c51162")}
-                        :devider   "rgba(255, 255, 255, 0.12)"})})))
+    (clj->js {:typography {:fontFamily ["Roboto-Bold"]}
+              :palette    {:type      (if dark? "dark" "light")
+                           :primary   {:main (if dark? "#90caf9" "#1976d2")}
+                           :secondary {:main (if dark? "#ff4081" "#c51162")}
+                           :devider   "rgba(255, 255, 255, 0.12)"}
+              ;; (clj->js )
+              })))
 
 (rum/defc loading < rum/reactive
   [r]

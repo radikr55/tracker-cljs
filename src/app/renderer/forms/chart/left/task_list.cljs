@@ -83,7 +83,8 @@
                                                  :opts      {:className "task-badge"}
                                                  :child     "TRACKING"}})]}
                      {:component :box
-                      :opts      {:key "desc"}
+                      :opts      {:key "desc"
+                                  :className "task-desc"}
                       :child     {:component :typography
                                   :styl      {:font-size "12px"}
                                   :opts      {:noWrap true}

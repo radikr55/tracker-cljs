@@ -50,11 +50,11 @@
        :child     [{:component :box
                     :opts      {:key   "project"
                                 :pr    1
-                                :width "40%"}
+                                :width "30%"}
                     :child     (project-search/Search-box r)}
                    {:component :box
                     :opts      {:key   "issue"
-                                :width "60%"}
+                                :width "70%"}
                     :child     (issue-search/Search-box r)}]}))
 
 (rum/defc Search

@@ -3,11 +3,10 @@ $themes: (light: ('orange-away': #ffab40,
         'blue': #1255cc,
         'opponent': black,
         'text': black,
-        'scroll-color': #565656,
+        'scroll-color': rgba(0, 0, 0, 0.5),
         'odd-emtry-block': #f8f8f8,
         'highlight-task': #f2f2f2,
         'empty-block': white,
-        'timeine-text': white,
         'logged': #848484,
         'submitted': #239f28,
         'active':#1255cc,
@@ -18,19 +17,17 @@ $themes: (light: ('orange-away': #ffab40,
         'border-color': #565656,
         'opponent': white,
         'blue': #4698f2,
-        'scroll-color': #ddd,
+        'scroll-color': rgba(255, 255, 255, 0.5),
         'highlight-task': #37373d,
         'empty-block': #202124,
         'odd-emtry-block': #242528,
         'text': white,
         'logged': #848484,
         'submitted': #00e578,
-        'timeine-text': black,
         'active':#4698f2,
         'inactive':#ff453a,
         'active-grey':#848484,
         'background-color': #202124));
-
 
 @mixin themify($themes) {
 
@@ -67,7 +64,6 @@ $themes: (light: ('orange-away': #ffab40,
         $scroll-color: themed('scroll-color') !global;
         $empty-block: themed('empty-block') !global;
         $text: themed('text') !global;
-        $timeline-text: themed('timeline-text') !global;
         $background-color: themed('background-color') !global;
         $highlight-task: themed('highlight-task') !global;
         $active: themed('active') !global;
@@ -84,8 +80,28 @@ $themes: (light: ('orange-away': #ffab40,
     line-height: 1.14;
     letter-spacing: normal;
     font-family: Roboto;
-    src: url(../font/Roboto-Regular.ttf),
-         url(../font/Roboto-Bold.ttf);
+    src: url(../font/Roboto-Regular.ttf);
+}
+
+@font-face {
+    font-weight: 500;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.33;
+    letter-spacing: normal;
+    letter-spacing: normal;
+    font-family: Roboto-Medium;
+    src: url(../font/Roboto-Medium.ttf);
+}
+
+@font-face {
+    font-size: 14px;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.14;
+    letter-spacing: normal;
+    font-family: Roboto-Bold;
+    src: url(../font/Roboto-Bold.ttf);
 }
 
 @include themed {
@@ -132,6 +148,10 @@ $themes: (light: ('orange-away': #ffab40,
 
         &>.MuiBox-root {
             justify-content: center;
+
+            &>.MuiTypography-body1 {
+                font-size: 14px;
+            }
         }
 
         &.selected-task {
@@ -172,6 +192,7 @@ $themes: (light: ('orange-away': #ffab40,
                 padding: 14px 14px;
                 font-size: 14px;
                 border: none;
+                font-family: Roboto;
             }
 
             &>.MuiOutlinedInput-notchedOutline {
@@ -187,12 +208,12 @@ $themes: (light: ('orange-away': #ffab40,
 
     .search-list {
         overflow: auto;
-        max-height: calc(100vh - 110px);
-        height: calc(100vh - 110px);
+        max-height: calc(100vh - 140px);
+        height: calc(100vh - 140px);
         padding: 0px 0px !important;
         background-color: $background-color;
 
-        &>.MuiListItem-root>.MuiListItemText-root>.MuiTypography-root {
+        &>.MuiListItem-root:not(.selected-project)>.MuiListItemText-root>.MuiTypography-root {
             color: $text;
         }
 
@@ -205,13 +226,13 @@ $themes: (light: ('orange-away': #ffab40,
     }
 
     ::-webkit-scrollbar {
-        width: 5px;
-        height: 5px;
+        width: 4px;
     }
 
     ::-webkit-scrollbar-track {
-        box-shadow: inset 0 0 1px rgba(0, 0, 0, 0.00);
-        webkit-box-shadow: inset 0 0 1px rgba(0, 0, 0, 0.00);
+        box-shadow: inset 0 0 1px rgba(0, 0, 0, 0.1);
+        webkit-box-shadow: inset 0 0 1px rgba(0, 0, 0, 0.1);
+        background-color: transparent;
     }
 
     ::-webkit-scrollbar-thumb {
@@ -221,7 +242,7 @@ $themes: (light: ('orange-away': #ffab40,
     }
 
     ::-webkit-scrollbar-thumb:hover {
-        background: rgba(0, 0, 0, .4);
+        background: darken($scroll-color, 10%);
     }
 
 
@@ -243,6 +264,14 @@ $themes: (light: ('orange-away': #ffab40,
         background-color: $highlight-task;
         height: 100%;
         margin: 0px 5px;
+    }
+
+    .MuiButton-contained {
+        box-shadow: none;
+
+        &.Mui-disabled {
+            background-color: $highlight-task;
+        }
     }
 
     .date-picker {
@@ -288,14 +317,15 @@ $themes: (light: ('orange-away': #ffab40,
     }
 
     .submit {
+        width: 106px;
         color: white;
         background-color: $blue;
     }
 
     .gap-dot {
         color: $border-color;
-        height: 10px !important;
-        width: 8px !important;
+        height: 5px !important;
+        width: 5px !important;
     }
 
     .gap {
@@ -323,13 +353,13 @@ $themes: (light: ('orange-away': #ffab40,
         border-top: solid 1px $border-color;
 
         &::-webkit-scrollbar {
-            width: 5px;
-            height: 5px;
+            height: 4px;
         }
 
         &::-webkit-scrollbar-track {
-            box-shadow: inset 0 0 1px rgba(0, 0, 0, 0.00);
-            webkit-box-shadow: inset 0 0 1px rgba(0, 0, 0, 0.00);
+            box-shadow: inset 0 0 1px rgba(0, 0, 0, 0.1);
+            webkit-box-shadow: inset 0 0 1px rgba(0, 0, 0, 0.1);
+            background-color: transparent;
         }
 
         &::-webkit-scrollbar-thumb {
@@ -339,7 +369,7 @@ $themes: (light: ('orange-away': #ffab40,
         }
 
         &::-webkit-scrollbar-thumb:hover {
-            background: rgba(0, 0, 0, .4);
+            background: darken($scroll-color, 10%);
         }
 
     }
@@ -366,7 +396,8 @@ $themes: (light: ('orange-away': #ffab40,
         display: flex;
         justify-content: center;
         border-bottom: solid 1px $border-color;
-        &.active{
+
+        &.active {
             cursor: context-menu;
         }
     }
@@ -377,12 +408,12 @@ $themes: (light: ('orange-away': #ffab40,
         display: flex;
         overflow: hidden;
         opacity: 0.5;
-        color: $timeline-text;
         font-weight: 500;
         font-size: 12px;
         justify-content: center;
         user-select: none;
         align-items: center;
+        font-family: Roboto-Medium;
     }
 
     .highlight-task {
@@ -390,7 +421,6 @@ $themes: (light: ('orange-away': #ffab40,
     }
 
     .task-badge {
-        font-family: Roboto;
         font-size: 9px;
         font-weight: bold;
         font-stretch: normal;
@@ -398,6 +428,13 @@ $themes: (light: ('orange-away': #ffab40,
         line-height: normal;
         letter-spacing: normal;
         color: $blue;
+    }
+
+    .task-desc {
+        &>.MuiTypography-body1 {
+            font-family: Roboto;
+            letter-spacing: 0;
+        }
     }
 
     .selected-task {
@@ -446,6 +483,13 @@ $themes: (light: ('orange-away': #ffab40,
         align-items: center;
         color: $blue;
         cursor: pointer;
+
+        &>.MuiBox-root {
+            &>.MuiTypography-body1 {
+                letter-spacing: -0.11px;
+                font-size: 14px;
+            }
+        }
     }
 
     .stat-box {
@@ -458,19 +502,24 @@ $themes: (light: ('orange-away': #ffab40,
         align-items: center;
         border-bottom: solid 1px $border-color;
         flex-direction: column;
-        &.stat-blue{
+
+        &.stat-blue {
             cursor: pointer;
         }
     }
 
     .stat-header {
+        font-family: Roboto-Medium;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-weight: bold;
         opacity: 0.5;
-        color: $timeline-text;
         font-size: 12px;
+    }
+
+    .stat-block-empty {
+        opacity: 0.5;
+        color: $text;
     }
 
     .chart-activity-block-active {
@@ -529,10 +578,13 @@ $themes: (light: ('orange-away': #ffab40,
 
     }
 
-    .chart-highlight{
-        -webkit-box-shadow: inset 0px 1px 5px 0px rgba(2, 119, 189, 1);
-        -moz-box-shadow: inset 0px 1px 5px 0px rgba(2, 119, 189, 1);
-        box-shadow: inset 0px 1px 5px 0px rgba(2, 119, 189, 1);
+    .chart-block-title {
+        font-family: Roboto;
+    }
+
+    .chart-highlight {
+        opacity: 0.3;
+        background-color: $blue !important;
         z-index: 1;
     }
 
@@ -556,6 +608,10 @@ $themes: (light: ('orange-away': #ffab40,
             color: $text;
             background-color: $background-color;
 
+            &>.MuiMenu-list>.MuiMenuItem-root>.MuiTypography-root {
+                font-family: Roboto;
+            }
+
             &>.MuiMenu-list>.MuiMenuItem-root>.MuiListItemIcon-root {
                 color: $text;
             }
@@ -572,12 +628,19 @@ $themes: (light: ('orange-away': #ffab40,
         }
     }
 
+    .search-list-body {
+        margin: 10px 0;
+        border: solid 1px $border-color;
+        border-radius: 3px;
+    }
+
     .search-list-subheader {
         font-size: 12px;
         font-weight: 500;
         font-stretch: normal;
         font-style: normal;
         letter-spacing: normal;
+        font-family: Roboto-Medium;
     }
 
     .table-row {
@@ -589,11 +652,22 @@ $themes: (light: ('orange-away': #ffab40,
         }
     }
 
+    .selected-project {
+        background-color: $active;
+        color: white !important;
+
+        &:hover {
+            color: $text !important;
+        }
+    }
+
     .search-item-title {
+        font-size: 14px;
         overflow: hidden;
         white-space: nowrap;
         text-overflow: ellipsis;
         display: inherit;
+        font-family: Roboto;
     }
 
     .search-item-code {
@@ -618,7 +692,7 @@ $themes: (light: ('orange-away': #ffab40,
         font-style: normal;
         line-height: 0.9;
         letter-spacing: normal;
-        font: Roboto-Bold
+        font-family: Roboto-Bold
     }
 
     .time-field,
@@ -632,12 +706,15 @@ $themes: (light: ('orange-away': #ffab40,
     }
 
     .time-field {
+        font-family: Roboto;
+        letter-spacing: -0.11px;
         width: 45% !important;
     }
 
     .popper-interval {
         font-size: 14px;
         padding-right: 10px;
+        font-family: Roboto-Medium;
     }
 
     .popper-save {
@@ -664,17 +741,16 @@ $themes: (light: ('orange-away': #ffab40,
 
     .sum-time {
         font-size: 12px;
-        font-weight: bold;
     }
 
     .sum-title {
-        float:right;
+        font-family: Roboto-Medium;
         font-size: 12px;
-        font-weight: bold;
         text-transform: capitalize;
     }
 
     .sum-statistic {
+        text-align: right;
         padding: 0px 10px;
     }
 }

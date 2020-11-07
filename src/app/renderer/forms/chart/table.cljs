@@ -11,11 +11,11 @@
 (def right-width 100)
 (def h-header 30)
 (def h-body 50)
-(def left-min-width 150)
+(def left-min-width 200)
 (def left-max-width 500)
 (def init-width (- js/window.innerWidth right-width))
 (def atom-width (atom (- js/window.innerWidth right-width)))
-(def left-width (atom 150))
+(def left-width (atom 200))
 (def chart-ref (js/React.createRef))
 (def left-ref (js/React.createRef))
 
@@ -32,9 +32,9 @@
 (js/window.addEventListener "resize" #(reset! atom-width (- js/window.innerWidth right-width)))
 
 (defn set-left-size [position]
-  (if (and
-        (< position left-max-width)
-        (> position left-min-width))
+  (when (and
+          (< position left-max-width)
+          (> position left-min-width))
     (reset! left-width position)))
 
 (rum/defc middle < rum/reactive
@@ -103,10 +103,9 @@
   load-mixin
   {:key-fn (fn [_] "table")}
   [r h-header]
-  (let [date (rum/react (citrus/subscription r [:chart :date]))]
-    (tc {:component :box
-         :opts      {:display "flex"}
-         :child     [(left r h-header)
-                     (gap r h-header)
-                     (middle r h-header)
-                     (right r h-header)]})))
+  (tc {:component :box
+       :opts      {:display "flex"}
+       :child     [(left r h-header)
+                   (gap r h-header)
+                   (middle r h-header)
+                   (right r h-header)]}))

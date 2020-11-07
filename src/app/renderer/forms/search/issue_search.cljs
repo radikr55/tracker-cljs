@@ -49,20 +49,18 @@
         theme         (rum/react (citrus/subscription r [:theme :cljs]))
         paper         (-> theme :palette :background :paper)]
     (tc {:component :box
-         :opts      {:pt 1}
-         :child     {:component :paper
-                     :opts      {:elevation 3}
-                     :child     {:component :list
-                                 :opts      {:component "nav"
-                                             :key       "project"
-                                             :className "search-list"}
-                                 :child     (map (fn [data]
-                                                   (let [category (:category data)
-                                                         d-list   (:list data)]
-                                                     [(when (not (clojure.string/blank? category))
-                                                        (subheader r category paper))
-                                                      (map #(item r %) d-list)]))
-                                                 list)}}})))
+         :opts      {:className "search-list-body"}
+         :child     {:component :list
+                     :opts      {:component "nav"
+                                 :key       "project"
+                                 :className "search-list"}
+                     :child     (map (fn [data]
+                                       (let [category (:category data)
+                                             d-list   (:list data)]
+                                         [(when (not (clojure.string/blank? category))
+                                            (subheader r category paper))
+                                          (map #(item r %) d-list)]))
+                                     list)}})))
 
 (rum/defc search < rum/reactive
   {:key-fn (fn [_] "search")}

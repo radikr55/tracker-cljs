@@ -32,31 +32,34 @@
 (rum/defc left < rum/reactive
   {:key-fn (fn [_] "left")}
   [r]
-  (tc {:component :box
-       :opts      {:display    "flex"
-                   :width      "100%"
-                   :alignItems "center"}
-       :child     [(provider r)
-                   {:component :button
-                    :opts      {:key       "left-button"
-                                :onClick   #(do (citrus/dispatch! r :chart :dec-date)
-                                                (citrus/dispatch! r :chart :load-track-logs))
-                                :className "header-button left-button calendar-button"}
-                    :child     {:component :arrow-left}}
-                   {:component :button
-                    :opts      {:key       "right-button"
-                                :onClick   #(do (citrus/dispatch! r :chart :inc-date)
-                                                (citrus/dispatch! r :chart :load-track-logs))
-                                :className "header-button calendar-button"}
-                    :child     {:component :arrow-right}}
-                   {:component :button
-                    :styl      {:font-weight "900"}
-                    :opts      {:variant   "contained"
-                                :className "header-button"
-                                :onClick   #(do (citrus/dispatch! r :chart :set-date (t/now))
-                                                (citrus/dispatch! r :chart :load-track-logs))
-                                :key       "today-button"}
-                    :child     "today"}]}))
+  (let [date (rum/react (citrus/subscription r [:chart :date]))]
+    (tc {:component :box
+         :opts      {:display    "flex"
+                     :width      "100%"
+                     :alignItems "center"}
+         :child     [(provider r)
+                     {:component :button
+                      :opts      {:key       "left-button"
+                                  :onClick   #(do (citrus/dispatch! r :chart :dec-date)
+                                                  (citrus/dispatch! r :chart :load-track-logs))
+                                  :className "header-button left-button calendar-button MuiButton-contained"}
+                      :child     {:component :arrow-left}}
+                     {:component :button
+                      :opts      {:key       "right-button"
+                                  :disabled  (tu/eq-by-date (t/now) date)
+                                  :onClick   #(do (citrus/dispatch! r :chart :inc-date)
+                                                  (citrus/dispatch! r :chart :load-track-logs))
+                                  :className "header-button calendar-button MuiButton-contained"}
+                      :child     {:component :arrow-right}}
+                     {:component :button
+                      :styl      {:font-weight "900"}
+                      :opts      {:variant   "contained"
+                                  :disabled  (tu/eq-by-date (t/now) date)
+                                  :className "header-button"
+                                  :onClick   #(do (citrus/dispatch! r :chart :set-date (t/now))
+                                                  (citrus/dispatch! r :chart :load-track-logs))
+                                  :key       "today-button"}
+                      :child     "today"}]}) ))
 
 (rum/defc sum-time < rum/static
   {:key-fn (fn [type] type)}
@@ -85,7 +88,6 @@
                      (sum-time "tracked" tracked)
                      (sum-time "submitted" submitted)
                      {:component :button
-                      :styl      {:font-weight "900"}
                       :opts      {:variant   "contained"
                                   :className "header-button submit"
                                   :key       "submit"

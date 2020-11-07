@@ -1,7 +1,6 @@
 (ns app.renderer.controllers.theme
   (:require
-   [cljs.tools.reader.edn :as edn]
-   ["@material-ui/core/styles" :refer [createMuiTheme]]))
+   [cljs.tools.reader.edn :as edn]))
 
 (defmulti control (fn [event] event))
 

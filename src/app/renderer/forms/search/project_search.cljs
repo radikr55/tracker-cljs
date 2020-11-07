@@ -1,29 +1,24 @@
 (ns app.renderer.forms.search.project-search
   (:require [rum.core :as rum]
             [app.renderer.utils :refer [tc]]
-            [citrus.core :as citrus]
-            ["@material-ui/core/styles" :refer [styled]]
-            ["@material-ui/core" :refer [Paper
-                                         Devider
-                                         Box
-                                         ListSubheader
-                                         List
-                                         ListItem
-                                         ListItemText
-                                         TextField]]))
+            [citrus.core :as citrus]))
+
+(def selected-project (atom nil))
 
 (defn title-includes?
   [base str]
   (clojure.string/includes? (clojure.string/upper-case base)
                             (clojure.string/upper-case str)))
 
+
 (defn filter-list [list criteria]
   (if (clojure.string/blank? criteria)
     list
     (let [pred-proj     #(or (title-includes? (:title %) criteria)
+                             (= (:id %) @selected-project)
                              (and (:code %)
                                   (title-includes? (:code %) criteria)))
-          pred-category #(not (empty? (filter pred-proj (:list %))))
+          pred-category #(seq (filter pred-proj (:list %)))
           f-category    (filter pred-category list)]
       (for [category f-category]
         (assoc category :list (filter pred-proj (:list category)))))))
@@ -31,13 +26,17 @@
 (rum/defc item < rum/reactive
   {:key-fn (fn [r data] (str (:id  data)))}
   [r data]
-  (let [title (:title data)
-        id    (:id data)]
+  (let [title       (:title data)
+        id          (:id data)
+        selected-id (rum/react selected-project)
+        class       (cond-> "table-row"
+                      (= selected-id id) (str " selected-project " ))]
     (tc {:component :list-item
          :opts      {:button    true
                      :key       (str id)
-                     :onClick   #(citrus/dispatch! r :project :get-by-project-id id)
-                     :className "table-row"}
+                     :onClick   #(do (reset! selected-project id)
+                                     (citrus/dispatch! r :project :get-by-project-id id) )
+                     :className class}
          :child     {:component :list-item-text
                      :child     {:component :typography
                                  :opts      {:className "search-item search-item-title"
@@ -61,19 +60,17 @@
         search (rum/react (citrus/subscription r [:project :search-project]))
         f-list (filter-list list search)]
     (tc {:component :box
-         :opts      {:pt 1}
-         :child     {:component :paper
-                     :opts      {:elevation 3}
-                     :child     {:component :list
-                                 :opts      {:key       "project"
-                                             :className "search-list"}
-                                 :child     (map (fn [data]
-                                                   (let [category (:category data)
-                                                         d-list   (:list data)]
-                                                     [(when (not (clojure.string/blank? category))
-                                                        (subheader r category paper))
-                                                      (map #(item r %) d-list)]))
-                                                 f-list)}}})))
+         :opts      {:className "search-list-body"}
+         :child     {:component :list
+                     :opts      {:key       "project"
+                                 :className "search-list"}
+                     :child     (map (fn [data]
+                                       (let [category (:category data)
+                                             d-list   (:list data)]
+                                         [(when (not (clojure.string/blank? category))
+                                            (subheader r category paper))
+                                          (map #(item r %) d-list)]))
+                                     f-list)}})))
 
 (rum/defc search < rum/reactive
   {:key-fn (fn [_] "search")}

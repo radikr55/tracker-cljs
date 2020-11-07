@@ -9,7 +9,7 @@
             [cljs.pprint :refer [pprint]]
             [cljs-time.format :as ft]))
 
-(def inactive-interval 2)
+(def inactive-interval 5)
 (def time-send (* 60 inactive-interval)) ; sec
 (def time-check 5) ; sec
 (def format "yyyy/MM/dd HH:mm")
@@ -49,6 +49,13 @@
   [ping-package]
   (assoc ping-package :inactive (= (:status ping-package) "inactive")))
 
+(defn set-inactive-task
+  "Set inactive log task empty if status=inactive"
+  [ping-package]
+  (if (= (:status ping-package) "inactive")
+    (assoc ping-package :task "")
+    ping-package))
+
 (defn inactive->active
   "Switch incative status to active if less then 5"
   [ping-package]
@@ -57,8 +64,8 @@
     ping-package))
 
 (defn fill-packages
-  "Fill ping packages in group by active status"
-  [result current]
+"Fill ping packages in group by active status"
+[result current]
   (let [last-res       (last result)
         last-end       (:end last-res)
         current-status (:status (last current))
@@ -66,33 +73,33 @@
         current-time   (to-date (first current))
         status?        (= (:status last-res)  current-status)
         near?          (t/= (add-minute last-end 1) current-time)]
-    (cond
-      (nil? last-res)     (conj result {:start  current-time
-                                        :end    current-time
-                                        :status current-status
-                                        :task   current-task})
-      (and near? status?) (set-top result (assoc last-res :end current-time))
-      near?               (conj result {:start  last-end
-                                        :end    current-time
-                                        :status current-status
-                                        :task   current-task})
-      :else               (conj result {:start  current-time
-                                        :end    current-time
-                                        :status current-status
-                                        :task   current-task}))))
+  (cond
+    (nil? last-res)     (conj result {:start  current-time
+                                      :end    current-time
+                                      :status current-status
+                                      :task   current-task})
+    (and near? status?) (set-top result (assoc last-res :end current-time))
+    near?               (conj result {:start  last-end
+                                      :end    current-time
+                                      :status current-status
+                                      :task   current-task})
+    :else               (conj result {:start  current-time
+                                      :end    current-time
+                                      :status current-status
+                                      :task   current-task}))))
 
 (defn collect-package [map-ping]
   (loop [origin map-ping
          result []]
-    (if  (nil? origin)
-      result
-      (let [current (first origin)]
-        (cond
-          (empty? result) (recur (next origin) [{:start  (to-date (first current))
-                                                 :end    (to-date (first current))
-                                                 :status (:status (last current))
-                                                 :task   (:task (last current))}])
-          :else           (recur (next origin) (fill-packages result current)))))))
+  (if  (nil? origin)
+    result
+    (let [current (first origin)]
+      (cond
+        (empty? result) (recur (next origin) [{:start  (to-date (first current))
+                                               :end    (to-date (first current))
+                                               :status (:status (last current))
+                                               :task   (:task (last current))}])
+        :else           (recur (next origin) (fill-packages result current)))))))
 
 (defn process-ping []
   (when @w/main-window
@@ -104,9 +111,10 @@
                     (when (seq ping-vector)
                       (->> ping-vector
                            (collect-package)
-                           (map #(inactive->active %))
-                           (map #(set-inactive-log %))
+                           (map inactive->active)
+                           (map set-inactive-log)
                            (reduce #(merge-packages %1 %2) [])
+                           (map set-inactive-task)
                            (map #(assoc %
                                         :start (c/to-string (:start %))
                                         :end (c/to-string (:end %))))))))

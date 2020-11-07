@@ -40,6 +40,7 @@
         interval     (:format-interval block)
         title        (when not-nil? (str start " - " end "\n" interval))
         child        [{:component :typography
+                       :opts      {:className "chart-block-title"}
                        :child     (str start " - " end)}
                       {:component :typography
                        :styl      {:fontWeight "bold"}
@@ -54,7 +55,7 @@
                                  :display     "flex"
                                  :className   class
                                  :title       title}
-                     :child     (when (and (not away?) not-nil? ) child)}})))
+                     :child     (when (and (not away?) not-nil?) child)}})))
 
 (rum/defc item < rum/reactive
   {:key-fn (fn [_ row] (:code row))}

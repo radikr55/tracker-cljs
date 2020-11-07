@@ -1,4 +1,4 @@
-(ns app.renderer.core-test
+(ns renderer.core-test
   (:require [cljs.test :refer-macros [deftest is testing run-tests]]))
 
 (deftest test-numbers

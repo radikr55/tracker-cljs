@@ -41,13 +41,16 @@
 (rum/defc item < rum/reactive
   {:key-fn (fn [_ row] (:code row))}
   [r row h-body index]
+  (print row)
   (let [code         (:code row)
-        away?        (not (empty? code))
+        away?        (seq code)
+        interval     (:interval row)
         current-task (rum/react (citrus/subscription r [:chart :current-task]))
         class        (cond-> "stat-box "
                        (empty? code)         (str " away ")
-                       (not (empty? code))   (str " stat-blue ")
+                       (seq code)            (str " stat-blue ")
                        (odd? index)          (str " chart-block-gray ")
+                       (= 0 interval)        (str " stat-block-empty ")
                        (= code current-task) (str " selected-row "))
         context-menu (when away?
                        #(open-menu r % code (:format-field row)))
@@ -67,7 +70,7 @@
                         :child     (tu/format-time (/ submitted 60))})]})))
 
 (rum/defc body < rum/reactive
-  {:key-fn (fn [_] "body")}
+{:key-fn (fn [_] "body")}
   [r h-top h-header h-body]
   (let [middle-list-ref (rum/react (citrus/subscription r [:home :middle-list-ref]))
         left-list-ref   (rum/react (citrus/subscription r [:home :left-list-ref]))
