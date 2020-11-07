@@ -157,6 +157,8 @@
             :params   (assoc token
                              :offset (.getTimezoneOffset (js/Date. date))
                              :task code
+                             :date      (c/to-string (tu/merge-date-time date
+                                                                         (tu/field->to-time "12:00")))
                              :start (c/to-string start-day)
                              :end   (c/to-string end-day))
             :method   :delete
