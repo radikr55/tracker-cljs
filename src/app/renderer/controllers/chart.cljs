@@ -186,7 +186,7 @@
                                         :key    :current-task}})]
     (citrus/dispatch! r :chart :load-track-logs)
     (citrus/dispatch! r :task-popper :close-popper)
-    (merge {:state (assoc state :current-task code)} update-local)))
+    (merge {:state (assoc state :current-task "")} update-local)))
 
 (defmethod control :error [_ e state]
   (print e))
