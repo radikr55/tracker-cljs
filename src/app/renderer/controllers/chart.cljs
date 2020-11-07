@@ -156,7 +156,7 @@
     {:http {:endpoint :active-task
             :params   (assoc token
                              :offset (.getTimezoneOffset (js/Date. date))
-                             :task code
+                             :tasks [code]
                              :date      (c/to-string (tu/merge-date-time date
                                                                          (tu/field->to-time "12:00")))
                              :start (c/to-string start-day)
@@ -164,6 +164,34 @@
             :method   :delete
             :on-load  :success-delete-task
             :on-error :error}}))
+
+(defmethod control :delete-all-empty-tasks [_ _ state]
+  (let [date      (:date state)
+        start-day (t/at-midnight date)
+        end-day   (t/at-midnight (t/plus- date (t/days 1)))
+        token     (effects/local-storage
+                    nil
+                    :project
+                    {:method :get
+                     :key    :token})
+        list      (->> (:list state)
+                       (filter #(not (= (:code % ) "") ))
+                       (filter #(= 0 (:interval %)))
+                       (map :code)
+                       (into #{}))]
+    (print (:list state) )
+    {:http {:endpoint :active-task
+            :params   (assoc token
+                             :offset (.getTimezoneOffset (js/Date. date))
+                             :tasks list
+                             :date      (c/to-string (tu/merge-date-time date
+                                                                         (tu/field->to-time "12:00")))
+                             :start (c/to-string start-day)
+                             :end   (c/to-string end-day))
+            :method   :delete
+            :on-load  :success-delete-task
+            :on-error :error}}
+    ))
 
 (defmethod control :success-save-task [event [args r] state]
   (let [code (:code args)]
@@ -174,15 +202,15 @@
                      :key    :current-task}}))
 
 (defmethod control :success-delete-task [event [args r] state]
-  (let [code         (:code args)
+  (let [codes        (:codes args)
         exist        (-> (effects/local-storage nil
                                                 :poject
                                                 {:method :get
                                                  :key    :current-task})
                          :code)
-        update-local (when (= exist code)
+        update-local (when (contains? exist codes)
                        {:local-storage {:method :set
-                                        :data   {:code code}
+                                        :data   {:code ""}
                                         :key    :current-task}})]
     (citrus/dispatch! r :chart :load-track-logs)
     (citrus/dispatch! r :task-popper :close-popper)
@@ -215,8 +243,6 @@
             :on-load  :success-track-log-load
             :on-error :error}}))
 
-
-
 (defn merge-nearby [[key list]]
   [key (loop [origin     list
               previously nil
@@ -230,7 +256,7 @@
                btlast          (into [] (butlast result))
                nearby?         (and (not (nil? current-code))
                                     (= previously-code current-code)
-                                    (t/= current-start previously-end) )]
+                                    (t/= current-start previously-end))]
            (cond
              (nil? origin) result
              nearby?       (let [el (assoc previously :end current-end)]
@@ -322,7 +348,7 @@
         submitted  (-> result :desc :timeSpent (/ 60))
         tracked    (->> state-list
                         (filter #(seq %))
-                        (filter #(seq (:code % )))
+                        (filter #(seq (:code %)))
                         (map :format-field)
                         (reduce + 0))
         logged     (->> state-list
@@ -556,7 +582,6 @@
                 "WDZ-548: Publish Notification events for SMS subscriptions",
                 :timeSpent 10440,
                 :link      "http://localhost:2990/jira/browse/WELKIN-76"}},
-              :timeSpent        20160, 
-              :notSubmittedDate []}})
-  )
+              :timeSpent        20160,
+              :notSubmittedDate []}}))
 

@@ -4,6 +4,7 @@
             [app.main.window :as w]
             [app.main.timer.notification :as n]
             [app.main.api :as api]
+            [app.main.utils :refer [send-ipc]]
             [app.main.local-storage :as ls]
             [promesa.core :as p]
             [cljs.pprint :refer [pprint]]
@@ -120,9 +121,6 @@
                                         :end (c/to-string (:end %))))))))
           (p/catch #(print "test" %))))))
 
-(defn send-refresh [web-content]
-  (.send web-content "refresh"))
-
 (defn validate-package [packages]
   (let [last-item      (last packages)
         last-inactive? (:inactive last-item)
@@ -150,7 +148,7 @@
         (-> (ls/local-get web-content "token")
             (p/then send-fetch)
             (p/then #(ls/local-remove web-content "time"))
-            (p/then #(send-refresh web-content))
+            (p/then #(send-ipc @w/main-window "refresh" nil))
             (p/catch #(print %)))))))
 
 (defn inactive-show [package]

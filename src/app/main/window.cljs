@@ -1,38 +1,36 @@
 (ns app.main.window
   (:require [app.main.local-storage :as ls]
             [promesa.core :as p]
+            [app.main.utils :refer [send-ipc]]
             ["electron" :as electron :refer [Menu
                                              ipcMain]]))
 
 (def main-window (atom nil))
 
-(defn set-dark [dark?]
-  (let [web-content (.-webContents @main-window)]
-    (.send web-content "theme" dark?)))
-
-(defn logout []
-  (let [web-content (.-webContents @main-window)]
-    (.send web-content "logout")))
-
 (defn menu-template [name dark?]
   (clj->js [{:label   "TaskTracker"
              :submenu [{:role "toggledevtools"}
                        {:role "reload"}
+                       {:label       "Refresh"
+                        :accelerator "CmdOrCtrl+Shift+R"
+                        :click       #(send-ipc @main-window "refresh" nil)}
                        {:type "separator"}
-                       {:label "Clear Notifications"}
-                       {:label "Clear Inactive Tasks"}
+                       {:label "Clear Notifications"
+                        :click #(send-ipc  @main-window "clear-notification" nil)}
+                       {:label "Clear Inactive Tasks"
+                        :click #(send-ipc @main-window "clear-tasks" nil)}
                        {:type "separator"}
                        {:label   "Light theme"
                         :type    "radio"
                         :checked (not dark?)
-                        :click   #(set-dark false)}
+                        :click   #(send-ipc @main-window "theme" false)}
                        {:label   "Dark theme"
                         :type    "radio"
                         :checked dark?
-                        :click   #(set-dark true)}
+                        :click   #(send-ipc @main-window "theme" true)}
                        {:type "separator"}
                        {:label (str "Sign out " name)
-                        :click logout}
+                        :click #(send-ipc @main-window "logout" nil)}
                        {:type "separator"}
                        {:label "Quit TaskTracker"
                         :role  "quit"}]}]))

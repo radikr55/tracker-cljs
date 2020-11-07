@@ -29,8 +29,20 @@
        (fn [event arg]
          (citrus/dispatch! r :chart :load-track-logs))))
 
+(defn clear-notificaiton  [r]
+  (.on ipcRenderer "clear-notification"
+       (fn [event arg]
+         (print event))))
+
+(defn clear-tasks  [r]
+  (.on ipcRenderer "clear-tasks"
+       (fn [event arg]
+         (citrus/dispatch! r :chart :delete-all-empty-tasks))))
+
 (defn start! [r]
   (render-secret r)
   (refresh r)
   (theme r)
-  (logout r))
+  (logout r)
+  (clear-notificaiton r)
+  (clear-tasks r))

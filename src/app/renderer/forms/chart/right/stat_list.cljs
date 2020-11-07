@@ -41,7 +41,6 @@
 (rum/defc item < rum/reactive
   {:key-fn (fn [_ row] (:code row))}
   [r row h-body index]
-  (print row)
   (let [code         (:code row)
         away?        (seq code)
         interval     (:interval row)
