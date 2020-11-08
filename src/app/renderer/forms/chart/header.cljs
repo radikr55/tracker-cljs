@@ -11,15 +11,17 @@
   [r]
   (let [date (rum/react (citrus/subscription r [:chart :date]))]
     (tc  {:component :date-picker
-          :opts      {:margin       "normal"
-                      :className    "date-picker"
-                      :variant      "inline"
-                      :inputVariant "outlined"
-                      :value        (c/to-date date)
-                      :autoOk       true
-                      :format       "dddd, MMMM DD, yyyy"
-                      :onChange     #(do (citrus/dispatch! r :chart :set-date (c/from-date (.toDate %)))
-                                         (citrus/dispatch! r :chart :load-track-logs))}})))
+          :opts      {:margin         "normal"
+                      :className      "date-picker"
+                      :variant        "inline"
+                      :inputVariant   "outlined"
+                      :value          (c/to-date date)
+                      :autoOk         true
+                      :disableFuture  true
+                      :disableToolbar true
+                      :format         "dddd, MMMM DD, yyyy"
+                      :onChange       #(do (citrus/dispatch! r :chart :set-date (c/from-date (.toDate %)))
+                                           (citrus/dispatch! r :chart :load-track-logs))}})))
 
 (rum/defc provider < rum/reactive
   {:key-fn (fn [_] "provider")}

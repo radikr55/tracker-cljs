@@ -36,6 +36,11 @@
         resp   (t/to-default-time-zone (c/from-string date-str))]
     (f/parse format (f/unparse format resp))))
 
+(defn get-local-without-offset [date]
+  (let [format (f/formatter-local "yyyy-MM-dd HH:mm:ss")
+        resp   (t/to-default-time-zone date)]
+    (f/parse format (f/unparse format resp))))
+
 (defn format-time [time]
   (let [hour    (/ time 60)
         minutes (rem time 60)]

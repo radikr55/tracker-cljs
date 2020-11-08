@@ -1,14 +1,14 @@
 (ns app.renderer.controllers.chart-popper
   (:require [citrus.core :as citrus]
             [cljs-time.coerce :as c]
+            [app.renderer.time-utils :as tu]
+            [cljs-time.core :as t]
             [app.renderer.effects :as effects]))
 
-(def initial-state {:open         false
-                    :start        nil
-                    :end          nil
-                    :position     nil
-                    :inactive-log true
-                    :interval     nil})
+(def initial-state {:open     false
+                    :start    nil
+                    :end      nil
+                    :position nil})
 
 (defmulti control (fn [event] event))
 
@@ -23,9 +23,7 @@
                    :code (:code row)
                    :start (:start row)
                    :end (:end row)
-                   :inactive-log (or (nil? inactive-log) inactive-log)
-                   :open true)}
-    ))
+                   :open true)}))
 
 (defmethod control :close-popper [_ _ state]
   {:state (assoc state
@@ -33,7 +31,6 @@
                  :code nil
                  :end nil
                  :start nil
-                 :inactive-log true
                  :open false)})
 
 (defmethod control :set-start [_ [start] state]
@@ -42,18 +39,18 @@
     state))
 
 (defmethod control :set-end [_ [end] state]
-  (if (> end (:start state))
+  (if (and (t/after? (tu/get-local-without-offset (t/now)) end )
+           (t/after? end (:start state)))
     {:state (assoc state :end end)}
     state))
 
 (defmethod control :save-time [_ [start end task] state]
-  (let [token     (effects/local-storage
-                    nil
-                    :poject
-                    {:method :get
-                     :key    :token})
-        offset    (.getTimezoneOffset (js/Date. start))
-        inactive? (:inactive-log state)]
+  (let [token  (effects/local-storage
+                 nil
+                 :poject
+                 {:method :get
+                  :key    :token})
+        offset (.getTimezoneOffset (js/Date. start))]
     {:http {:endpoint :save-ping
             :params   (assoc token
                              :data   [{:start    (c/to-string start)

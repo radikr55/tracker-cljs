@@ -9,13 +9,30 @@
    [app.main.timer.reduce :as r]
    [app.main.utils :refer [send-ipc]]
    ["electron" :as electron :refer [app
+                                    Tray
+                                    Menu
                                     ipcMain
                                     BrowserWindow
                                     nativeTheme
                                     crashReporter
                                     session]]))
 
-(def icon (str js/__dirname "/public/img/icon-small.png"))
+(def icon (str js/__dirname "/public/img/icon.png"))
+
+(if (not (.requestSingleInstanceLock app))
+  (.quit app)
+  (.on app "second-instance" #(when @w/main-window
+                                (.restore @w/main-window)
+                                (.focus @w/main-window))))
+
+(defn create-tray []
+  (let [tray          (Tray. icon)
+        menu-template [{:label "test"
+                        :type  "radio"}]
+        menu          (.buildFromTemplate Menu
+                                          (clj->js menu-template))]
+    (.setToolTip tray "hui")
+    (.setContextMenu tray menu)))
 
 (defn set-theme []
   (when (.-shouldUseDarkColors nativeTheme)
@@ -25,6 +42,19 @@
                       (send-ipc @w/main-window "theme" true)
                       (set! (.-themeSource nativeTheme) "dark")))))))
 
+(defn set-events []
+  ;; (.on @w/main-window "close" #(do (.preventDefault %)
+  ;;                                  (.minimize @w/main-window)))
+  )
+
+;; const contextMenu = Menu.buildFromTemplate([
+;;                                             { label: 'Item1', type: 'radio' },
+;;                                             { label: 'Item2', type: 'radio' },
+;;                                             { label: 'Item3', type: 'radio', checked: true },
+;;                                             { label: 'Item4', type: 'radio' }
+;;                                             ])
+;; tray.setToolTip('This is my application.')
+;; tray.setContextMenu(contextMenu)
 (defn init-browser []
   (reset! w/main-window (BrowserWindow.
                           (clj->js {:width          900
@@ -33,6 +63,8 @@
                                     :minHeight      600
                                     :webPreferences {:nodeIntegration true}})))
   (login-server/-main)
+  (set-events)
+  (create-tray)
   (set-theme)
   (w/load-local-index))
 

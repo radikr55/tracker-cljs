@@ -10,12 +10,14 @@
             [cljs.pprint :refer [pprint]]
             [cljs-time.format :as ft]))
 
-(def inactive-interval 5)
+(def inactive-interval 2)
 (def time-send (* 60 inactive-interval)) ; sec
 (def time-check 5) ; sec
 (def format "yyyy/MM/dd HH:mm")
 (def send-interval (atom nil))
 (def check-interval (atom nil))
+(def last-send-log (atom nil))
+(def last-inactive (atom nil))
 
 (defn get-interval [start end]
   (t/in-minutes (t/interval start end)))
@@ -38,8 +40,7 @@
   (let [left-last (last left)
         near?     (and (= (:status left-last) (:status right))
                        (or (t/= (:end left-last) (:start right))
-                           (t/= (add-minute (:end left-last) 1) (:start right))
-                           ))]
+                           (t/= (add-minute (:end left-last) 1) (:start right))))]
     (cond
       (nil? left-last) [right]
       near?            (set-top left (assoc left-last :end (:end right)))
@@ -65,8 +66,8 @@
     ping-package))
 
 (defn fill-packages
-"Fill ping packages in group by active status"
-[result current]
+  "Fill ping packages in group by active status"
+  [result current]
   (let [last-res       (last result)
         last-end       (:end last-res)
         current-status (:status (last current))
@@ -74,33 +75,33 @@
         current-time   (to-date (first current))
         status?        (= (:status last-res)  current-status)
         near?          (t/= (add-minute last-end 1) current-time)]
-  (cond
-    (nil? last-res)     (conj result {:start  current-time
-                                      :end    current-time
-                                      :status current-status
-                                      :task   current-task})
-    (and near? status?) (set-top result (assoc last-res :end current-time))
-    near?               (conj result {:start  last-end
-                                      :end    current-time
-                                      :status current-status
-                                      :task   current-task})
-    :else               (conj result {:start  current-time
-                                      :end    current-time
-                                      :status current-status
-                                      :task   current-task}))))
+    (cond
+      (nil? last-res)     (conj result {:start  current-time
+                                        :end    current-time
+                                        :status current-status
+                                        :task   current-task})
+      (and near? status?) (set-top result (assoc last-res :end current-time))
+      near?               (conj result {:start  last-end
+                                        :end    current-time
+                                        :status current-status
+                                        :task   current-task})
+      :else               (conj result {:start  current-time
+                                        :end    current-time
+                                        :status current-status
+                                        :task   current-task}))))
 
 (defn collect-package [map-ping]
   (loop [origin map-ping
          result []]
-  (if  (nil? origin)
-    result
-    (let [current (first origin)]
-      (cond
-        (empty? result) (recur (next origin) [{:start  (to-date (first current))
-                                               :end    (to-date (first current))
-                                               :status (:status (last current))
-                                               :task   (:task (last current))}])
-        :else           (recur (next origin) (fill-packages result current)))))))
+    (if  (nil? origin)
+      result
+      (let [current (first origin)]
+        (cond
+          (empty? result) (recur (next origin) [{:start  (to-date (first current))
+                                                 :end    (to-date (first current))
+                                                 :status (:status (last current))
+                                                 :task   (:task (last current))}])
+          :else           (recur (next origin) (fill-packages result current)))))))
 
 (defn process-ping []
   (when @w/main-window
@@ -131,49 +132,67 @@
          (or (not= 1 size) (not (t/= start end)))
          (not last-inactive?))))
 
+(defn fix-packages
+  "add previously end time to if it eq p.end + 1 = c.start"
+  [packages]
+  (let [last-send-log-end (:end @last-send-log)
+        last-end-date     (c/to-date-time last-send-log-end)
+        c-first           (first packages)
+        c-start           (c/to-date-time (:start c-first))]
+    (if (and last-send-log-end
+             (t/= (t/plus- last-end-date (t/minutes 1)) c-start))
+      (concat [(assoc c-first :start last-send-log-end)]
+              (pop (seq packages)))
+      packages)))
+
 (defn send-ping [packages]
   (when @w/main-window
     (let [web-content (.-webContents @w/main-window)
           offset      (.getTimezoneOffset (js/Date.))
+          ->packages  (fix-packages packages)
           send-fetch  (fn [token] (-> (api/fetch
                                         {:method   :POST
                                          :data     (assoc token
-                                                          :data   packages
+                                                          :data   ->packages
                                                           :offset offset)
                                          :endpoint :save-ping})
                                       (p/then #(print %))
-                                      (p/catch #(print %))))
-          ]
-      (when (validate-package packages)
+                                      (p/catch #(print %))))]
+      (when (validate-package ->packages)
         (-> (ls/local-get web-content "token")
             (p/then send-fetch)
+            (p/then #(reset! last-send-log (last ->packages)))
             (p/then #(ls/local-remove web-content "time"))
             (p/then #(send-ipc @w/main-window "refresh" nil))
             (p/catch #(print %)))))))
 
 (defn inactive-show [package]
-  (when (seq package)
-    (let [element (->> package
-                       (into [])
-                       pop
-                       last)]
-      (when (and  element (:inactive element))
-        (reset! n/inactive-interval (get-interval (c/to-date (:start element))
-                                                  (c/to-date (:end element))))
-        (send-ping package))) ))
+(when (seq package)
+  (let [element           (->> package
+                               (into [])
+                               pop
+                               last)
+        last-inactive-end (:end @last-inactive)]
+    (when (and element
+               (:inactive element)
+               (not (= last-inactive-end (:end element))))
+      (reset! last-inactive element)
+      (reset! n/inactive-interval (get-interval (c/to-date (:start element))
+                                                (c/to-date (:end element))))
+      (send-ping package)))))
 
 (defonce timer-send-ping
-  (reset! send-interval
-          (js/setInterval (fn []
-                            (-> (process-ping)
-                                (p/then #(send-ping %))
-                                (p/catch #(print "123" %))))
-                          (* time-send 1000))))
+(reset! send-interval
+        (js/setInterval (fn []
+                          (-> (process-ping)
+                              (p/then #(send-ping %))
+                              (p/catch #(print "123" %))))
+                        (* time-send 1000))))
 
 (defn check-fun  []
-  (-> (process-ping)
-      (p/then #(inactive-show %))
-      (p/catch #(print "check-inactive" %)))
+(-> (process-ping)
+    (p/then #(inactive-show %))
+    (p/catch #(print "check-inactive" %)))
   (js/setTimeout check-fun (* time-check 1000)))
 
 (defonce check-inactive
@@ -188,7 +207,7 @@
   (reset! n/inactive-interval 5)
 
   (-> (process-ping)
-      (p/then pprint)
+      ;; (p/then pprint)
       ;; (p/then #(send-ping %))
       (p/catch #(print %)))
 
@@ -205,6 +224,7 @@
   ;;          (sort-by first))
   ;;     ping->vector
   ;;     pr/pprint)
+  {"2020/11/08 02:23" {:status "active", :task "SA_TT-33"}, "2020/11/08 02:24" {:status "active", :task "SA_TT-33"}, "2020/11/08 02:25" {:status "active", :task "SA_TT-33"}, "2020/11/08 02:26" {:status "active", :task "SA_TT-33"}, "2020/11/08 02:27" {:status "active", :task "SA_TT-33"}, "2020/11/08 02:28" {:status "active", :task "SA_TT-33"}}
 
   (def init (into {} [["2020/10/31 12:04" {:status "inactive", :task "WELKIN-76"}]
                       ["2020/10/31 12:05" {:status "active", :task nil}]
@@ -241,11 +261,6 @@
                       ["2020/10/31 12:36" {:status "inactive", :task "WELKIN-76"}]
                       ["2020/10/31 12:37" {:status "inactive", :task "WELKIN-76"}]
                       ["2020/10/31 12:38" {:status "inactive", :task "WELKIN-76"}]
-                      ["2020/10/31 12:39" {:status "inactive", :task "WELKIN-76"}]
-                      ]))
+                      ["2020/10/31 12:39" {:status "inactive", :task "WELKIN-76"}]]))
 
-  (ls/local-set (.-webContents @w/main-window) "time" init)
-
-
-
-  )
+  (ls/local-set (.-webContents @w/main-window) "time" init))

@@ -6,7 +6,6 @@
 
 (defonce app (express))
 
-(def server-atom (atom nil))
 
 (.get app "/login"
       (fn [req res]
@@ -19,8 +18,9 @@
 (defn -main [& mess]
   (let [server (.listen app port
                         #(println "Server running at http://127.0.0.1:8666/"))]
-    (reset! server-atom server)))
+    (.on server "error" #(print %))
+    ))
 
 (comment
-  (-main)
-  (.close @server-atom))
+  (try (throw js/Error) (catch :default e (print e)))
+  (-main))

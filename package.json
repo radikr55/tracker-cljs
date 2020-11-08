@@ -39,6 +39,37 @@
         "react-dom": "16.13.1",
         "react-draggable": "^4.4.3",
         "react-simple-timefield": "3.2.3",
-        "sass": "1.26.10"
+        "sass": "1.26.10",
+        "ws": "^7.4.0"
+    },
+    "build": {
+        "productName": "TaskTracker",
+        "appId": "TaskTracker",
+        "win": {
+            "target": "NSIS",
+            "icon": "build/icon.png"
+        },
+        "dmg": {
+            "icon": "build/icon.icns",
+            "contents": [
+                {
+                    "x": 110,
+                    "y": 150
+                },
+                {
+                    "x": 400,
+                    "y": 150,
+                    "type": "link",
+                    "path": "/Applications"
+                }
+            ]
+        },
+        "linux": {
+            "icon": "build/icon.icns",
+            "target": [
+                "AppImage",
+                "deb"
+            ]
+        }
     }
 }
