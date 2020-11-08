@@ -37,18 +37,20 @@
                          {:label "Quit TaskTracker"
                           :role  "quit"})]}
             {:label   "Edit"
-             :submenu (if mac? [{:role "reload"}
-                                {:role "toggledevtools"}
-                                {:type "separator"}
-                                {:role "undo"}
+             :submenu (if mac? [{:role "undo"}
                                 {:role "redo"}
                                 {:type "separator"}
                                 {:role "cut"}
                                 {:role "copy"}
-                                {:role "past"}
+                                {:role "paste"}
                                 {:role "delete"}]
-                          [{:role "reload"}
-                           {:role "toggledevtools"}])}]))
+                          [{:role "reload"}])}
+            {:label   "Dev"
+             :submenu [{:role "reload"}
+                       {:label       "Switch theme"
+                        :accelerator "CmdOrCtrl+T"
+                        :click       #(send-ipc @main-window "theme" (not dark?))}
+                       {:role "toggledevtools"}]}]))
 
 (defn set-menu []
   (let [web-content (.-webContents @main-window)]
