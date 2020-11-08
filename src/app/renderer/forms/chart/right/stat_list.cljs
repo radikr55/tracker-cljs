@@ -62,14 +62,16 @@
                      :onClick   context-menu
                      :className class}
          :child     [{:component :box
+                      :opts      {:key "active-time"}
                       :child     (:format row)}
                      (when (and away? (not (= 0 submitted)))
                        {:component :box
-                        :opts      {:className "submitted"}
+                        :opts      {:key       "submitted-time"
+                                    :className "submitted"}
                         :child     (tu/format-time (/ submitted 60))})]})))
 
 (rum/defc body < rum/reactive
-{:key-fn (fn [_] "body")}
+  {:key-fn (fn [_] "body")}
   [r h-top h-header h-body]
   (let [middle-list-ref (rum/react (citrus/subscription r [:home :middle-list-ref]))
         left-list-ref   (rum/react (citrus/subscription r [:home :left-list-ref]))

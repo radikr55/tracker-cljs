@@ -40,9 +40,11 @@
         interval     (:format-interval block)
         title        (when not-nil? (str start " - " end "\n" interval))
         child        [{:component :typography
-                       :opts      {:className "chart-block-title"}
+                       :opts      {:key       "title-interval"
+                                   :className "chart-block-title"}
                        :child     (str start " - " end)}
                       {:component :typography
+                       :opts      {:key       "sum-interval"}
                        :styl      {:fontWeight "bold"}
                        :child     (str "(" interval ")")}]]
     (tc {:component :box
@@ -75,6 +77,7 @@
          :child     (map-indexed #(box r %2 %1 (odd? index) code) list)})))
 
 (rum/defc body  < rum/reactive
+  {:key-fn (fn [_] "body")}
   [r h-top h-header h-body]
   (let [list (rum/react (citrus/subscription r [:chart :list]))]
     (citrus/dispatch! r :home :set-middle-list-ref middle-list-ref)

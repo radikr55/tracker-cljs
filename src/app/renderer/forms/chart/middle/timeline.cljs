@@ -142,6 +142,7 @@
      (map-indexed #(activity r %2 %1) (first activity-list))]))
 
 (rum/defc Timeline < rum/reactive
+  {:key-fn (fn [_ _ top?] (str "timeline" top?))}
   [r height top?]
   (let [activity-height    5
         timeline-height    (- height activity-height)

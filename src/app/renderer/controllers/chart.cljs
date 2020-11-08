@@ -210,14 +210,13 @@
                                                  :key    :current-task})
                          :code)
         update-local (when (contains? codes exist)
+                       {:state {:current-task ""}}
                        {:local-storage {:method :set
                                         :data   {:code ""}
                                         :key    :current-task}})]
-    (print codes)
-    (print exist)
     (citrus/dispatch! r :chart :load-track-logs)
     (citrus/dispatch! r :task-popper :close-popper)
-    (merge {:state (assoc state :current-task "")} update-local)))
+    (merge state update-local)))
 
 (defmethod control :error [_ e state]
   (print e))

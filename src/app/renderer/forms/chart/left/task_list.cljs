@@ -7,7 +7,8 @@
 (def left-list-ref (js/React.createRef))
 (def away "Away (Not working)")
 
-(rum/defc header
+(rum/defc header <
+  {:key-fn (fn [_] "header")}
   [r h-header top?]
   (tc {:component :box
        :opts      {:height    (str h-header "px")
@@ -17,15 +18,18 @@
                    :onClick   #(citrus/dispatch! r :router :push :search)
                    :width     "100%"}
        :child     [{:component :add
-                    :opts      {:key "icon"} :styl {:font-size "18px"}}
-                   {:component :box :opts {:key "title"}
+                    :opts      {:key "icon"}
+                    :styl      {:font-size "18px"}}
+                   {:component :box 
+                    :opts      {:key "title"}
                     :child     {:component :typography
                                 :styl      {:min-inline-size "fit-content"
                                             :font-size       "12px"
                                             :font-weight     "900"}
                                 :child     "Add Task"}}]}))
 
-(rum/defc footer
+(rum/defc footer <
+  {:key-fn (fn [_] "footer")}
   [h-header]
   (tc {:component :box
        :opts      {:height    (str h-header "px")
@@ -83,7 +87,7 @@
                                                  :opts      {:className "task-badge"}
                                                  :child     "TRACKING"}})]}
                      {:component :box
-                      :opts      {:key "desc"
+                      :opts      {:key       "desc"
                                   :className "task-desc"}
                       :child     {:component :typography
                                   :styl      {:font-size "12px"}
@@ -91,7 +95,7 @@
                                   :child     desc}}]})))
 
 (rum/defc body < rum/reactive
-{:key-fn (fn [_] "body")}
+  {:key-fn (fn [_] "body")}
   [r h-top h-header h-body]
   (let [middle-list-ref (rum/react (citrus/subscription r [:home :middle-list-ref]))
         right-list-ref  (rum/react (citrus/subscription r [:home :right-list-ref]))

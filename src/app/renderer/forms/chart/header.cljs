@@ -69,10 +69,12 @@
   (tc {:component :box
        :opts      {:className (str  "sum-statistic sum-statistic-" type)}
        :child     [{:component :typography
-                    :opts      {:className "sum-time"}
+                    :opts      {:key       (str type "time")
+                                :className "sum-time"}
                     :child     (tu/format-time time)}
                    {:component :typography
-                    :opts      {:className "sum-title"}
+                    :opts      {:key       (str type "title")
+                                :className "sum-title"}
                     :child     type}]}))
 
 (rum/defc right < rum/reactive
