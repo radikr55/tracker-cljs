@@ -179,18 +179,19 @@
                        (filter #(= 0 (:interval %)))
                        (map :code)
                        (into #{}))]
-    (print (:list state) )
-    {:http {:endpoint :active-task
-            :params   (assoc token
-                             :offset (.getTimezoneOffset (js/Date. date))
-                             :tasks list
-                             :date      (c/to-string (tu/merge-date-time date
-                                                                         (tu/field->to-time "12:00")))
-                             :start (c/to-string start-day)
-                             :end   (c/to-string end-day))
-            :method   :delete
-            :on-load  :success-delete-task
-            :on-error :error}}
+    (if (empty? list)
+      state
+      {:http {:endpoint :active-task
+              :params   (assoc token
+                               :offset (.getTimezoneOffset (js/Date. date))
+                               :tasks list
+                               :date      (c/to-string (tu/merge-date-time date
+                                                                           (tu/field->to-time "12:00")))
+                               :start (c/to-string start-day)
+                               :end   (c/to-string end-day))
+              :method   :delete
+              :on-load  :success-delete-task
+              :on-error :error}} )
     ))
 
 (defmethod control :success-save-task [event [args r] state]
@@ -208,10 +209,12 @@
                                                 {:method :get
                                                  :key    :current-task})
                          :code)
-        update-local (when (contains? exist codes)
+        update-local (when (contains? codes exist)
                        {:local-storage {:method :set
                                         :data   {:code ""}
                                         :key    :current-task}})]
+    (print codes)
+    (print exist)
     (citrus/dispatch! r :chart :load-track-logs)
     (citrus/dispatch! r :task-popper :close-popper)
     (merge {:state (assoc state :current-task "")} update-local)))

@@ -238,7 +238,6 @@ $themes: (light: ('orange-away': #ffab40,
     ::-webkit-scrollbar-thumb {
         border-radius: 2px;
         background-color: $scroll-color;
-        outline: 1px solid slategrey;
     }
 
     ::-webkit-scrollbar-thumb:hover {
@@ -365,7 +364,6 @@ $themes: (light: ('orange-away': #ffab40,
         &::-webkit-scrollbar-thumb {
             border-radius: 2px;
             background-color: $scroll-color;
-            outline: 1px solid slategrey;
         }
 
         &::-webkit-scrollbar-thumb:hover {

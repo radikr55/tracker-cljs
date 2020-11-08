@@ -6,12 +6,11 @@
                                              ipcMain]]))
 
 (def main-window (atom nil))
+(def mac? (= "darwin" (.-platform js/process)))
 
 (defn menu-template [name dark?]
   (clj->js [{:label   "TaskTracker"
-             :submenu [{:role "toggledevtools"}
-                       {:role "reload"}
-                       {:label       "Refresh"
+             :submenu [{:label       "Refresh"
                         :accelerator "CmdOrCtrl+Shift+R"
                         :click       #(send-ipc @main-window "refresh" nil)}
                        {:type "separator"}
@@ -32,8 +31,24 @@
                        {:label (str "Sign out " name)
                         :click #(send-ipc @main-window "logout" nil)}
                        {:type "separator"}
-                       {:label "Quit TaskTracker"
-                        :role  "quit"}]}]))
+                       (if mac?
+                         {:label "Quit TaskTracker"
+                          :role  "close"}
+                         {:label "Quit TaskTracker"
+                          :role  "quit"})]}
+            {:label   "Edit"
+             :submenu (if mac? [{:role "reload"}
+                                {:role "toggledevtools"}
+                                {:type "separator"}
+                                {:role "undo"}
+                                {:role "redo"}
+                                {:type "separator"}
+                                {:role "cut"}
+                                {:role "copy"}
+                                {:role "past"}
+                                {:role "delete"}]
+                          [{:role "reload"}
+                           {:role "toggledevtools"}])}]))
 
 (defn set-menu []
   (let [web-content (.-webContents @main-window)]
@@ -51,3 +66,6 @@
 (defonce on-get-name
   (.on ipcMain "update-title-bar-menu"
        #(set-menu)))
+
+(comment
+  (menu-template "rad" true))

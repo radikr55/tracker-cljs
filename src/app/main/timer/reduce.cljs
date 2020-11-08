@@ -141,9 +141,10 @@
         c-start           (c/to-date-time (:start c-first))]
     (if (and last-send-log-end
              (t/= (t/plus- last-end-date (t/minutes 1)) c-start))
-      (concat [(assoc c-first :start last-send-log-end)]
-              (pop (seq packages)))
+      (cons (assoc c-first :start last-send-log-end)
+            (drop 1 packages))
       packages)))
+
 
 (defn send-ping [packages]
   (when @w/main-window
@@ -208,7 +209,7 @@
 
   (-> (process-ping)
       ;; (p/then pprint)
-      ;; (p/then #(send-ping %))
+      (p/then #(send-ping %))
       (p/catch #(print %)))
 
   (defn ping->vector [ping-vector]
