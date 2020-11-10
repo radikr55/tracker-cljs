@@ -11,6 +11,7 @@
    ["electron" :as electron :refer [app
                                     Menu
                                     BrowserWindow
+                                    globalShortcut
                                     nativeTheme]]))
 
 (def icon (str js/__dirname "/public/img/icon.png"))
@@ -29,6 +30,9 @@
                       (send-ipc @w/main-window "theme" true)
                       (set! (.-themeSource nativeTheme) "dark")))))))
 
+(defn add-shortcuts []
+  (.register globalShortcut "CommandOrControl+H" #(send-ipc @w/main-window "about" nil)))
+
 (defn set-events []
   ;; (.on @w/main-window "close" #(do (.preventDefault %)
   ;;                                  (.minimize @w/main-window)))
@@ -44,6 +48,7 @@
   (login-server/-main)
   (set-events)
   (set-theme)
+  (add-shortcuts)
   (w/load-local-index)
   (.setApplicationMenu Menu (.buildFromTemplate Menu
                                                 (w/menu-template "" false))))

@@ -751,4 +751,25 @@ $themes: (light: ('orange-away': #ffab40,
         text-align: right;
         padding: 0px 10px;
     }
+
+    .about-dialog-header {
+        &>.MuiTypography-root {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+    }
+
+    .about-dialog-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .about-copyright {
+        width: 100%;
+        display: flex;
+        padding-top: 20px;
+        justify-content: center;
+    }
 }

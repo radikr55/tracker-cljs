@@ -24,6 +24,12 @@
        (fn [event arg]
          (citrus/dispatch! r :home :open-logout))))
 
+(defn about  [r]
+  (.on ipcRenderer "about"
+       (fn [event arg]
+         (print 123123)
+         (citrus/dispatch! r :home :open-about))))
+
 (defn refresh  [r]
   (.on ipcRenderer "refresh"
        (fn [event arg]
@@ -44,5 +50,6 @@
   (refresh r)
   (theme r)
   (logout r)
+  (about r)
   (clear-notificaiton r)
   (clear-tasks r))

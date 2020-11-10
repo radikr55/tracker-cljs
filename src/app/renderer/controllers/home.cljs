@@ -6,6 +6,7 @@
                     :right-list-ref  nil
                     :scale           2
                     :logout          false
+                    :about           false
                     :mouse-resize    false})
 
 (defmulti control (fn [event] event))
@@ -18,6 +19,12 @@
 
 (defmethod control :open-logout [_ _ state]
   {:state (assoc state :logout true)})
+
+(defmethod control :close-about [_ _ state]
+  {:state (assoc state :about false)})
+
+(defmethod control :open-about [_ _ state]
+  {:state (assoc state :about true)})
 
 (defmethod control :set-chart-ref [_ [val] state]
   {:state (assoc state :chart-ref val)})

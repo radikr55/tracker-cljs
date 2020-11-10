@@ -3,11 +3,11 @@
             [app.renderer.utils :refer [tc]]
             [app.renderer.forms.login :refer [Login]]
             [app.renderer.forms.logout :refer [dialog-logout]]
+            [app.renderer.forms.about :refer [dialog-about]]
             [app.renderer.forms.home :refer [Home]]
             [citrus.core :as citrus]
-            ["@material-ui/core" :refer [Button CssBaseline Typography]]
+            ["@material-ui/core" :refer [CssBaseline]]
             ["@material-ui/core/styles" :refer [createMuiTheme MuiThemeProvider]]
-            ["@material-ui/core/styles/createPalette" :default createPalette]
             [app.renderer.forms.search :refer [Search]]))
 
 (defn create-theme [dark?]
@@ -41,6 +41,7 @@
       (js/React.createElement CssBaseline)
       [:div
        (dialog-logout r)
+       (dialog-about r)
        (loading r)
        (case route
          :login  (Login r)

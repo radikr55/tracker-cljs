@@ -1,6 +1,5 @@
 (ns app.renderer.forms.logout
   (:require [rum.core :as rum]
-            ["electron" :refer [remote]]
             [citrus.core :as citrus]
             [app.renderer.utils :refer [tc]]))
 
