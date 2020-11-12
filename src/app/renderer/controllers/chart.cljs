@@ -13,7 +13,6 @@
    :desc      []
    :list      []
    :activity  []
-   :current   "WELKIN-76"
    :submitted nil
    :tracked   nil
    :logged    nil
@@ -209,9 +208,9 @@
                                                 {:method :get
                                                  :key    :current-task})
                          :code)
-        update-local (when (contains? codes exist)
-                       {:state {:current-task ""}}
-                       {:local-storage {:method :set
+        update-local (when (some #(= exist %) codes)
+                       {:state         (assoc state :current-task "")
+                        :local-storage {:method :set
                                         :data   {:code ""}
                                         :key    :current-task}})]
     (citrus/dispatch! r :chart :load-track-logs)

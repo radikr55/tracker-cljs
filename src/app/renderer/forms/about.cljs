@@ -3,13 +3,14 @@
             [citrus.core :as citrus]
             [app.renderer.utils :refer [tc]]))
 
-(rum/defc image []
+(rum/defc image < {:key-fn (fn [_] "image")}
+  []
   [:img {:src    "img/icon@2x.png"
          :width  100
-         :style  {:display "flex"}
          :height 100}])
 
-(rum/defc copyright []
+(rum/defc copyright < {:key-fn (fn [_] "copyright")}
+  []
   [:div {:class "about-copyright"}
    [:span (str "© Softarex " (.getFullYear (js/Date.)))]])
 
@@ -24,7 +25,7 @@
                                 :className "about-dialog-header"}
                     :child     [{:component :typography
                                  :styl      {:fontSize "25px"}
-                                 :opts      {:display "flex"}
+                                 :opts      {:key "about"}
                                  :child     "About"}
                                 {:component :icon-button
                                  :styl      {:float   "right"
@@ -36,22 +37,28 @@
                     :opts      {:key "dialog-conent"}
                     :child     [{:component :box
                                  :opts      {:className "about-dialog-content"
+                                             :key       "content"
                                              :pb        3}
                                  :child     [{:component :box
+                                              :opts      {:key "content"}
                                               :child     [{:component :typography
                                                            :styl      {:fontSize "25px"}
+                                                           :opts      {:key "title"}
                                                            :child     "TaskTracker v2"}
                                                           {:component :typography
-                                                           :styl      {:fontSize "18px"
+                                                           :styl      {:fontSize      "18px"
                                                                        :paddingBottom "10px"}
-                                                           :child     "We want peace and love"}
+                                                           :opts      {:key "tagline"}
+                                                           :child     "«We want peace and love»"}
                                                           {:component :typography
                                                            :styl      {:fontFamily "Roboto"
                                                                        :fontSize   "12px"}
+                                                           :opts      {:key "dev1"}
                                                            :child     "Made by a developer who is tired"}
                                                           {:component :typography
                                                            :styl      {:fontFamily "Roboto"
                                                                        :fontSize   "12px"}
+                                                           :opts      {:key "dev2"}
                                                            :child     "of fixing bugs on the old version"}]}
 
                                              (image)]}

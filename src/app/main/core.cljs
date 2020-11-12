@@ -55,6 +55,9 @@
 
 (defn main []
   (.on app "window-all-closed" #(when-not (= js/process.platform "darwin")
+                                  (js/clearInterval @ping/ping-interval)
+                                  (js/clearInterval @r/send-interval)
+                                  (js/clearInterval @r/check-interval)
                                   (.quit app)))
   (.on app "ready" init-browser))
 

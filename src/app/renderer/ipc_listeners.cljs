@@ -27,7 +27,6 @@
 (defn about  [r]
   (.on ipcRenderer "about"
        (fn [event arg]
-         (print 123123)
          (citrus/dispatch! r :home :open-about))))
 
 (defn refresh  [r]
