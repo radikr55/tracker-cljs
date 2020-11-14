@@ -168,33 +168,34 @@
             (p/catch #(print %)))))))
 
 (defn inactive-show [package]
-(when (seq package)
-  (let [element           (->> package
-                               (into [])
-                               pop
-                               last)
-        last-inactive-end (:end @last-inactive)]
-    (when (and element
-               (:inactive element)
-               (not (= last-inactive-end (:end element))))
-      (reset! last-inactive element)
-      (reset! n/inactive-interval (get-interval (c/to-date (:start element))
-                                                (c/to-date (:end element))))
-      (send-ping package)))))
+  (when (seq package)
+    (let [element           (->> package
+                                 (into [])
+                                 pop
+                                 last)
+          last-inactive-end (:end @last-inactive)]
+      (when (and element
+                 (:inactive element)
+                 (not (= last-inactive-end (:end element))))
+        (reset! last-inactive element)
+        (reset! n/inactive-interval (get-interval (c/to-date (:start element))
+                                                  (c/to-date (:end element))))
+        (send-ping package)))))
 
 (defonce timer-send-ping
-(reset! send-interval
-        (js/setInterval (fn []
-                          (-> (process-ping)
-                              (p/then #(send-ping %))
-                              (p/catch #(print "123" %))))
-                        (* time-send 1000))))
+  (reset! send-interval
+          (js/setInterval (fn []
+                            (-> (process-ping)
+                                (p/then #(send-ping %))
+                                (p/catch #(print "123" %))))
+                          (* time-send 1000))))
 
 (defn check-fun  []
-(-> (process-ping)
-    (p/then #(inactive-show %))
-    (p/catch #(print "check-inactive" %)))
-  (js/setTimeout check-fun (* time-check 1000)))
+  (-> (process-ping)
+      (p/then #(inactive-show %))
+      (p/catch #(print "check-inactive" %)))
+  (reset! check-interval
+          (js/setTimeout check-fun (* time-check 1000))))
 
 (defonce check-inactive
   (reset! check-interval

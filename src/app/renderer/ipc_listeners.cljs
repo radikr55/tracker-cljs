@@ -19,6 +19,11 @@
        (fn [event arg]
          (citrus/dispatch! r :theme :set-dark arg))))
 
+(defn theme-default  [r]
+  (.on ipcRenderer "theme-default"
+       (fn [event arg]
+         (citrus/dispatch! r :theme :theme-default arg))))
+
 (defn logout  [r]
   (.on ipcRenderer "logout"
        (fn [event arg]
@@ -48,6 +53,7 @@
   (render-secret r)
   (refresh r)
   (theme r)
+  (theme-default r)
   (logout r)
   (about r)
   (clear-notificaiton r)

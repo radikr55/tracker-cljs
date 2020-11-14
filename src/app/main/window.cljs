@@ -3,12 +3,34 @@
             [promesa.core :as p]
             [app.main.utils :refer [send-ipc]]
             ["electron" :as electron :refer [Menu
+                                             nativeTheme
                                              ipcMain]]))
 
 (def main-window (atom nil))
+(def theme-timeout (atom nil))
 (def mac? (= "darwin" (.-platform js/process)))
 
-(defn menu-template [name dark?]
+(defn timeout-theme []
+  (let [web-content (.-webContents @main-window)
+        theme       (if (.-shouldUseDarkColors nativeTheme) "dark" "light")]
+    (->  (ls/local-get web-content "theme")
+         (p/then #(when (= 'default %)
+                    (send-ipc @main-window "theme-default" theme)
+                    (reset! theme-timeout
+                            (js/setTimeout timeout-theme 500)))))))
+
+(defn set-theme []
+  (reset! theme-timeout
+          (js/setTimeout timeout-theme 500)))
+
+(defn switch-theme [theme]
+  (if-not (= "default" theme)
+    (do (js/clearTimeout @theme-timeout)
+        (send-ipc @main-window "theme" theme))
+    (do (set-theme)
+        (send-ipc @main-window "theme-default" theme))))
+
+(defn menu-template [name theme]
   (clj->js [{:label   "TaskTracker"
              :submenu [{:label       "Refresh"
                         :accelerator "CmdOrCtrl+Shift+R"
@@ -21,12 +43,16 @@
                        {:type "separator"}
                        {:label   "Light theme"
                         :type    "radio"
-                        :checked (not dark?)
-                        :click   #(send-ipc @main-window "theme" false)}
+                        :checked (= 'light theme)
+                        :click   #(switch-theme "light")}
                        {:label   "Dark theme"
                         :type    "radio"
-                        :checked dark?
-                        :click   #(send-ipc @main-window "theme" true)}
+                        :checked (= 'dark theme)
+                        :click   #(switch-theme "dark")}
+                       {:label   "System theme"
+                        :type    "radio"
+                        :checked (= 'default theme)
+                        :click   #(switch-theme "default")}
                        {:type "separator"}
                        {:label (str "Sign out " name)
                         :click #(send-ipc @main-window "logout" nil)}
@@ -49,16 +75,16 @@
              :submenu [{:role "reload"}
                        {:label       "Switch theme"
                         :accelerator "CmdOrCtrl+T"
-                        :click       #(send-ipc @main-window "theme" (not dark?))}
+                        :click       #(send-ipc @main-window "theme" (if (= 'dark theme) "light" "dark"))}
                        {:role "toggledevtools"}]}]))
 
 (defn set-menu []
   (let [web-content (.-webContents @main-window)]
     (-> (p/all [(ls/local-get web-content "token")
-                (ls/local-get web-content "dark")])
-        (p/then (fn [[token dark?]]
+                (ls/local-get web-content "theme")])
+        (p/then (fn [[token theme]]
                   (.setApplicationMenu Menu (.buildFromTemplate Menu
-                                                                (menu-template (:name token) dark?))))))))
+                                                                (menu-template (:name token) theme))))))))
 
 (defn load-local-index []
   (.loadURL @main-window (str "file://" js/__dirname "/public/index.html"))

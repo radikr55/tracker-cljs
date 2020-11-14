@@ -22,21 +22,15 @@
                                 (.restore @w/main-window)
                                 (.focus @w/main-window))))
 
-(defn set-theme []
-  (when (.-shouldUseDarkColors nativeTheme)
-    (let [web-content (.-webContents @w/main-window)]
-      (->  (ls/local-get web-content "dark")
-           (p/then #(when (nil? %)
-                      (send-ipc @w/main-window "theme" true)
-                      (set! (.-themeSource nativeTheme) "dark")))))))
+
 
 (defn add-shortcuts []
   (.register globalShortcut "CommandOrControl+H" #(send-ipc @w/main-window "about" nil)))
 
 (defn set-events []
-  ;; (.on @w/main-window "close" #(do (.preventDefault %)
-  ;;                                  (.minimize @w/main-window)))
-  )
+;; (.on @w/main-window "close" #(reset! w/main-window nil))
+)
+
 
 (defn init-browser []
   (reset! w/main-window (BrowserWindow.
@@ -47,17 +41,13 @@
                                     :webPreferences {:nodeIntegration true}})))
   (login-server/-main)
   (set-events)
-  (set-theme)
+  (w/set-theme)
   (add-shortcuts)
   (w/load-local-index)
   (.setApplicationMenu Menu (.buildFromTemplate Menu
-                                                (w/menu-template "" false))))
+                                                (w/menu-template "" 'default))))
 
 (defn main []
-  (.on app "window-all-closed" #(when-not (= js/process.platform "darwin")
-                                  (js/clearInterval @ping/ping-interval)
-                                  (js/clearInterval @r/send-interval)
-                                  (js/clearInterval @r/check-interval)
-                                  (.quit app)))
-  (.on app "ready" init-browser))
+(.on app "window-all-closed" #(.quit app))
+(.on app "ready" init-browser))
 
