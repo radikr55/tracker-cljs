@@ -39,7 +39,7 @@
   "by-project-id")
 
 (defn- ->uri [path]
-  (str "http://192.168.0.102:3000/" path))
+  (str "http://localhost:3000/" path))
 
 (defn- parse-body [res]
   (-> res
