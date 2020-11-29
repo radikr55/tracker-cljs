@@ -1,6 +1,7 @@
 (ns app.renderer.core
   (:require [rum.core :as rum]
             [goog.dom :as dom]
+            ["electron-log" :as log]
             [citrus.core :as citrus]
             [app.renderer.effects :as effects]
             [app.renderer.controllers.user :as user]
@@ -16,6 +17,8 @@
             [app.renderer.controllers.home :as home]
             [app.renderer.forms.root :refer [Root]]
             [app.renderer.ipc-listeners :as ipc]))
+
+(.assign js/Object js/console (.-functions log))
 
 (enable-console-print!)
 
@@ -38,14 +41,6 @@
                        :http          effects/http}}))
 
 (defonce init-ctrl (citrus/broadcast-sync! reconciler :init))
-
-;; (citrus/dispatch! reconciler :router :push :home)
-;; (citrus/dispatch! reconciler :home :plus-line true)
-
-;; (add-watch refresh-atom
-;;            :watcher
-;;            #(rum/mount (Root reconciler)
-;;                        (dom/getElement "app-container")))
 
 (defn start! []
   (ipc/start! reconciler)

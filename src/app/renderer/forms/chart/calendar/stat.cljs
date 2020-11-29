@@ -23,16 +23,23 @@
 
 (rum/defc week < rum/reactive
   {:key-fn (fn [_ index] (str "week" index))}
-  [r index [week _]]
-  (let [stat      (rum/react (citrus/subscription r [:calendar-popper :stat]))
-        week      ((keyword (str week)) stat)
-        submitted (:submitted week)
-        logged    (:logged week)
-        tracked   (:tracked week)]
-    [:div {:class "calendar-stat-week calendar-week"}
-     [:div {:class "sum-statistic-logged calendar-stat-cell"} (tu/format-time (/ logged 60))]
-     [:div {:class "sum-statistic-tracked calendar-stat-cell"} (tu/format-time (/ tracked 60))]
-     [:div {:class "sum-statistic-submitted calendar-stat-cell"} (tu/format-time (/ submitted 60))]]))
+  [r index [week-num _]]
+  (let [stat        (rum/react (citrus/subscription r [:calendar-popper :stat]))
+        week        ((keyword (str week-num)) stat)
+        submitted   (:submitted week)
+        logged      (:logged week)
+        tracked     (:tracked week)
+        select-week (rum/react (citrus/subscription r [:calendar-popper :select-week]))
+        class       (cond-> "calendar-stat-week calendar-week "
+                      (= week-num select-week) (str " calendar-select-week"))]
+    (if (->> [logged tracked submitted]
+             (reduce +)
+             (not= 0))
+      [:div {:class class}
+       [:div {:class "sum-statistic-logged calendar-stat-cell"} (tu/format-time (/ logged 60))]
+       [:div {:class "sum-statistic-tracked calendar-stat-cell"} (tu/format-time (/ tracked 60))]
+       [:div {:class "sum-statistic-submitted calendar-stat-cell"} (tu/format-time (/ submitted 60))]]
+      [:div {:class class}])))
 
 (rum/defc month < rum/reactive
   [r]

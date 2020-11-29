@@ -323,8 +323,7 @@ $themes: (light: ('orange-away': #ffab40,
 
     .gap-dot {
         color: $border-color;
-        height: 5px !important;
-        width: 5px !important;
+        font-size: 30px;
     }
 
     .gap {
@@ -776,6 +775,12 @@ $themes: (light: ('orange-away': #ffab40,
     .calendar-header {
         display: flex;
         justify-content: space-between;
+        align-items: center;
+    }
+
+    .calendar-header-title {
+        padding-left: 10px;
+        font-size: 14px;
     }
 
     .calendar-field {
@@ -808,7 +813,7 @@ $themes: (light: ('orange-away': #ffab40,
 
     .calendar-week {
         min-height: 30px;
-        margin: 0px 10px;
+        padding: 0px 10px;
         display: flex;
         font-family: Roboto;
         font-size: 12px;
@@ -865,5 +870,15 @@ $themes: (light: ('orange-away': #ffab40,
         display: flex;
         align-items: center;
         justify-content: center;
+    }
+
+    .calendar-selected {
+        border-radius: 50%;
+        background-color: $blue;
+        color: white;
+    }
+
+    .calendar-select-week {
+        background-color: rgba(70, 152, 242, 0.1);
     }
 }

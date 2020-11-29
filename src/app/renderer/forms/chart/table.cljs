@@ -69,10 +69,8 @@
                                :flexDirection  "column"
                                :justifyContent "center"
                                :alignItems     "center"}
-                   :child     (vec (for [x (range 3)]
-                                     {:component :dot
-                                      :opts      {:className "gap-dot"
-                                                  :key       (str x)}}))}}))
+                   :child     {:component :more-vert
+                               :opts      {:className "gap-dot"}}}}))
 
 (rum/defc left < rum/reactive
   {:key-fn (fn [_] "left")}

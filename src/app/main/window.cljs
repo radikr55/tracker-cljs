@@ -1,14 +1,24 @@
 (ns app.main.window
   (:require [app.main.local-storage :as ls]
             [promesa.core :as p]
+            ["electron-log" :as log]
+            ["path" :as path]
             [app.main.utils :refer [send-ipc]]
             ["electron" :as electron :refer [Menu
+                                             shell
                                              nativeTheme
                                              ipcMain]]))
 
 (def main-window (atom nil))
 (def theme-timeout (atom nil))
 (def mac? (= "darwin" (.-platform js/process)))
+
+(defn openLogs []
+  (.openPath shell (.dirname path (->> log
+                                       .-transports
+                                       .-file
+                                       .getFile
+                                       str))))
 
 (defn timeout-theme []
   (let [web-content (.-webContents @main-window)
@@ -73,6 +83,9 @@
                           [{:role "reload"}])}
             {:label   "Dev"
              :submenu [{:role "reload"}
+                       {:label       "Log"
+                        :accelerator "CmdOrCtrl+L"
+                        :click       #(openLogs)}
                        {:label       "Switch theme"
                         :accelerator "CmdOrCtrl+T"
                         :click       #(send-ipc @main-window "theme" (if (= 'dark theme) "light" "dark"))}

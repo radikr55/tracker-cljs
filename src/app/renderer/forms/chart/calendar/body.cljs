@@ -17,15 +17,25 @@
 (rum/defc day < rum/reactive
   {:key-fn (fn [_ index] (str "date" index))}
   [r index date]
-  [:div {:class "calendar-day calendar-actual-day"}
-   (t/day date)])
+  (let [chart-date (rum/react (citrus/subscription r [:chart :date]))
+        class      (cond-> "calendar-day calendar-actual-day "
+                     (t/= chart-date date) (str " calendar-selected " ))]
+    [:div {:class   class
+           :onClick #(do (citrus/dispatch! r :chart :set-date date)
+                         (citrus/dispatch! r :calendar-popper :close-popper)
+                         (citrus/dispatch! r :chart :load-track-logs))}
+     (t/day date)] ))
 
 (rum/defc weeks < rum/reactive
   {:key-fn (fn [_ index] (str "week" index))}
   [r index [week dates] first?]
-  [:div {:class "calendar-week"}
-   [(when first? (stub-day dates))
-    (map-indexed #(day r %1 %2) dates)]])
+  (let [select-week (rum/react (citrus/subscription r [:calendar-popper :select-week]))
+        class       (cond-> "calendar-week "
+                      (= week select-week) (str " calendar-select-week"))]
+    [:div {:class       class
+           :onMouseOver #(citrus/dispatch! r :calendar-popper :set-select-week week)}
+     [(when first? (stub-day dates))
+      (map-indexed #(day r %1 %2) dates)]] ))
 
 (rum/defc day-names-row < {:key-fn (fn [_] "week-days")}
   []
@@ -46,4 +56,5 @@
   (tc {:component :box
        :opts      {:className "calendar-body"}
        :child     (month r)}))
+
 

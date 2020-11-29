@@ -2,17 +2,15 @@
   (:require [rum.core :as rum]
             [citrus.core :as citrus]
             [app.renderer.utils :refer [tc]]
-            [app.renderer.time-utils :as tu]
-            ))
+            [app.renderer.time-utils :as tu]))
 
 (rum/defc title < rum/reactive
   {:key-fn (fn [_] "title")}
   [r]
   (let [date (rum/react (citrus/subscription r [:calendar-popper :date]))]
     (tc {:component :typography
-         :child     (tu/date->calendar-title date)} )
-    )
-  )
+         :opts      {:className "calendar-header-title"}
+         :child     (tu/date->calendar-title date)})))
 
 (rum/defc buttons < rum/reactive
   {:key-fn (fn [_] "buttons")}

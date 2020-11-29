@@ -4,10 +4,11 @@
             [citrus.core :as citrus]
             [cljs-time.core :as t]))
 
-(def initial-state {:open?    false
-                    :date     nil
-                    :stat     nil
-                    :position nil})
+(def initial-state {:open?       false
+                    :date        nil
+                    :stat        nil
+                    :select-week nil
+                    :position    nil})
 
 (defmulti control (fn [event] event))
 
@@ -18,13 +19,16 @@
   {:state (assoc state
                  :position (:position val)
                  :date (:date val)
-                 :open?  true)})
+                 :select-week (t/week-number-of-year (:date val))
+                 :open? true)})
 
 (defmethod control :close-popper [_ _ state]
   {:state (assoc state
                  :position nil
-                 :stat     nil
                  :open? false)})
+
+(defmethod control :set-select-week [_ [week] state]
+  {:state (assoc state :select-week week)})
 
 (defmethod control :previously-month [_ [r] state]
   (let [date (:date state)]
