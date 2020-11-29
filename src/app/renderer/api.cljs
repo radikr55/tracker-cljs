@@ -35,6 +35,9 @@
 (defmethod ->endpoint :save-ping [_ _]
   "ping")
 
+(defmethod ->endpoint :load-stat [_ _]
+  "load-stat")
+
 (defmethod ->endpoint :by-project-id [_ _]
   "by-project-id")
 

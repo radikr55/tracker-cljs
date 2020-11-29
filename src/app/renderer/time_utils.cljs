@@ -6,6 +6,26 @@
             [goog.string.format]
             [citrus.core :as citrus]))
 
+(defn date->calendar-date [date]
+  (f/unparse (f/formatter "d.MM.YYYY") date))
+
+(defn days [date day]
+  (t/plus- (t/first-day-of-the-month date) (t/days day)))
+
+(defn month->calendar [date]
+  (->> (range (t/number-of-days-in-the-month date))
+       (map #(days date %))
+       (reduce #(let [week  (t/week-number-of-year %2)
+                      exist (get %1 week)]
+                  (assoc %1 week
+                         (conj (or exist []) %2))) {})))
+
+(defn date->calendar-field [date]
+  (f/unparse (f/formatter "EEEE, MMMM d, YYYY") date))
+
+(defn date->calendar-title [date]
+  (f/unparse (f/formatter "MMMM, YYYY") date))
+
 (defn to-time->field [date]
   (f/unparse (f/formatter "HH:mm") date))
 

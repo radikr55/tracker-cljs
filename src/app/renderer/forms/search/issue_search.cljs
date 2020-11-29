@@ -1,15 +1,7 @@
 (ns app.renderer.forms.search.issue-search
   (:require [rum.core :as rum]
             [citrus.core :as citrus]
-            [app.renderer.utils :refer [tc]]
-            ["@material-ui/core/styles" :refer [styled]]
-            ["@material-ui/core" :refer [Paper
-                                         ListSubheader
-                                         Box
-                                         List
-                                         ListItem
-                                         ListItemText
-                                         TextField]]))
+            [app.renderer.utils :refer [tc]]))
 
 (def search-atom (atom ""))
 

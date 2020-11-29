@@ -394,10 +394,6 @@ $themes: (light: ('orange-away': #ffab40,
         display: flex;
         justify-content: center;
         border-bottom: solid 1px $border-color;
-
-        &.active {
-            cursor: context-menu;
-        }
     }
 
 
@@ -480,7 +476,6 @@ $themes: (light: ('orange-away': #ffab40,
         user-select: none;
         align-items: center;
         color: $blue;
-        cursor: pointer;
 
         &>.MuiBox-root {
             &>.MuiTypography-body1 {
@@ -500,10 +495,6 @@ $themes: (light: ('orange-away': #ffab40,
         align-items: center;
         border-bottom: solid 1px $border-color;
         flex-direction: column;
-
-        &.stat-blue {
-            cursor: pointer;
-        }
     }
 
     .stat-header {
@@ -535,7 +526,6 @@ $themes: (light: ('orange-away': #ffab40,
     }
 
     .chart-block-blue {
-        cursor: pointer;
         background-color: $blue;
     }
 
@@ -770,6 +760,110 @@ $themes: (light: ('orange-away': #ffab40,
         width: 100%;
         display: flex;
         padding-top: 20px;
+        justify-content: center;
+    }
+
+    .calendr-box {
+        padding: 12px 14px;
+        color: $text;
+        background-color: $background-color;
+    }
+
+    .calendar-paper {
+        background-color: $background-color;
+    }
+
+    .calendar-header {
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .calendar-field {
+        width: 250px;
+        margin: 0px 0px !important;
+        height: 100%;
+
+        &>.MuiInputBase-root {
+            height: 100%;
+            font-size: 14px;
+            background-color: $highlight-task;
+
+            &>fieldset {
+                border: 0px;
+            }
+
+            &>.MuiInputBase-input {
+                color: $text;
+                width: 100%;
+                font-weight: bold;
+                text-align: center;
+                font-stretch: normal;
+                font-style: normal;
+                line-height: 1.14;
+                letter-spacing: normal;
+                padding: 0px 10px !important;
+            }
+        }
+    }
+
+    .calendar-week {
+        min-height: 30px;
+        margin: 0px 10px;
+        display: flex;
+        font-family: Roboto;
+        font-size: 12px;
+        user-select: none;
+    }
+
+    .calendar-day-names {
+        color: $logged;
+        font-family: Roboto-Bold;
+    }
+
+    .calendar-day {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 30px;
+    }
+
+    .calendar-actual-day {
+        &:hover {
+            border: 1px solid $blue;
+            border-radius: 50%;
+        }
+    }
+
+    .calendar-body-stat {
+        display: flex;
+        border-top: solid 1px $border-color;
+    }
+
+    .calendar-body {
+        border-right: solid 1px $border-color;
+        padding: 10px 0px;
+    }
+
+    .calendar-stat {
+        padding: 10px 0px;
+    }
+
+    .calendar-stat-week {
+        min-width: 200px;
+        display: flex;
+        justify-content: space-around;
+        font-family: Roboto;
+        font-size: 12px;
+    }
+
+    .calendar-stat-sum {
+        font-family: Roboto-Bold;
+        font-size: 12px;
+    }
+
+    .calendar-stat-cell {
+        display: flex;
+        align-items: center;
         justify-content: center;
     }
 }

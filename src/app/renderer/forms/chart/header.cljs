@@ -1,35 +1,18 @@
 (ns app.renderer.forms.chart.header
   (:require [rum.core :as rum]
             [cljs-time.core :as t]
-            [cljs-time.coerce :as c]
             [app.renderer.utils :refer [tc]]
             [app.renderer.time-utils :as tu]
-            ["@date-io/moment" :as MomentUtils]
+            [app.renderer.forms.chart.calendar.calendar :refer [Calendar]]
             [citrus.core :as citrus]))
 
-(rum/defc picker < rum/reactive
-  [r]
-  (let [date (rum/react (citrus/subscription r [:chart :date]))]
-    (tc  {:component :date-picker
-          :opts      {:margin         "normal"
-                      :className      "date-picker"
-                      :variant        "inline"
-                      :inputVariant   "outlined"
-                      :value          (c/to-date date)
-                      :autoOk         true
-                      :disableFuture  true
-                      :disableToolbar true
-                      :format         "dddd, MMMM DD, yyyy"
-                      :onChange       #(do (citrus/dispatch! r :chart :set-date (c/from-date (.toDate %)))
-                                           (citrus/dispatch! r :chart :load-track-logs))}})))
+(defn open-calendar [r event date]
+  (citrus/dispatch! r :calendar-popper :open-popper
+                    {:position {:mouseX (.-clientX event)
+                                :mouseY (.-clientY event)}
+                     :date     date})
+  (citrus/dispatch! r :calendar-popper :load-stat))
 
-(rum/defc provider < rum/reactive
-  {:key-fn (fn [_] "provider")}
-  [r]
-  (tc {:component :date-provider
-       :opts      {:utils #(new MomentUtils %)
-                   :key   "provider"}
-       :child     (picker r)}))
 
 (rum/defc left < rum/reactive
   {:key-fn (fn [_] "left")}
@@ -39,7 +22,14 @@
          :opts      {:display    "flex"
                      :width      "100%"
                      :alignItems "center"}
-         :child     [(provider r)
+         :child     [(Calendar r)
+                     {:component :text-field
+                      :opts      {:variant   "outlined"
+                                  :key       "calendar-field"
+                                  :className "calendar-field"
+                                  :readOnly  true
+                                  :value     (tu/date->calendar-field date)
+                                  :onClick   #(open-calendar r % date)}}
                      {:component :button
                       :opts      {:key       "left-button"
                                   :onClick   #(do (citrus/dispatch! r :chart :dec-date)

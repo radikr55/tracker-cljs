@@ -12,6 +12,7 @@
             [app.renderer.controllers.chart-popper :as chart-popper]
             [app.renderer.controllers.task-popper :as task-popper]
             [app.renderer.controllers.stat-popper :as stat-popper]
+            [app.renderer.controllers.calendar-popper :as calendar-popper]
             [app.renderer.controllers.home :as home]
             [app.renderer.forms.root :refer [Root]]
             [app.renderer.ipc-listeners :as ipc]))
@@ -21,16 +22,17 @@
 (defonce reconciler
   (citrus/reconciler
     {:state           (atom {})
-     :controllers     {:loading      loading/control
-                       :user         user/control
-                       :router       router/control
-                       :project      project/control
-                       :chart        chart/control
-                       :home         home/control
-                       :theme        theme/control
-                       :chart-popper chart-popper/control
-                       :stat-popper  stat-popper/control
-                       :task-popper  task-popper/control}
+     :controllers     {:loading         loading/control
+                       :user            user/control
+                       :router          router/control
+                       :project         project/control
+                       :chart           chart/control
+                       :home            home/control
+                       :theme           theme/control
+                       :chart-popper    chart-popper/control
+                       :stat-popper     stat-popper/control
+                       :calendar-popper calendar-popper/control
+                       :task-popper     task-popper/control}
      :effect-handlers {:local-storage effects/local-storage
                        :ipc           effects/ipc-renderer
                        :http          effects/http}}))
