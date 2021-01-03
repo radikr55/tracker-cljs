@@ -131,14 +131,18 @@
                    :key    :current-task}})
 
 (defmethod control :new-current-task [_ [code] state]
-  (let [token (effects/local-storage
+  (let [date  (:date state)
+        token (effects/local-storage
                 nil
                 :poject
                 {:method :get
                  :key    :token})]
     {:http {:endpoint :active-task
             :params   (assoc token :query
-                             {:code code})
+                             {:code code}
+                             :date (c/to-string (tu/merge-date-time date
+                                                                    (tu/field->to-time "00:00")))
+                             :offset (.getTimezoneOffset (js/Date. date)))
             :method   :post
             :on-load  :success-save-task
             :on-error :error}}))

@@ -7,7 +7,7 @@
             [citrus.core :as citrus]))
 
 (defn date->calendar-date [date]
-  (f/unparse (f/formatter "d.MM.YYYY") date))
+  (f/unparse (f/formatter "dd.MM.YYYY") date))
 
 (defn days [date day]
   (t/plus- (t/first-day-of-the-month date) (t/days day)))

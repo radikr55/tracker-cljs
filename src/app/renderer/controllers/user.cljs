@@ -1,8 +1,5 @@
 (ns app.renderer.controllers.user
-  (:require [citrus.core :as citrus]
-            [goog.string :as gstring]
-            ["electron" :refer [shell]]
-            [goog.string.format]))
+  (:require [citrus.core :as citrus]))
 
 (def initial-state {:login    nil
                     :token    nil

@@ -15,6 +15,7 @@
             [app.renderer.controllers.stat-popper :as stat-popper]
             [app.renderer.controllers.calendar-popper :as calendar-popper]
             [app.renderer.controllers.home :as home]
+            [app.renderer.controllers.error :as error]
             [app.renderer.forms.root :refer [Root]]
             [app.renderer.ipc-listeners :as ipc]))
 
@@ -32,6 +33,7 @@
                        :chart           chart/control
                        :home            home/control
                        :theme           theme/control
+                       :error           error/control
                        :chart-popper    chart-popper/control
                        :stat-popper     stat-popper/control
                        :calendar-popper calendar-popper/control

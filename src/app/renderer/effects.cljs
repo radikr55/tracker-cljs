@@ -38,10 +38,14 @@
                 :headers  headers
                 :token    token})
     (p/then (fn [e]
+              (citrus/dispatch! r :error :check-version e)
+              e))
+    (p/then (fn [e]
               (citrus/dispatch! r :loading :off)
               (dispatch! r c on-load e r)))
     (p/catch (fn [e]
                (citrus/dispatch! r :loading :off)
+               (citrus/dispatch! r :error :show-error e r)
                (dispatch! r c on-error e r)))))
 
 (defn ipc-renderer [r c {:keys [type args]}]

@@ -33,7 +33,8 @@
                                     :height         600
                                     :minWidth       900
                                     :minHeight      600
-                                    :webPreferences {:nodeIntegration true}})))
+                                    :webPreferences {:nodeIntegration    true
+                                                     :enableRemoteModule true}})))
   (login-server/-main)
   (w/set-theme)
   (add-shortcuts)

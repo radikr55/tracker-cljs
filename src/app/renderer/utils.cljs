@@ -1,10 +1,9 @@
 (ns app.renderer.utils
   (:require
    ["react-draggable" :default Draggable]
-   ["react-beautiful-dnd" :as dnd]
    ["react-simple-timefield" :default TimeField]
    ["@material-ui/core/styles" :refer [styled]]
-   ["@material-ui/pickers" :refer [MuiPickersUtilsProvider KeyboardDatePicker DatePicker]]
+   ["@material-ui/lab" :refer [Alert]]
    ["@material-ui/core" :refer [Typography Box
                                 Fade LinearProgress
                                 InputAdornment TextField
@@ -12,16 +11,16 @@
                                 DialogContent DialogActions
                                 Popper Menu MenuItem
                                 ListItemSecondaryAction
-                                ListItemIcon
+                                Snackbar ListItemIcon
                                 Popover Divider
                                 Switch List ListItem
                                 Button ButtonBase Tooltip
                                 ListItemText ListSubheader
-                                AppBar Toolbar FormControl
+                                FormControl
                                 FormGroup FormControlLabel
-                                Paper Collapse Fab
+                                Paper Fab
                                 Grid FormGroup
-                                Slide IconButton]]
+                                IconButton]]
    ["@material-ui/icons" :refer [Close Add Search
                                  MoreVert OpenInNew
                                  FiberManualRecord
@@ -79,8 +78,6 @@
     :arrow-right                ArrowForwardIos
     :grid                       Grid
     :arrow-down                 ArrowDownward
-    :date-provider              MuiPickersUtilsProvider
-    :date-picker                DatePicker
     :more-vert                  MoreVert
     :dot                        FiberManualRecord
     :list-item-icon             ListItemIcon
@@ -91,9 +88,8 @@
     :input-adornment            InputAdornment
     :zoom-in                    ZoomIn
     :zoom-out                   ZoomOut
-    :dnd-draggable              dnd/Draggable
-    :dnd-droppable              dnd/Droppable
-    :dnd-context                dnd/DragDropContext
+    :snack                      Snackbar
+    :alert                      Alert
     nil))
 
 (defn obj-js [component]

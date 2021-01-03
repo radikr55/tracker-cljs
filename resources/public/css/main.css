@@ -130,7 +130,6 @@
 .theme-light ::-webkit-scrollbar-thumb {
   border-radius: 2px;
   background-color: rgba(0, 0, 0, 0.5);
-  outline: 1px solid slategrey;
 }
 .theme-light ::-webkit-scrollbar-thumb:hover {
   background: rgba(0, 0, 0, 0.5);
@@ -199,8 +198,7 @@
 }
 .theme-light .gap-dot {
   color: #dddddd;
-  height: 5px !important;
-  width: 5px !important;
+  font-size: 30px;
 }
 .theme-light .gap {
   border-right: solid 1px #dddddd;
@@ -234,7 +232,6 @@
 .theme-light .middle::-webkit-scrollbar-thumb {
   border-radius: 2px;
   background-color: rgba(0, 0, 0, 0.5);
-  outline: 1px solid slategrey;
 }
 .theme-light .middle::-webkit-scrollbar-thumb:hover {
   background: rgba(0, 0, 0, 0.5);
@@ -258,9 +255,6 @@
   display: flex;
   justify-content: center;
   border-bottom: solid 1px #dddddd;
-}
-.theme-light .task-box.active {
-  cursor: context-menu;
 }
 .theme-light .timeline-box {
   height: 100%;
@@ -321,7 +315,6 @@
   user-select: none;
   align-items: center;
   color: #1255cc;
-  cursor: pointer;
 }
 .theme-light .header-task-list > .MuiBox-root > .MuiTypography-body1 {
   letter-spacing: -0.11px;
@@ -337,9 +330,6 @@
   align-items: center;
   border-bottom: solid 1px #dddddd;
   flex-direction: column;
-}
-.theme-light .stat-box.stat-blue {
-  cursor: pointer;
 }
 .theme-light .stat-header {
   font-family: Roboto-Medium;
@@ -365,7 +355,6 @@
   background-color: #dddddd;
 }
 .theme-light .chart-block-blue {
-  cursor: pointer;
   background-color: #1255cc;
 }
 .theme-light .chart-block-gray {
@@ -537,6 +526,120 @@
   text-align: right;
   padding: 0px 10px;
 }
+.theme-light .about-dialog-header > .MuiTypography-root {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.theme-light .about-dialog-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.theme-light .about-copyright {
+  width: 100%;
+  display: flex;
+  padding-top: 20px;
+  justify-content: center;
+}
+.theme-light .calendr-box {
+  padding: 12px 14px;
+  color: black;
+  background-color: #fff;
+}
+.theme-light .calendar-paper {
+  background-color: #fff;
+}
+.theme-light .calendar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.theme-light .calendar-header-title {
+  padding-left: 10px;
+  font-size: 14px;
+}
+.theme-light .calendar-field {
+  width: 250px;
+  margin: 0px 0px !important;
+  height: 100%;
+}
+.theme-light .calendar-field > .MuiInputBase-root {
+  height: 100%;
+  font-size: 14px;
+  background-color: #f2f2f2;
+}
+.theme-light .calendar-field > .MuiInputBase-root > fieldset {
+  border: 0px;
+}
+.theme-light .calendar-field > .MuiInputBase-root > .MuiInputBase-input {
+  color: black;
+  width: 100%;
+  font-weight: bold;
+  text-align: center;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: 1.14;
+  letter-spacing: normal;
+  padding: 0px 10px !important;
+}
+.theme-light .calendar-week {
+  min-height: 30px;
+  padding: 0px 10px;
+  display: flex;
+  font-family: Roboto;
+  font-size: 12px;
+  user-select: none;
+}
+.theme-light .calendar-day-names {
+  color: #848484;
+  font-family: Roboto-Bold;
+}
+.theme-light .calendar-day {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+}
+.theme-light .calendar-actual-day:hover {
+  border: 1px solid #1255cc;
+  border-radius: 50%;
+}
+.theme-light .calendar-body-stat {
+  display: flex;
+  border-top: solid 1px #dddddd;
+}
+.theme-light .calendar-body {
+  border-right: solid 1px #dddddd;
+  padding: 10px 0px;
+}
+.theme-light .calendar-stat {
+  padding: 10px 0px;
+}
+.theme-light .calendar-stat-week {
+  min-width: 200px;
+  display: flex;
+  justify-content: space-around;
+  font-family: Roboto;
+  font-size: 12px;
+}
+.theme-light .calendar-stat-sum {
+  font-family: Roboto-Bold;
+  font-size: 12px;
+}
+.theme-light .calendar-stat-cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.theme-light .calendar-selected {
+  border-radius: 50%;
+  background-color: #1255cc;
+  color: white;
+}
+.theme-light .calendar-select-week {
+  background-color: rgba(70, 152, 242, 0.1);
+}
 
 .theme-dark body {
   color: white;
@@ -642,7 +745,6 @@
 .theme-dark ::-webkit-scrollbar-thumb {
   border-radius: 2px;
   background-color: rgba(255, 255, 255, 0.5);
-  outline: 1px solid slategrey;
 }
 .theme-dark ::-webkit-scrollbar-thumb:hover {
   background: rgba(230, 230, 230, 0.5);
@@ -711,8 +813,7 @@
 }
 .theme-dark .gap-dot {
   color: #565656;
-  height: 5px !important;
-  width: 5px !important;
+  font-size: 30px;
 }
 .theme-dark .gap {
   border-right: solid 1px #565656;
@@ -746,7 +847,6 @@
 .theme-dark .middle::-webkit-scrollbar-thumb {
   border-radius: 2px;
   background-color: rgba(255, 255, 255, 0.5);
-  outline: 1px solid slategrey;
 }
 .theme-dark .middle::-webkit-scrollbar-thumb:hover {
   background: rgba(230, 230, 230, 0.5);
@@ -770,9 +870,6 @@
   display: flex;
   justify-content: center;
   border-bottom: solid 1px #565656;
-}
-.theme-dark .task-box.active {
-  cursor: context-menu;
 }
 .theme-dark .timeline-box {
   height: 100%;
@@ -833,7 +930,6 @@
   user-select: none;
   align-items: center;
   color: #4698f2;
-  cursor: pointer;
 }
 .theme-dark .header-task-list > .MuiBox-root > .MuiTypography-body1 {
   letter-spacing: -0.11px;
@@ -849,9 +945,6 @@
   align-items: center;
   border-bottom: solid 1px #565656;
   flex-direction: column;
-}
-.theme-dark .stat-box.stat-blue {
-  cursor: pointer;
 }
 .theme-dark .stat-header {
   font-family: Roboto-Medium;
@@ -877,7 +970,6 @@
   background-color: #848484;
 }
 .theme-dark .chart-block-blue {
-  cursor: pointer;
   background-color: #4698f2;
 }
 .theme-dark .chart-block-gray {
@@ -1048,6 +1140,120 @@
 .theme-dark .sum-statistic {
   text-align: right;
   padding: 0px 10px;
+}
+.theme-dark .about-dialog-header > .MuiTypography-root {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.theme-dark .about-dialog-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.theme-dark .about-copyright {
+  width: 100%;
+  display: flex;
+  padding-top: 20px;
+  justify-content: center;
+}
+.theme-dark .calendr-box {
+  padding: 12px 14px;
+  color: white;
+  background-color: #202124;
+}
+.theme-dark .calendar-paper {
+  background-color: #202124;
+}
+.theme-dark .calendar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.theme-dark .calendar-header-title {
+  padding-left: 10px;
+  font-size: 14px;
+}
+.theme-dark .calendar-field {
+  width: 250px;
+  margin: 0px 0px !important;
+  height: 100%;
+}
+.theme-dark .calendar-field > .MuiInputBase-root {
+  height: 100%;
+  font-size: 14px;
+  background-color: #37373d;
+}
+.theme-dark .calendar-field > .MuiInputBase-root > fieldset {
+  border: 0px;
+}
+.theme-dark .calendar-field > .MuiInputBase-root > .MuiInputBase-input {
+  color: white;
+  width: 100%;
+  font-weight: bold;
+  text-align: center;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: 1.14;
+  letter-spacing: normal;
+  padding: 0px 10px !important;
+}
+.theme-dark .calendar-week {
+  min-height: 30px;
+  padding: 0px 10px;
+  display: flex;
+  font-family: Roboto;
+  font-size: 12px;
+  user-select: none;
+}
+.theme-dark .calendar-day-names {
+  color: #848484;
+  font-family: Roboto-Bold;
+}
+.theme-dark .calendar-day {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+}
+.theme-dark .calendar-actual-day:hover {
+  border: 1px solid #4698f2;
+  border-radius: 50%;
+}
+.theme-dark .calendar-body-stat {
+  display: flex;
+  border-top: solid 1px #565656;
+}
+.theme-dark .calendar-body {
+  border-right: solid 1px #565656;
+  padding: 10px 0px;
+}
+.theme-dark .calendar-stat {
+  padding: 10px 0px;
+}
+.theme-dark .calendar-stat-week {
+  min-width: 200px;
+  display: flex;
+  justify-content: space-around;
+  font-family: Roboto;
+  font-size: 12px;
+}
+.theme-dark .calendar-stat-sum {
+  font-family: Roboto-Bold;
+  font-size: 12px;
+}
+.theme-dark .calendar-stat-cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.theme-dark .calendar-selected {
+  border-radius: 50%;
+  background-color: #4698f2;
+  color: white;
+}
+.theme-dark .calendar-select-week {
+  background-color: rgba(70, 152, 242, 0.1);
 }
 
 /*# sourceMappingURL=main.css.map */

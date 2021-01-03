@@ -28,6 +28,22 @@
          :opts      {:in (not loading?)}
          :child     {:component :linear-progress}})))
 
+(rum/defc snack < rum/reactive
+  [r]
+  (let  [error (rum/react (citrus/subscription r [:error]))]
+    (when (:code error)
+      (tc {:component :snack
+           :opts      (cond-> {:open             (:code error)
+                               :onClose          #(citrus/dispatch! r :error :init)}
+                        (:auto-hide error) (merge {:autoHideDuration 5000}))
+           :child     {:component :alert
+                       :child     (:message error)
+                       :opts      (cond-> {:severity (:severity error)
+                                           :onClose #(citrus/dispatch! r :error :init)}
+                                    (:button error) (merge {:action (tc {:component :button
+                                                                         :opts      {:onClick (:action error)}
+                                                                         :child     (:button error)})}))}}))))
+
 (rum/defc Root <  rum/reactive
   [r]
   (let  [route (rum/react (citrus/subscription r [:router]))
@@ -43,6 +59,7 @@
        (dialog-logout r)
        (dialog-about r)
        (loading r)
+       (snack r)
        (case route
          :login  (Login r)
          :search (Search r)
