@@ -29,11 +29,14 @@
 (defmethod ->endpoint :submit [_ _]
   "submit")
 
+(defmethod ->endpoint :submit-force [_ _]
+  "submit-force")
+
 (defmethod ->endpoint :load-track-logs [_ _]
   "track-logs")
 
 (defmethod ->endpoint :save-ping [_ _]
-  "ping")
+  "save-ping")
 
 (defmethod ->endpoint :load-stat [_ _]
   "load-stat")

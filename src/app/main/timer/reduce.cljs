@@ -158,13 +158,13 @@
                                                           :offset offset)
                                          :endpoint :save-ping})
                                       (p/then #(print %))
+                                      (p/then #(ls/local-remove web-content "time"))
+                                      (p/then #(send-ipc @w/main-window "refresh" nil))
                                       (p/catch #(print %))))]
       (when (validate-package ->packages)
         (-> (ls/local-get web-content "token")
             (p/then send-fetch)
             (p/then #(reset! last-send-log (last ->packages)))
-            (p/then #(ls/local-remove web-content "time"))
-            (p/then #(send-ipc @w/main-window "refresh" nil))
             (p/catch #(print %)))))))
 
 (defn inactive-show [package]
@@ -187,13 +187,13 @@
           (js/setInterval (fn []
                             (-> (process-ping)
                                 (p/then #(send-ping %))
-                                (p/catch #(print "123" %))))
+                                (p/catch #(print "timer-send-ping " %))))
                           (* time-send 1000))))
 
 (defn check-fun  []
   (-> (process-ping)
       (p/then #(inactive-show %))
-      (p/catch #(print "check-inactive" %)))
+      (p/catch #(print "check-inactive " %)))
   (reset! check-interval
           (js/setTimeout check-fun (* time-check 1000))))
 

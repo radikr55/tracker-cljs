@@ -1,5 +1,5 @@
 (ns app.renderer.controllers.error
-  (:require ["electron" :as electron  :refer [shell]]
+  (:require ["electron" :as electron  :refer [shell remote]]
             [citrus.core :as citrus]
             [goog.string :as gstring]
             [goog.string.format]))
@@ -42,3 +42,11 @@
       :else          {:state {:code     400003
                               :severity "error"
                               :message  error}})))
+
+;; (defmethod control :offline [_ [error r]]
+;;   {:state {:code     400004
+;;            :severity "error"
+;;            :message  "Offline"
+;;            :button   "Refresh"
+;;            :action   #(.reload (.getCurrentWindow remote) )}})
+

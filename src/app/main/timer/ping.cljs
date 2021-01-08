@@ -21,11 +21,11 @@
 
 (defn save-to-ls [date active-time]
   (when @w/main-window
-    (let [format       (to-time date)
-          at-middnight (t/at-midnight (t/now))
-          web-content  (.-webContents @w/main-window)
-          status       (if (< active-time time-ping) status-active status-inactive)]
-      (when (not= at-middnight  format)
+    (let [at-midnight (ft/unparse (ft/formatter format) (t/plus- (t/at-midnight (t/plus- (t/now) (t/days 1))) (t/minutes 26)))
+          format      (to-time date)
+          web-content (.-webContents @w/main-window)
+          status      (if (< active-time time-ping) status-active status-inactive)]
+      (when (not= at-midnight format)
         (-> (ls/local-get web-content "time")
             (p/then
               (fn [ping] (-> (ls/local-get web-content current-task)

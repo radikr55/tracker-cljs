@@ -5,6 +5,7 @@
                     :left-list-ref   nil
                     :right-list-ref  nil
                     :scale           2
+                    :offline         false
                     :logout          false
                     :about           false
                     :mouse-resize    false})

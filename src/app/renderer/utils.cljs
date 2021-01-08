@@ -17,6 +17,7 @@
                                 Button ButtonBase Tooltip
                                 ListItemText ListSubheader
                                 FormControl
+                                Badge
                                 FormGroup FormControlLabel
                                 Paper Fab
                                 Grid FormGroup
@@ -90,6 +91,7 @@
     :zoom-out                   ZoomOut
     :snack                      Snackbar
     :alert                      Alert
+    :badge                      Badge
     nil))
 
 (defn obj-js [component]

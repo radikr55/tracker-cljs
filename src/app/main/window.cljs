@@ -5,11 +5,13 @@
             ["path" :as path]
             [app.main.utils :refer [send-ipc]]
             ["electron" :as electron :refer [Menu
+                                             app
                                              shell
                                              nativeTheme
                                              ipcMain]]))
 
 (def main-window (atom nil))
+(def force-quit (atom nil))
 (def theme-timeout (atom nil))
 (def mac? (= "darwin" (.-platform js/process)))
 
@@ -67,11 +69,11 @@
                        {:label (str "Sign out " name)
                         :click #(send-ipc @main-window "logout" nil)}
                        {:type "separator"}
-                       (if mac?
-                         {:label "Quit TaskTracker"
-                          :role  "close"}
-                         {:label "Quit TaskTracker"
-                          :role  "quit"})]}
+                       {:label       "Quit TaskTracker"
+                        :accelerator "CmdOrCtrl+Q"
+                        :click       #(do
+                                        (reset! force-quit true)
+                                        (.quit app))}]}
             {:label   "Edit"
              :submenu (if mac? [{:role "undo"}
                                 {:role "redo"}
@@ -102,7 +104,10 @@
 (defn load-local-index []
   (.loadURL @main-window (str "file://" js/__dirname "/public/index.html"))
   (set-menu)
-  (.on @main-window "closed" #(reset! main-window nil)))
+  (.on @main-window "closed" #(reset! main-window nil))
+  (.on @main-window "close" #(when (not @force-quit)
+                               (.preventDefault %)
+                               (.minimize @main-window))))
 
 (defonce on-get-name
   (.on ipcMain "update-title-bar-menu"

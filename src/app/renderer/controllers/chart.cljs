@@ -9,14 +9,15 @@
             [app.renderer.time-utils :as tu]))
 
 (def initial-state
-  {:chart     [{:code nil}]
-   :desc      []
-   :list      []
-   :activity  []
-   :submitted nil
-   :tracked   nil
-   :logged    nil
-   :date      (t/date-time 2020 10 30)})
+  {:chart         [{:code nil}]
+   :desc          []
+   :list          []
+   :activity      []
+   :submitted     nil
+   :tracked       nil
+   :logged        nil
+   :not-submitted []
+   :date          (t/date-time 2020 10 30)})
 
 (defn calc-interval [origin]
   (mapv (fn [origin]
@@ -119,6 +120,31 @@
              :method   :post
              :on-load  :success-submit
              :on-error :error}}))
+
+(defmethod control :clear-notification [_ _ state]
+  (let [token (effects/local-storage
+                nil
+                :poject
+                {:method :get
+                 :key    :token})
+        date  (:date state)
+        list  (->> (:list state)
+                   (filter #(seq (:code %)))
+                   (map #(assoc {}
+                                :issueCode (:code %)
+                                :timeSpent 0
+                                :date      (c/to-string (tu/merge-date-time date
+                                                                            (tu/field->to-time "12:00")))
+                                :offset    (.getTimezoneOffset (js/Date.)))))]
+    (if (= 0 (:submitted state))
+      {:state state
+       :http  {:endpoint :submit-force
+               :params   (assoc token :query
+                                list)
+               :method   :post
+               :on-load  :success-submit
+               :on-error :error}}
+      state)))
 
 (defmethod control :success-submit [event [args r] state]
   (citrus/dispatch! r :chart :load-track-logs args)
@@ -313,58 +339,62 @@
     (into {} res)))
 
 (defmethod control :success-track-log-load [event [result] init-state]
-  (let [date       (:date init-state)
-        descs      (->> (:desc result)
-                        :issueWithSummary
-                        (map #(vector {:code      (name (first %))
-                                       :desc      (:summary (second %))
-                                       :link      (:link (second %))
-                                       :submitted (:timeSpent (second %))}))
-                        flatten)
-        arr        (->> (:data result)
-                        (map #(assoc {}
-                                     :start  (tu/to-local (:start_date %))
-                                     :inactive-log (:inactive_log %)
-                                     :end  (tu/to-local (:end_date %))
-                                     :code  (:task %)))
-                        (add-mock date "" #(empty? (:code %)))
-                        (add-empty-tasks date descs))
-        activity   (->>  arr
-                         (activity-arr)
-                         (map add-stubs)
-                         (map add-middle-stubs)
-                         (map calc-interval)
-                         (map add-format-time))
-        state      (->> arr
-                        (group-by-code)
-                        (map merge-nearby)
-                        (map add-stubs)
-                        (map add-middle-stubs)
-                        (map calc-interval)
-                        (map add-format-time)
-                        (map map-by-code))
-        state-list (->> arr
-                        calc-interval
-                        (filter #(not (nil? (:code %))))
-                        time-merge
-                        (sort-by :code)
-                        (sort away-on-top)
-                        (map format-time))
-        submitted  (-> result :desc :timeSpent (/ 60))
-        tracked    (->> state-list
-                        (filter #(seq %))
-                        (filter #(seq (:code %)))
-                        (map :format-field)
-                        (reduce + 0))
-        logged     (->> state-list
-                        (map :format-field)
-                        (reduce + 0))]
+  (let [date          (:date init-state)
+        not-submitted (->> (-> result :desc :notSubmittedDate)
+                           (map #(c/from-long %)))
+        descs         (->> (:desc result)
+                           :issueWithSummary
+                           (map #(vector {:code      (name (first %))
+                                          :desc      (:summary (second %))
+                                          :link      (:link (second %))
+                                          :submitted (:timeSpent (second %))}))
+                           flatten)
+        arr           (->> (:data result)
+                           (map #(assoc {}
+                                        :start  (tu/to-local (:start_date %))
+                                        :inactive-log (:inactive_log %)
+                                        :end  (tu/to-local (:end_date %))
+                                        :code  (:task %)))
+                           (add-mock date "" #(empty? (:code %)))
+                           (add-empty-tasks date descs))
+        activity      (->>  arr
+                            (activity-arr)
+                            (map add-stubs)
+                            (map add-middle-stubs)
+                            (map calc-interval)
+                            (map add-format-time))
+        state         (->> arr
+                           (group-by-code)
+                           (map merge-nearby)
+                           (map add-stubs)
+                           (map add-middle-stubs)
+                           (map calc-interval)
+                           (map add-format-time)
+                           (map map-by-code))
+        state-list    (->> arr
+                           calc-interval
+                           (filter #(not (nil? (:code %))))
+                           time-merge
+                           (sort-by :code)
+                           (sort away-on-top)
+                           (map format-time))
+        submitted     (-> result :desc :timeSpent (/ 60))
+        tracked       (->> state-list
+                           (filter #(seq %))
+                           (filter #(seq (:code %)))
+                           (map :format-field)
+                           (reduce + 0))
+        logged        (->> state-list
+                           (map :format-field)
+                           (reduce + 0))]
+    (print not-submitted)
     {:state (assoc init-state
                    :chart state
                    :activity activity
                    :list state-list
                    :desc descs
                    :submitted submitted
+                   :not-submitted not-submitted
                    :tracked (/ tracked 60)
                    :logged (/ logged 60))}))
 

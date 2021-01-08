@@ -17,10 +17,12 @@
   [r]
   (tc {:component :box
        :child     [{:component :icon-button
-                    :opts      {:onClick #(citrus/dispatch! r :calendar-popper :previously-month r)}
+                    :opts      {:onClick #(citrus/dispatch! r :calendar-popper :previously-month r)
+                                :key     "previously"}
                     :child     {:component :arrow-left}}
                    {:component :icon-button
-                    :opts      {:onClick #(citrus/dispatch! r :calendar-popper :next-month r)}
+                    :opts      {:onClick #(citrus/dispatch! r :calendar-popper :next-month r)
+                                :key     "next"}
                     :child     {:component :arrow-right}}]}))
 
 (rum/defc Header < rum/reactive

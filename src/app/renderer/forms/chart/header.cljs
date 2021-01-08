@@ -13,23 +13,32 @@
                      :date     date})
   (citrus/dispatch! r :calendar-popper :load-stat))
 
-
 (rum/defc left < rum/reactive
   {:key-fn (fn [_] "left")}
   [r]
-  (let [date (rum/react (citrus/subscription r [:chart :date]))]
+  (let [date               (rum/react (citrus/subscription r [:chart :date]))
+        not-submitted      (rum/react (citrus/subscription r [:chart :not-submitted]))
+        not-submitted-list (->> not-submitted
+                                (map #(tu/date->calendar-date %))
+                                (reduce #(str %1 "\n" %2)))]
     (tc {:component :box
          :opts      {:display    "flex"
                      :width      "100%"
                      :alignItems "center"}
          :child     [(Calendar r)
-                     {:component :text-field
-                      :opts      {:variant   "outlined"
-                                  :key       "calendar-field"
-                                  :className "calendar-field"
-                                  :readOnly  true
-                                  :value     (tu/date->calendar-field date)
-                                  :onClick   #(open-calendar r % date)}}
+                     {:component :badge
+                      :opts      {:className    "badge"
+                                  :key          "calendar-field"
+                                  :color        "error"
+                                  :badgeContent (count not-submitted)
+                                  :title        not-submitted-list
+                                  :invisible    (empty? not-submitted)}
+                      :child     {:component :text-field
+                                  :opts      {:variant   "outlined"
+                                              :className "calendar-field"
+                                              :readOnly  true
+                                              :value     (tu/date->calendar-field date)
+                                              :onClick   #(open-calendar r % date)}}}
                      {:component :button
                       :opts      {:key       "left-button"
                                   :onClick   #(do (citrus/dispatch! r :chart :dec-date)
@@ -51,21 +60,26 @@
                                   :onClick   #(do (citrus/dispatch! r :chart :set-date (t/now))
                                                   (citrus/dispatch! r :chart :load-track-logs))
                                   :key       "today-button"}
-                      :child     "today"}]}) ))
+                      :child     "today"}]})))
 
-(rum/defc sum-time < rum/static
-  {:key-fn (fn [type] type)}
-  [type time]
-  (tc {:component :box
-       :opts      {:className (str  "sum-statistic sum-statistic-" type)}
-       :child     [{:component :typography
-                    :opts      {:key       (str type "time")
-                                :className "sum-time"}
-                    :child     (tu/format-time time)}
-                   {:component :typography
-                    :opts      {:key       (str type "title")
-                                :className "sum-title"}
-                    :child     type}]}))
+(rum/defc sum-time < rum/reactive
+  {:key-fn (fn [_ type] type)}
+  [r type time]
+  (let [date          (rum/react (citrus/subscription r [:chart :date]))
+        not-submitted (rum/react (citrus/subscription r [:chart :not-submitted]))
+        class         (cond-> (str  "sum-statistic sum-statistic-" type)
+                        (and (= "submitted" type)
+                             (some #(t/= date %) not-submitted)) (str  " sum-statistic-not-submitted "))]
+    (tc {:component :box
+         :opts      {:className class}
+         :child     [{:component :typography
+                      :opts      {:key       (str type "time")
+                                  :className "sum-time"}
+                      :child     (tu/format-time time)}
+                     {:component :typography
+                      :opts      {:key       (str type "title")
+                                  :className "sum-title"}
+                      :child     type}]})))
 
 (rum/defc right < rum/reactive
   {:key-fn (fn [_] "right")}
@@ -78,9 +92,9 @@
                      :width          "100%"
                      :justifyContent "flex-end"
                      :alignItems     "center"}
-         :child     [(sum-time "logged" logged)
-                     (sum-time "tracked" tracked)
-                     (sum-time "submitted" submitted)
+         :child     [(sum-time r "logged" logged)
+                     (sum-time r "tracked" tracked)
+                     (sum-time r "submitted" submitted)
                      {:component :button
                       :opts      {:variant   "contained"
                                   :className "header-button submit"

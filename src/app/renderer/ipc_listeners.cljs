@@ -42,7 +42,7 @@
 (defn clear-notificaiton  [r]
   (.on ipcRenderer "clear-notification"
        (fn [event arg]
-         (print event))))
+         (citrus/dispatch! r :chart :clear-notification))))
 
 (defn clear-tasks  [r]
   (.on ipcRenderer "clear-tasks"
