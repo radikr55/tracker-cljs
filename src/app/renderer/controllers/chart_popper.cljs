@@ -8,7 +8,8 @@
 (def initial-state {:open     false
                     :start    nil
                     :end      nil
-                    :position nil})
+                    :position nil
+                    :disabled true})
 
 (defmulti control (fn [event] event))
 
@@ -23,7 +24,8 @@
                    :code (:code row)
                    :start (:start row)
                    :end (:end row)
-                   :open true)}))
+                   :open true
+                   :disabled (= (:start row) (:end row)))}))
 
 (defmethod control :close-popper [_ _ state]
   {:state (assoc state
@@ -35,14 +37,16 @@
 
 (defmethod control :set-start [_ [start] state]
   (if (< start (:end state))
-    {:state (assoc state :start start)}
-    state))
+    {:state (assoc state :start start
+                   :disabled false)}
+    {:state (assoc state :disabled true)}))
 
 (defmethod control :set-end [_ [end] state]
   (if (and (t/after? (tu/get-local-without-offset (t/now)) end )
            (t/after? end (:start state)))
-    {:state (assoc state :end end)}
-    state))
+    {:state (assoc state :end end
+                   :disabled false)}
+    {:state (assoc state :disabled true)}))
 
 (defmethod control :save-time [_ [start end task] state]
   (let [token  (effects/local-storage

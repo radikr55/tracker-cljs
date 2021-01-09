@@ -33,12 +33,12 @@
                                   :badgeContent (count not-submitted)
                                   :title        not-submitted-list
                                   :invisible    (empty? not-submitted)}
-                      :child     {:component :text-field
-                                  :opts      {:variant   "outlined"
-                                              :className "calendar-field"
-                                              :readOnly  true
-                                              :value     (tu/date->calendar-field date)
-                                              :onClick   #(open-calendar r % date)}}}
+                      :child     {:component :button
+                                  :opts      {:key       "calendar-button"
+                                              :variant   "contained"
+                                              :className "header-button calendar-field"
+                                              :onClick   #(open-calendar r % date)}
+                                  :child     (tu/date->calendar-field date)}}
                      {:component :button
                       :opts      {:key       "left-button"
                                   :onClick   #(do (citrus/dispatch! r :chart :dec-date)

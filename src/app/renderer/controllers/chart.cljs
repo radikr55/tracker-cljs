@@ -49,7 +49,7 @@
   (let [start     (:start (first origin))
         end       (:end (last origin))
         start-day (t/at-midnight start)
-        end-day   (t/at-midnight (t/plus- end (t/days 1)))]
+        end-day   (t/minus- (t/at-midnight (t/plus- end (t/days 1))) (t/minutes 1))]
     (cond-> origin
       (t/after? start start-day) (->> (concat [{:start start-day
                                                 :end   start}]))

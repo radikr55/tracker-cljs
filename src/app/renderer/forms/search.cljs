@@ -11,7 +11,9 @@
   (tc {:component :icon-button
        :opts      {:className "search-close"
                    :onClick   #(do (citrus/dispatch! r :project :init)
-                                   (citrus/dispatch! r :router :push :home))}
+                                   (citrus/dispatch! r :router :push :home)
+                                   (reset! project-search/selected-project nil)
+                                   )}
        :child     {:component :close}}))
 
 (rum/defc title < rum/reactive

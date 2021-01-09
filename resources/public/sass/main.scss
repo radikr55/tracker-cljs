@@ -263,6 +263,10 @@ $themes: (light: ('orange-away': #ffab40,
         background-color: $highlight-task;
         height: 100%;
         margin: 0px 5px;
+
+        &:hover {
+            background-color:$highlight-task !important;
+        }
     }
 
     .MuiButton-contained {
@@ -319,6 +323,10 @@ $themes: (light: ('orange-away': #ffab40,
         width: 106px;
         color: white;
         background-color: $blue;
+
+        &:hover {
+            background-color:$blue !important;
+        }
     }
 
     .gap-dot {
@@ -723,7 +731,7 @@ $themes: (light: ('orange-away': #ffab40,
     }
 
     .sum-statistic-not-submitted {
-        color: $inactive!important;
+        color: $inactive !important;
     }
 
     .sum-statistic-tracked {
@@ -791,6 +799,8 @@ $themes: (light: ('orange-away': #ffab40,
         width: 250px;
         margin: 0px 0px !important;
         height: 100%;
+
+
         &>.MuiInputBase-root {
             height: 100%;
             font-size: 14px;
@@ -810,10 +820,6 @@ $themes: (light: ('orange-away': #ffab40,
                 line-height: 1.14;
                 letter-spacing: normal;
                 padding: 0px 10px !important;
-                -webkit-user-select: none;
-                -moz-user-select: none;
-                -ms-user-select: none;
-                user-select: none;
             }
         }
     }
@@ -900,5 +906,12 @@ $themes: (light: ('orange-away': #ffab40,
 
     .MuiButtonBase-root {
         cursor: default;
+    }
+
+    .calendar-disabled {
+        color: $border-color;
+        &:hover {
+            border: none;
+        }
     }
 }

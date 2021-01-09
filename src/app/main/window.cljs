@@ -104,6 +104,7 @@
 (defn load-local-index []
   (.loadURL @main-window (str "file://" js/__dirname "/public/index.html"))
   (set-menu)
+  (.on app "before-quit" #(reset! force-quit true))
   (.on @main-window "closed" #(reset! main-window nil))
   (.on @main-window "close" #(when (not @force-quit)
                                (.preventDefault %)

@@ -6,7 +6,6 @@
             [cljs-time.core :as t]
             [cljs-time.format :as ft]))
 
-
 (rum/defc body  < rum/reactive
   {:key-fn (fn [_] "body")}
   [r start end task date]
@@ -75,6 +74,7 @@
                         {:component :button
                          :opts      {:variant   "contained"
                                      :key       "save"
+                                     :disabled  (rum/react (citrus/subscription r [:chart-popper :disabled]))
                                      :onClick   #(citrus/dispatch! r :chart-popper :save-time
                                                                    start end task)
                                      :className "popper-save"

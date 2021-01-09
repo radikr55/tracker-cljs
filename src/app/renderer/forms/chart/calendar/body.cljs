@@ -7,6 +7,8 @@
 
 (def day-names ["MO" "TU" "WE" "TH" "FR" "SA" "SU"])
 
+(defn disable-date [date]
+  (t/after? date (t/now)))
 
 (rum/defc stub-day <
   {:key-fn (fn [_] "stub-day")}
@@ -21,13 +23,17 @@
   [r index date]
   (let [chart-date    (rum/react (citrus/subscription r [:chart :date]))
         not-submitted (rum/react (citrus/subscription r [:chart :not-submitted]))
+        disable?      (disable-date date)
         class         (cond-> "calendar-day calendar-actual-day "
                         (t/= chart-date date)              (str " calendar-selected " )
-                        (some #(t/= date %) not-submitted) (str " calendar-not-submitted " ))]
+                        (some #(t/= date %) not-submitted) (str " calendar-not-submitted ")
+                        disable?                           (str " calendar-disabled "))
+        ]
     [:div {:class   class
-           :onClick #(do (citrus/dispatch! r :chart :set-date date)
-                         (citrus/dispatch! r :calendar-popper :close-popper)
-                         (citrus/dispatch! r :chart :load-track-logs))}
+           :onClick #(when (not disable?)
+                       (citrus/dispatch! r :chart :set-date date)
+                       (citrus/dispatch! r :calendar-popper :close-popper)
+                       (citrus/dispatch! r :chart :load-track-logs))}
      (t/day date)] ))
 
 (rum/defc weeks < rum/reactive
