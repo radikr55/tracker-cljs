@@ -138,3 +138,5 @@
         (scroll-vertical-box 30 box)
         (scroll-vertical-box -30 box)))))
 
+(defn package-config [config]
+  (get (js->clj (js/require "../../package.json")) config))

@@ -44,7 +44,7 @@
                                    :className "chart-block-title"}
                        :child     (str start " - " end)}
                       {:component :typography
-                       :opts      {:key       "sum-interval"}
+                       :opts      {:key "sum-interval"}
                        :styl      {:fontWeight "bold"}
                        :child     (str "(" interval ")")}]]
     (tc {:component :box
@@ -76,6 +76,7 @@
                      :width   width}
          :child     (map-indexed #(box r %2 %1 (odd? index) code) list)})))
 
+
 (rum/defc body  < rum/reactive
   {:key-fn (fn [_] "body")}
   [r h-top h-header h-body]
@@ -86,6 +87,7 @@
                      :ref      middle-list-ref
                      :height   (str "calc(100vh - " (+ 2 h-top (* 2 h-header)) "px)")}
          :child     (map-indexed #(item r %2 h-body %1) list)})))
+
 
 (rum/defc ChartList < rum/reactive
   [r h-top h-header h-body]

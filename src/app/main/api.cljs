@@ -1,16 +1,10 @@
 (ns app.main.api
   (:require ["axios" :as axios]
             [cljs.pprint :refer [pprint]]
-            [promesa.core :as p]))
+            [promesa.core :as p]
+            [app.main.local-storage :as ls]))
 
-(def url "http://localhost:3000/")
-;; (def error-send (atom false))
-
-;; (add-watch error-send :reload
-;;            (fn [_ _ old new]
-;;              (cond
-;;                (and old (not new)) (.reload @w/main-window)
-;;                (and (not old) new) (send-ipc @w/main-window "offline" nil))))
+(def url (ls/package-config "server-link"))
 
 (defmulti ->endpoint (fn [id] id))
 
@@ -47,11 +41,3 @@
     (-> (axios param)
         (p/then #(parse-body %))
         (p/catch #(print %)))))
-
-(comment
-  (-> (fetch {:method   :POST
-              :data     {:task  121233
-                         :start (t/time-now)
-                         :end   (t/time-noe)}
-              :endpoint :save-ping})
-      (p/then #(print %))))

@@ -16,3 +16,6 @@
 (defn local-remove [web-content item]
   (-> (.executeJavaScript web-content (gstring/format "localStorage.removeItem('%s')" item) true)
       (p/catch #(print  %))))
+
+(defn package-config [config]
+  (get (js->clj (js/require "../package.json")) config))

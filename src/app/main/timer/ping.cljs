@@ -21,7 +21,7 @@
 
 (defn save-to-ls [date active-time]
   (when @w/main-window
-    (let [at-midnight (ft/unparse (ft/formatter format) (t/plus- (t/at-midnight (t/plus- (t/now) (t/days 1))) (t/minutes 26)))
+    (let [at-midnight (ft/unparse (ft/formatter format) (t/at-midnight (t/plus- (t/now) (t/days 1))))
           format      (to-time date)
           web-content (.-webContents @w/main-window)
           status      (if (< active-time time-ping) status-active status-inactive)]
@@ -45,9 +45,3 @@
           (js/setInterval #(save-to-ls (js/Date.)
                                        (.getSystemIdleTime powerMonitor))
                           (* time-ping 1000)) ))
-
-(comment
-
-  (js/clearInterval @ping-interval)
-
-  )

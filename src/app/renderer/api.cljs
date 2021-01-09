@@ -1,6 +1,7 @@
 (ns app.renderer.api
   (:require [httpurr.client.xhr :as xhr]
             [httpurr.status :as status]
+            [app.renderer.utils :as u]
             [promesa.core :as p]))
 
 (defmulti ->endpoint (fn [id] id))
@@ -45,7 +46,7 @@
   "by-project-id")
 
 (defn- ->uri [path]
-  (str "http://localhost:3000/" path))
+  (str(u/package-config "server-link") path))
 
 (defn- parse-body [res]
   (-> res

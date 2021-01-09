@@ -387,7 +387,6 @@
         logged        (->> state-list
                            (map :format-field)
                            (reduce + 0))]
-    (print not-submitted)
     {:state (assoc init-state
                    :chart state
                    :activity activity
@@ -397,4 +396,3 @@
                    :not-submitted not-submitted
                    :tracked (/ tracked 60)
                    :logged (/ logged 60))}))
-
