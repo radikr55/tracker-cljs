@@ -28,9 +28,6 @@
 (defn to-date [str]
   (ft/parse (ft/formatter format) str))
 
-(defn add-minute [date min]
-  (t/plus- date (t/minutes min)))
-
 (defn interval-less? [ping-package]
   (< (get-interval (:start ping-package) (:end ping-package)) inactive-interval))
 
@@ -39,8 +36,7 @@
   [left right]
   (let [left-last (last left)
         near?     (and (= (:status left-last) (:status right))
-                       (or (t/= (:end left-last) (:start right))
-                           (t/= (add-minute (:end left-last) 1) (:start right))))]
+                       (t/= (:end left-last) (:start right)))]
     (cond
       (nil? left-last) [right]
       near?            (set-top left (assoc left-last :end (:end right)))
@@ -74,7 +70,7 @@
         current-task   (:task (last current))
         current-time   (to-date (first current))
         status?        (= (:status last-res)  current-status)
-        near?          (t/= (add-minute last-end 1) current-time)]
+        near?          (t/= (t/plus- last-end (t/minutes 1)) current-time)]
     (cond
       (nil? last-res)     (conj result {:start  current-time
                                         :end    current-time
@@ -97,7 +93,7 @@
       result
       (let [current (first origin)]
         (cond
-          (empty? result) (recur (next origin) [{:start  (to-date (first current))
+          (empty? result) (recur (next origin) [{:start  (t/minus- (to-date (first current)) (t/minutes 1))
                                                  :end    (to-date (first current))
                                                  :status (:status (last current))
                                                  :task   (:task (last current))}])
@@ -264,5 +260,18 @@
                       ["2020/10/31 12:37" {:status "inactive", :task "WELKIN-76"}]
                       ["2020/10/31 12:38" {:status "inactive", :task "WELKIN-76"}]
                       ["2020/10/31 12:39" {:status "inactive", :task "WELKIN-76"}]]))
+
+  (->> {"2020/10/31 12:34" {:status "inactive", :task "WELKIN-76"}
+        "2020/10/31 12:35" {:status "inactive", :task "WELKIN-76"}
+        ;; "2020/10/31 12:36" {:status "inactive", :task "WELKIN-76"}
+        }
+       (collect-package)
+       (map inactive->active)
+       (map set-inactive-log)
+       (reduce #(merge-packages %1 %2) [])
+       (map set-inactive-task)
+       (map #(assoc %
+                    :start (c/to-string (:start %))
+                    :end (c/to-string (:end %)))))
 
   (ls/local-set (.-webContents @w/main-window) "time" init))

@@ -16,6 +16,7 @@
    :submitted     nil
    :tracked       nil
    :logged        nil
+   :auto-scroll   false
    :not-submitted []
    :date          (t/date-time 2020 10 30)})
 
@@ -96,7 +97,13 @@
     {:state (assoc initial-state :current-task task)}))
 
 (defmethod control :set-date [_ [date] state]
-  {:state (assoc state :date (tu/date-only (t/to-default-time-zone date)))})
+  {:state (assoc state
+                 :auto-scroll true
+                 :date (tu/date-only (t/to-default-time-zone date)))})
+
+(defmethod control :off-auto-scroll [_ _ state]
+  {:state (assoc state
+                 :auto-scroll false)})
 
 (defmethod control :submit-all [_ _ state]
   (let [token (effects/local-storage
@@ -251,10 +258,14 @@
   (print e))
 
 (defmethod control :inc-date [_ _ state]
-  {:state (assoc state :date (t/plus- (:date state) (t/days 1)))})
+  {:state (assoc state
+                 :auto-scroll true
+                 :date (t/plus- (:date state) (t/days 1)))})
 
 (defmethod control :dec-date [_ _ state]
-  {:state (assoc state :date (t/minus- (:date state) (t/days 1)))})
+  {:state (assoc state
+                 :auto-scroll true
+                 :date (t/minus- (:date state) (t/days 1)))})
 
 (defmethod control :load-track-logs [_ _ state]
   (let [date      (:date state)
