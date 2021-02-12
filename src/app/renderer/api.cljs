@@ -6,47 +6,44 @@
 
 (defmulti ->endpoint (fn [id] id))
 
-(defmethod ->endpoint :comment [_ [article-id comment-id]]
-  (str "articles/" article-id "/comments/" comment-id))
-
-(defmethod ->endpoint :auth-link [_ _]
+(defmethod ->endpoint :auth-link []
   "auth-link")
 
-(defmethod ->endpoint :user-name [_ _]
+(defmethod ->endpoint :user-name []
   "user-name")
 
-(defmethod ->endpoint :oauth [_ _]
+(defmethod ->endpoint :oauth []
   "oauth")
 
-(defmethod ->endpoint :active-task [_ _]
+(defmethod ->endpoint :active-task []
   "active-task")
 
-(defmethod ->endpoint :project [_ _]
+(defmethod ->endpoint :project []
   "project")
 
-(defmethod ->endpoint :tasks [_ _]
+(defmethod ->endpoint :tasks []
   "tasks")
 
-(defmethod ->endpoint :submit [_ _]
+(defmethod ->endpoint :submit []
   "submit")
 
-(defmethod ->endpoint :submit-force [_ _]
+(defmethod ->endpoint :submit-force []
   "submit-force")
 
-(defmethod ->endpoint :load-track-logs [_ _]
+(defmethod ->endpoint :load-track-logs []
   "track-logs")
 
-(defmethod ->endpoint :save-ping [_ _]
+(defmethod ->endpoint :save-ping []
   "save-ping")
 
-(defmethod ->endpoint :load-stat [_ _]
+(defmethod ->endpoint :load-stat []
   "load-stat")
 
-(defmethod ->endpoint :by-project-id [_ _]
+(defmethod ->endpoint :by-project-id []
   "by-project-id")
 
 (defn- ->uri [path]
-  (str(u/package-config "server-link") path))
+  (str (u/package-config "server-link") path))
 
 (defn- parse-body [res]
   (-> res
@@ -59,16 +56,18 @@
 (defn- ->xhr [uri xhr-fn params]
   (-> uri
       (xhr-fn params)
-      (p/then (fn [{status :status body :body :as response}]
+      (p/then (fn [{status :status body :body headers :headers :as response}]
+                (js/localStorage.setItem "app-version" (get headers "x-app-version"))
+                (js/localStorage.setItem "app-version-link" (get headers "x-app-version-link"))
                 (condp = status
                   status/ok (p/resolved (parse-body body))
                   (p/rejected (parse-body body)))))))
 
 (defn- method->xhr-fn [method]
   (case method
-    :post   xhr/post
-    :put    xhr/put
-    :patch  xhr/patch
+    :post xhr/post
+    :put xhr/put
+    :patch xhr/patch
     :delete xhr/delete
     xhr/get))
 

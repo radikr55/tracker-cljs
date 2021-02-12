@@ -22,6 +22,6 @@
       (p/catch #(print %))))
 
 (defonce on-auth
-  (.on ipcMain "oauth"
-       (fn [event args]
-         (open-auth-window args))))
+         (.on ipcMain "oauth"
+              (fn [event args]
+                (open-auth-window args))))

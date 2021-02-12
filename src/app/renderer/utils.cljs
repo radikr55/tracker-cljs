@@ -1,6 +1,7 @@
 (ns app.renderer.utils
   (:require
    ["react-draggable" :default Draggable]
+   ["react-beautiful-dnd" :as dnd]
    ["react-simple-timefield" :default TimeField]
    ["@material-ui/core/styles" :refer [styled]]
    ["@material-ui/lab" :refer [Alert]]
@@ -12,15 +13,11 @@
                                 Popper Menu MenuItem
                                 ListItemSecondaryAction
                                 Snackbar ListItemIcon
-                                Popover Divider
-                                Switch List ListItem
+                                Popover Divider Switch List ListItem
                                 Button ButtonBase Tooltip
                                 ListItemText ListSubheader
-                                FormControl
-                                Badge
-                                FormGroup FormControlLabel
-                                Paper Fab
-                                Grid FormGroup
+                                FormControl Badge FormGroup FormControlLabel
+                                Paper Fab Grid FormGroup
                                 IconButton]]
    ["@material-ui/icons" :refer [Close Add Search
                                  MoreVert OpenInNew
@@ -92,6 +89,9 @@
     :snack                      Snackbar
     :alert                      Alert
     :badge                      Badge
+    :dnd-context                dnd/DragDropContext
+    :dnd-droppable              dnd/Droppable
+    :dnd-draggable              dnd/Draggable
     nil))
 
 (defn obj-js [component]
@@ -106,15 +106,15 @@
   (let [opts  (:opts component)
         comp  (get-component (:component component))
         child (:child component)
-        styl  (:styl component)]
+        styl (:styl component)]
     (if styl
-      (js/React.createElement ((styled  comp)
+      (js/React.createElement ((styled comp)
                                #(clj->js styl))
                               (clj->js opts)
                               (cond
-                                (map? child)    (js/React.createElement comp (clj->js opts) (tc child))
+                                (map? child) (js/React.createElement comp (clj->js opts) (tc child))
                                 (vector? child) (js/React.createElement comp (clj->js opts) (map tc child))
-                                :else           child))
+                                :else child))
       (cond
         (nil? comp)         component
         (object? component) component

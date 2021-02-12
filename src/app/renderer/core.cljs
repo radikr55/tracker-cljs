@@ -24,23 +24,23 @@
 (enable-console-print!)
 
 (defonce reconciler
-  (citrus/reconciler
-    {:state           (atom {})
-     :controllers     {:loading         loading/control
-                       :user            user/control
-                       :router          router/control
-                       :project         project/control
-                       :chart           chart/control
-                       :home            home/control
-                       :theme           theme/control
-                       :error           error/control
-                       :chart-popper    chart-popper/control
-                       :stat-popper     stat-popper/control
-                       :calendar-popper calendar-popper/control
-                       :task-popper     task-popper/control}
-     :effect-handlers {:local-storage effects/local-storage
-                       :ipc           effects/ipc-renderer
-                       :http          effects/http}}))
+         (citrus/reconciler
+           {:state           (atom {})
+            :controllers     {:loading         loading/control
+                              :user            user/control
+                              :router          router/control
+                              :project         project/control
+                              :chart           chart/control
+                              :home            home/control
+                              :theme           theme/control
+                              :error           error/control
+                              :chart-popper    chart-popper/control
+                              :stat-popper     stat-popper/control
+                              :calendar-popper calendar-popper/control
+                              :task-popper     task-popper/control}
+            :effect-handlers {:local-storage effects/local-storage
+                              :ipc           effects/ipc-renderer
+                              :http          effects/http}}))
 
 (defonce init-ctrl (citrus/broadcast-sync! reconciler :init))
 
@@ -52,5 +52,4 @@
 (defn ^:dev/after-load start []
   (rum/mount (Root reconciler)
              (dom/getElement "app-container")))
-
 
