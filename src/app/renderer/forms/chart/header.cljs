@@ -14,7 +14,7 @@
   (citrus/dispatch! r :calendar-popper :load-stat))
 
 (rum/defc left < rum/reactive
-  {:key-fn (fn [_] "left")}
+                 {:key-fn (fn [_] "left")}
   [r]
   (let [date               (rum/react (citrus/subscription r [:chart :date]))
         not-submitted      (rum/react (citrus/subscription r [:chart :not-submitted]))
@@ -63,13 +63,13 @@
                       :child     "today"}]})))
 
 (rum/defc sum-time < rum/reactive
-  {:key-fn (fn [_ type] type)}
+                     {:key-fn (fn [_ type] type)}
   [r type time]
   (let [date          (rum/react (citrus/subscription r [:chart :date]))
         not-submitted (rum/react (citrus/subscription r [:chart :not-submitted]))
-        class         (cond-> (str  "sum-statistic sum-statistic-" type)
-                        (and (= "submitted" type)
-                             (some #(t/= date %) not-submitted)) (str  " sum-statistic-not-submitted "))]
+        class         (cond-> (str "sum-statistic sum-statistic-" type)
+                              (and (= "submitted" type)
+                                   (some #(t/= date %) not-submitted)) (str " sum-statistic-not-submitted "))]
     (tc {:component :box
          :opts      {:className class}
          :child     [{:component :typography
@@ -82,7 +82,7 @@
                       :child     type}]})))
 
 (rum/defc right < rum/reactive
-  {:key-fn (fn [_] "right")}
+                  {:key-fn (fn [_] "right")}
   [r]
   (let [logged    (rum/react (citrus/subscription r [:chart :logged]))
         tracked   (rum/react (citrus/subscription r [:chart :tracked]))
@@ -104,7 +104,7 @@
                       :child     "submit all"}]})))
 
 (rum/defc Header < rum/reactive
-  {:key-fn (fn [_] "header")}
+                   {:key-fn (fn [_] "header")}
   [r h-header]
   (tc {:component :box
        :opts      {:display         "flex"

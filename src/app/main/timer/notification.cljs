@@ -14,7 +14,7 @@
                      (clj->js {:title "TaskTracker"
                                :body  body
                                :icon  icon-path}))]
-    (.on notific "click" #(do (.focus  @w/main-window)
+    (.on notific "click" #(do (.focus @w/main-window)
                               (.restore @w/main-window)))
     (.show notific)))
 

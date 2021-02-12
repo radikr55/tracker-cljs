@@ -18,7 +18,7 @@
        (reduce #(let [week  (t/week-number-of-year %2)
                       exist (get %1 week)]
                   (assoc %1 week
-                         (conj (or exist []) %2))) {})))
+                            (conj (or exist []) %2))) {})))
 
 (defn date->calendar-field [date]
   (f/unparse (f/formatter "EEEE, MMMM d, YYYY") date))
@@ -65,7 +65,7 @@
   (let [hour    (/ time 60)
         minutes (rem time 60)]
     (if time (gstring/format "%02dh %02dm" hour minutes)
-        "00h 00m")))
+             "00h 00m")))
 
 (defn to-interval->field [str]
   (let [start (f/parse (f/formatter "HH:mm") "00:00")
@@ -76,7 +76,7 @@
   (let [hour    (/ time 60)
         minutes (rem time 60)]
     (if time (gstring/format "%02d:%02d" hour minutes)
-        "00:00")))
+             "00:00")))
 
 (defn wheel->time-field [r e date value field store]
   (let [delta   (.-deltaY e)

@@ -17,4 +17,4 @@
                                            :className "login-button"
                                            :onClick   #(citrus/dispatch! r :user :get-link)
                                            :fullWidth true}
-                               :child     "Sign in to Jira"}} }))
+                               :child     "Sign in to Jira"}}}))

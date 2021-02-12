@@ -7,7 +7,7 @@
             [app.renderer.forms.chart.calendar.stat :refer [Stat]]))
 
 (rum/defc Calendar < rum/reactive
-  {:key-fn (fn [_] "calendar")}
+                     {:key-fn (fn [_] "calendar")}
   [r]
   (let [{open?    :open?
          position :position} (rum/react (citrus/subscription r [:calendar-popper]))]

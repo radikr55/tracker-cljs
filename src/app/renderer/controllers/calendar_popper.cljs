@@ -17,15 +17,15 @@
 
 (defmethod control :open-popper [_ [val] state]
   {:state (assoc state
-                 :position (:position val)
-                 :date (:date val)
-                 :select-week (t/week-number-of-year (:date val))
-                 :open? true)})
+            :position (:position val)
+            :date (:date val)
+            :select-week (t/week-number-of-year (:date val))
+            :open? true)})
 
 (defmethod control :close-popper [_ _ state]
   {:state (assoc state
-                 :position nil
-                 :open? false)})
+            :position nil
+            :open? false)})
 
 (defmethod control :set-select-week [_ [week] state]
   {:state (assoc state :select-week week)})

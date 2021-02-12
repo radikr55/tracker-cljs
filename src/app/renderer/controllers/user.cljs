@@ -61,7 +61,7 @@
 (defmethod control :init-token [_ [token] state]
   {:state (assoc state :token token)})
 
-(defmethod control :success-get-link [event [args ] state]
+(defmethod control :success-get-link [event [args] state]
   (let [link (:url args)]
     {:ipc   {:type "oauth"
              :args link}

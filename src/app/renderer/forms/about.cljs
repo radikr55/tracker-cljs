@@ -14,7 +14,7 @@
   [:div {:class "about-copyright"}
    [:span (str "© Softarex " (.getFullYear (js/Date.)))]])
 
-(rum/defc dialog-about < rum/reactive  [r]
+(rum/defc dialog-about < rum/reactive [r]
   (tc {:component :dialog
        :opts      {:open      (rum/react (citrus/subscription r [:home :about]))
                    :fullWidth true

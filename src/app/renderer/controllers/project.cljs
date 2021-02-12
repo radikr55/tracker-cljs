@@ -65,13 +65,13 @@
   {:state (assoc state :right (:list args))})
 
 (defmethod control :success-by-project-id [event [args] state]
-{:state (assoc state :right (:right args))})
+  {:state (assoc state :right (:right args))})
 
 (defmethod control :set-search-project [_ [key] state]
-{:state (assoc state :search-project key)})
+  {:state (assoc state :search-project key)})
 
 (defmethod control :set-search-task [_ [key] state]
-{:state (assoc state :search-task key)})
+  {:state (assoc state :search-task key)})
 
 (defmethod control :error [_ [error] state]
-(print error))
+  (print error))

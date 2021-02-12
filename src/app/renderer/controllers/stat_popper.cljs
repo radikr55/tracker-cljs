@@ -16,17 +16,17 @@
 
 (defmethod control :open-popper [_ [val] state]
   {:state (assoc state
-                 :position (:position val)
-                 :code (:code  val)
-                 :time  (:time val)
-                 :open  true)})
+            :position (:position val)
+            :code (:code val)
+            :time (:time val)
+            :open true)})
 
 (defmethod control :close-popper [_ _ state]
   {:state (assoc state
-                 :position nil
-                 :code nil
-                 :time nil
-                 :open false)})
+            :position nil
+            :code nil
+            :time nil
+            :open false)})
 
 (defmethod control :set-time [_ [time] state]
   {:state (assoc state :time time)})
@@ -39,10 +39,10 @@
                  :key    :token})]
     {:http {:endpoint :submit
             :params   (assoc token :query
-                             [{:issueCode (:code state)
-                               :timeSpent (* (:time state) 60)
-                               :date      (c/to-string (tu/merge-date-time date (tu/field->to-time "12:00")))
-                               :offset    (.getTimezoneOffset (js/Date.))}])
+                                   [{:issueCode (:code state)
+                                     :timeSpent (* (:time state) 60)
+                                     :date      (c/to-string (tu/merge-date-time date (tu/field->to-time "12:00")))
+                                     :offset    (.getTimezoneOffset (js/Date.))}])
             :method   :post
             :on-load  :success-submit
             :on-error :error}}))

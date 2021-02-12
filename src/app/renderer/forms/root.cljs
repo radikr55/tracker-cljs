@@ -20,7 +20,7 @@
 
 (rum/defc loading < rum/reactive
   [r]
-  (let  [loading? (rum/react (citrus/subscription r [:loading]))]
+  (let [loading? (rum/react (citrus/subscription r [:loading]))]
     (tc {:component :fade
          :styl      {:position "absolute"
                      :top      0
@@ -30,30 +30,30 @@
 
 (rum/defc snack < rum/reactive
   [r]
-  (let  [error (rum/react (citrus/subscription r [:error]))]
+  (let [error (rum/react (citrus/subscription r [:error]))]
     (when (:code error)
       (tc {:component :snack
-           :opts      (cond-> {:open             (:code error)
-                               :onClose          #(citrus/dispatch! r :error :init)}
-                        (:auto-hide error) (merge {:autoHideDuration 5000}))
+           :opts      (cond-> {:open    (:code error)
+                               :onClose #(citrus/dispatch! r :error :init)}
+                              (:auto-hide error) (merge {:autoHideDuration 5000}))
            :child     {:component :alert
                        :child     (:message error)
                        :opts      (cond-> {:severity (:severity error)
-                                           :onClose #(citrus/dispatch! r :error :init)}
-                                    (:button error) (merge {:action (tc {:component :button
-                                                                         :opts      {:onClick (:action error)}
-                                                                         :child     (:button error)})}))}}))))
+                                           :onClose  #(citrus/dispatch! r :error :init)}
+                                          (:button error) (merge {:action (tc {:component :button
+                                                                               :opts      {:onClick (:action error)}
+                                                                               :child     (:button error)})}))}}))))
 
-(rum/defc Root <  rum/reactive
+(rum/defc Root < rum/reactive
   [r]
-  (let  [route (rum/react (citrus/subscription r [:router]))
-         token (js/localStorage.getItem "token")
-         dark? (rum/react (citrus/subscription r [:theme :dark?]))
-         theme (create-theme dark?)]
+  (let [route (rum/react (citrus/subscription r [:router]))
+        token (js/localStorage.getItem "token")
+        dark? (rum/react (citrus/subscription r [:theme :dark?]))
+        theme (create-theme dark?)]
     (rum/react (citrus/subscription r [:refresh]))
     (citrus/dispatch! r :user :init-token token)
     (rum/adapt-class
-      MuiThemeProvider  {:theme theme}
+      MuiThemeProvider {:theme theme}
       (js/React.createElement CssBaseline)
       [:div
        (dialog-logout r)
@@ -61,9 +61,9 @@
        (loading r)
        (snack r)
        (case route
-         :login  (Login r)
+         :login (Login r)
          :search (Search r)
-         :home   (Home r)
+         :home (Home r)
          (if (boolean token)
            (Home r)
            (Login r)))])))

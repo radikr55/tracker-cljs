@@ -26,7 +26,7 @@
             (if (t/equal? start end)
               (assoc origin :interval 0)
               (assoc origin :interval
-                     (tu/get-interval start end)))))
+                            (tu/get-interval start end)))))
         origin))
 
 (defn time-merge [chart]
@@ -37,14 +37,14 @@
 
 (defn format-time [row]
   (assoc row
-         :format (tu/format-time (:interval row))
-         :format-field (* 60  (:interval row))))
+    :format (tu/format-time (:interval row))
+    :format-field (* 60 (:interval row))))
 
 (defn away-on-top [a b]
   (cond
     (empty? (:code a)) -1
     (empty? (:code b)) 1
-    :else              0))
+    :else 0))
 
 (defn add-stubs [[key origin]]
   (let [start     (:start (first origin))
@@ -52,10 +52,10 @@
         start-day (t/at-midnight start)
         end-day   (t/minus- (t/at-midnight (t/plus- end (t/days 1))) (t/minutes 1))]
     (cond-> origin
-      (t/after? start start-day) (->> (concat [{:start start-day
-                                                :end   start}]))
-      (t/before? end end-day)    (concat [{:start end
-                                           :end   end-day}]))))
+            (t/after? start start-day) (->> (concat [{:start start-day
+                                                      :end   start}]))
+            (t/before? end end-day) (concat [{:start end
+                                              :end   end-day}]))))
 
 (defn add-middle-stubs [origin]
   (loop [origin     origin
@@ -63,15 +63,15 @@
          result     []]
     (let [current (first origin)]
       (cond
-        (nil? origin)     result
+        (nil? origin) result
         (nil? previously) (recur (next origin) current (conj result current))
-        :else             (let [previously-end (:end previously)
-                                current-start  (:start current)]
-                            (if (not (t/= previously-end current-start))
-                              (recur (next origin) current (conj result {:start previously-end
-                                                                         :end   current-start}
-                                                                 current))
-                              (recur (next origin) current (conj result current))))))))
+        :else (let [previously-end (:end previously)
+                    current-start  (:start current)]
+                (if (not (t/= previously-end current-start))
+                  (recur (next origin) current (conj result {:start previously-end
+                                                             :end   current-start}
+                                                     current))
+                  (recur (next origin) current (conj result current))))))))
 
 (defn map-by-code [origin]
   (let [code (->> origin
@@ -86,8 +86,8 @@
                    format-end      (f/unparse (f/formatter "HH:mm") (:end %))
                    format-interval (tu/format-time (:interval %))]
                (assoc % :format-start format-start
-                      :format-end format-end
-                      :format-interval format-interval)))))
+                        :format-end format-end
+                        :format-interval format-interval)))))
 
 (defmulti control (fn [event] event))
 
@@ -98,12 +98,12 @@
 
 (defmethod control :set-date [_ [date] state]
   {:state (assoc state
-                 :auto-scroll true
-                 :date (tu/date-only (t/to-default-time-zone date)))})
+            :auto-scroll true
+            :date (tu/date-only (t/to-default-time-zone date)))})
 
 (defmethod control :off-auto-scroll [_ _ state]
   {:state (assoc state
-                 :auto-scroll false)})
+            :auto-scroll false)})
 
 (defmethod control :submit-all [_ _ state]
   (let [token (effects/local-storage
@@ -115,15 +115,15 @@
         list  (->> (:list state)
                    (filter #(seq (:code %)))
                    (map #(assoc {}
-                                :issueCode (:code %)
-                                :timeSpent (:format-field %)
-                                :date      (c/to-string (tu/merge-date-time date
-                                                                            (tu/field->to-time "12:00")))
-                                :offset    (.getTimezoneOffset (js/Date.)))))]
+                           :issueCode (:code %)
+                           :timeSpent (:format-field %)
+                           :date (c/to-string (tu/merge-date-time date
+                                                                  (tu/field->to-time "12:00")))
+                           :offset (.getTimezoneOffset (js/Date.)))))]
     {:state state
      :http  {:endpoint :submit
              :params   (assoc token :query
-                              list)
+                                    list)
              :method   :post
              :on-load  :success-submit
              :on-error :error}}))
@@ -138,16 +138,16 @@
         list  (->> (:list state)
                    (filter #(seq (:code %)))
                    (map #(assoc {}
-                                :issueCode (:code %)
-                                :timeSpent 0
-                                :date      (c/to-string (tu/merge-date-time date
-                                                                            (tu/field->to-time "12:00")))
-                                :offset    (.getTimezoneOffset (js/Date.)))))]
+                           :issueCode (:code %)
+                           :timeSpent 0
+                           :date (c/to-string (tu/merge-date-time date
+                                                                  (tu/field->to-time "12:00")))
+                           :offset (.getTimezoneOffset (js/Date.)))))]
     (if (= 0 (:submitted state))
       {:state state
        :http  {:endpoint :submit-force
                :params   (assoc token :query
-                                list)
+                                      list)
                :method   :post
                :on-load  :success-submit
                :on-error :error}}
@@ -172,10 +172,10 @@
                  :key    :token})]
     {:http {:endpoint :active-task
             :params   (assoc token :query
-                             {:code code}
-                             :date (c/to-string (tu/merge-date-time date
-                                                                    (tu/field->to-time "00:00")))
-                             :offset (.getTimezoneOffset (js/Date. date)))
+                                   {:code code}
+                                   :date (c/to-string (tu/merge-date-time date
+                                                                          (tu/field->to-time "00:00")))
+                                   :offset (.getTimezoneOffset (js/Date. date)))
             :method   :post
             :on-load  :success-save-task
             :on-error :error}}))
@@ -191,12 +191,12 @@
                      :key    :token})]
     {:http {:endpoint :active-task
             :params   (assoc token
-                             :offset (.getTimezoneOffset (js/Date. date))
-                             :tasks [code]
-                             :date      (c/to-string (tu/merge-date-time date
-                                                                         (tu/field->to-time "12:00")))
-                             :start (c/to-string start-day)
-                             :end   (c/to-string end-day))
+                        :offset (.getTimezoneOffset (js/Date. date))
+                        :tasks [code]
+                        :date (c/to-string (tu/merge-date-time date
+                                                               (tu/field->to-time "12:00")))
+                        :start (c/to-string start-day)
+                        :end (c/to-string end-day))
             :method   :delete
             :on-load  :success-delete-task
             :on-error :error}}))
@@ -211,7 +211,7 @@
                     {:method :get
                      :key    :token})
         list      (->> (:list state)
-                       (filter #(not (= (:code % ) "") ))
+                       (filter #(not (= (:code %) "")))
                        (filter #(= 0 (:interval %)))
                        (map :code)
                        (into #{}))]
@@ -219,15 +219,15 @@
       state
       {:http {:endpoint :active-task
               :params   (assoc token
-                               :offset (.getTimezoneOffset (js/Date. date))
-                               :tasks list
-                               :date      (c/to-string (tu/merge-date-time date
-                                                                           (tu/field->to-time "12:00")))
-                               :start (c/to-string start-day)
-                               :end   (c/to-string end-day))
+                          :offset (.getTimezoneOffset (js/Date. date))
+                          :tasks list
+                          :date (c/to-string (tu/merge-date-time date
+                                                                 (tu/field->to-time "12:00")))
+                          :start (c/to-string start-day)
+                          :end (c/to-string end-day))
               :method   :delete
               :on-load  :success-delete-task
-              :on-error :error}} )
+              :on-error :error}})
     ))
 
 (defmethod control :success-save-task [event [args r] state]
@@ -259,13 +259,13 @@
 
 (defmethod control :inc-date [_ _ state]
   {:state (assoc state
-                 :auto-scroll true
-                 :date (t/plus- (:date state) (t/days 1)))})
+            :auto-scroll true
+            :date (t/plus- (:date state) (t/days 1)))})
 
 (defmethod control :dec-date [_ _ state]
   {:state (assoc state
-                 :auto-scroll true
-                 :date (t/minus- (:date state) (t/days 1)))})
+            :auto-scroll true
+            :date (t/minus- (:date state) (t/days 1)))})
 
 (defmethod control :load-track-logs [_ _ state]
   (let [date      (:date state)
@@ -278,9 +278,9 @@
                      :key    :token})]
     {:http {:endpoint :load-track-logs
             :params   (assoc token
-                             :offset (.getTimezoneOffset (js/Date. date))
-                             :start (c/to-string start-day)
-                             :end   (c/to-string end-day))
+                        :offset (.getTimezoneOffset (js/Date. date))
+                        :start (c/to-string start-day)
+                        :end (c/to-string end-day))
             :method   :post
             :on-load  :success-track-log-load
             :on-error :error}}))
@@ -301,9 +301,9 @@
                                     (t/= current-start previously-end))]
            (cond
              (nil? origin) result
-             nearby?       (let [el (assoc previously :end current-end)]
-                             (recur (next origin) el (conj btlast el)))
-             :else         (recur (next origin) current (conj result current)))))])
+             nearby? (let [el (assoc previously :end current-end)]
+                       (recur (next origin) el (conj btlast el)))
+             :else (recur (next origin) current (conj result current)))))])
 
 (defn activity-arr [arr]
   (if (not-empty arr)
@@ -325,17 +325,17 @@
     (let [current (first origin)]
       (cond
         (nil? origin) result
-        :else         (let [current-code (:code current)
-                            with-mock    (add-mock date current-code #(= (:code %) current-code) result)]
-                        (recur (next origin) with-mock))))))
+        :else (let [current-code (:code current)
+                    with-mock    (add-mock date current-code #(= (:code %) current-code) result)]
+                (recur (next origin) with-mock))))))
 
 (defn compare-date [a b]
   (let [left  (:start a)
         right (:start b)]
     (cond
       (t/before? left right) -1
-      (t/after? left right)  1
-      :else                  0)))
+      (t/after? left right) 1
+      :else 0)))
 
 (defn group-by-code [arr]
   (let [->group (group-by :code arr)
@@ -362,18 +362,18 @@
                            flatten)
         arr           (->> (:data result)
                            (map #(assoc {}
-                                        :start  (tu/to-local (:start_date %))
-                                        :inactive-log (:inactive_log %)
-                                        :end  (tu/to-local (:end_date %))
-                                        :code  (:task %)))
+                                   :start (tu/to-local (:start_date %))
+                                   :inactive-log (:inactive_log %)
+                                   :end (tu/to-local (:end_date %))
+                                   :code (:task %)))
                            (add-mock date "" #(empty? (:code %)))
                            (add-empty-tasks date descs))
-        activity      (->>  arr
-                            (activity-arr)
-                            (map add-stubs)
-                            (map add-middle-stubs)
-                            (map calc-interval)
-                            (map add-format-time))
+        activity      (->> arr
+                           (activity-arr)
+                           (map add-stubs)
+                           (map add-middle-stubs)
+                           (map calc-interval)
+                           (map add-format-time))
         state         (->> arr
                            (group-by-code)
                            (map merge-nearby)
@@ -399,11 +399,11 @@
                            (map :format-field)
                            (reduce + 0))]
     {:state (assoc init-state
-                   :chart state
-                   :activity activity
-                   :list state-list
-                   :desc descs
-                   :submitted submitted
-                   :not-submitted not-submitted
-                   :tracked (/ tracked 60)
-                   :logged (/ logged 60))}))
+              :chart state
+              :activity activity
+              :list state-list
+              :desc descs
+              :submitted submitted
+              :not-submitted not-submitted
+              :tracked (/ tracked 60)
+              :logged (/ logged 60))}))

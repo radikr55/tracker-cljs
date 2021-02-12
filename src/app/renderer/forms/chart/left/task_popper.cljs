@@ -7,7 +7,7 @@
             [citrus.core :as citrus]))
 
 (rum/defc SubMenu < rum/reactive
-  {:key-fn (fn [_] "submenu")}
+                    {:key-fn (fn [_] "submenu")}
   [r]
   (let [p        (rum/react (citrus/subscription r [:task-popper]))
         date     (rum/react (citrus/subscription r [:chart :date]))
@@ -48,4 +48,4 @@
                                     {:component :typography
                                      :opts      {:key       "typography"
                                                  :className "menu-item-typography"}
-                                     :child     "Remove Task"}]} )]}))))
+                                     :child     "Remove Task"}]})]}))))

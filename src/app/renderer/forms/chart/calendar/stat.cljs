@@ -5,7 +5,7 @@
             [app.renderer.time-utils :as tu]))
 
 (rum/defc sum-week < rum/reactive
-  {:key-fn (fn [_] "month")}
+                     {:key-fn (fn [_] "month")}
   [r]
   (let [stat      (rum/react (citrus/subscription r [:calendar-popper :stat]))
         count-fn  (fn [key] (->> stat
@@ -22,7 +22,7 @@
      [:div {:class "sum-statistic-submitted calendar-stat-cell"} (tu/format-time (/ submitted 60))]]))
 
 (rum/defc week < rum/reactive
-  {:key-fn (fn [_ index] (str "week" index))}
+                 {:key-fn (fn [_ index] (str "week" index))}
   [r index [week-num _]]
   (let [stat        (rum/react (citrus/subscription r [:calendar-popper :stat]))
         week        ((keyword (str week-num)) stat)
@@ -31,7 +31,7 @@
         tracked     (:tracked week)
         select-week (rum/react (citrus/subscription r [:calendar-popper :select-week]))
         class       (cond-> "calendar-stat-week calendar-week "
-                      (= week-num select-week) (str " calendar-select-week"))]
+                            (= week-num select-week) (str " calendar-select-week"))]
     (if (->> [logged tracked submitted]
              (reduce +)
              (not= 0))
@@ -49,7 +49,7 @@
            (map-indexed #(week r %1 %2) month)]]))
 
 (rum/defc Stat < rum/reactive
-  {:key-fn (fn [_] "stat")}
+                 {:key-fn (fn [_] "stat")}
   [r]
   (tc {:component :box
        :opts      {:className "calendar-stat"}

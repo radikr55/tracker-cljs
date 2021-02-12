@@ -49,5 +49,5 @@
 
 (defmethod control :set-chart-position [_ [position] state]
   (let [pos (+ (:chart-position state) position)]
-    (when (and (<=  pos (:max-chart-scroll state)) (>= pos 0))
+    (when (and (<= pos (:max-chart-scroll state)) (>= pos 0))
       {:state (assoc state :chart-position pos)})))

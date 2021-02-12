@@ -20,14 +20,14 @@
 (def left-ref (js/React.createRef))
 
 (add-watch atom-width :window-width
-           (fn  [_ _ old new]
+           (fn [_ _ old new]
              (when (and (.-current chart-ref) @left-width)
                (set! (.-width (.-style (.-current chart-ref))) (str (- new @left-width) "px")))))
 
 (add-watch left-width :resize-width
-           (fn  [_ _ old new]
+           (fn [_ _ old new]
              (set! (.-width (.-style (.-current chart-ref))) (str (- @atom-width new) "px"))
-             (set! (.-width (.-style (.-current left-ref))) (str  new "px"))))
+             (set! (.-width (.-style (.-current left-ref))) (str new "px"))))
 
 (js/window.addEventListener "resize" #(reset! atom-width (- js/window.innerWidth right-width)))
 
@@ -38,7 +38,7 @@
     (reset! left-width position)))
 
 (rum/defc middle < rum/reactive
-  {:key-fn (fn [_] "middle")}
+                   {:key-fn (fn [_] "middle")}
   [r h-top]
   (citrus/dispatch! r :home :set-chart-ref chart-ref)
   (let [scale             (rum/react (citrus/subscription r [:home :scale]))
@@ -56,7 +56,7 @@
                      :child     (chart-list/ChartList r h-top h-header h-body)}})))
 
 (rum/defc gap < rum/reactive
-  {:key-fn (fn [_] "gap")}
+                {:key-fn (fn [_] "gap")}
   [r h-top]
   (tc {:component :draggable
        :opts      {:axis     "x"
@@ -73,7 +73,7 @@
                                :opts      {:className "gap-dot"}}}}))
 
 (rum/defc left < rum/reactive
-  {:key-fn (fn [_] "left")}
+                 {:key-fn (fn [_] "left")}
   [r h-top]
   (tc {:component :box
        :opts      {:width     (str @left-width "px")
@@ -83,7 +83,7 @@
        :child     (task-list/TaskList r h-top h-header h-body)}))
 
 (rum/defc right < rum/reactive
-  {:key-fn (fn [_] "right")}
+                  {:key-fn (fn [_] "right")}
   [r h-top]
   (tc {:component :box
        :opts      {:key       "right"
@@ -98,8 +98,8 @@
                  state)})
 
 (rum/defc Table < rum/reactive
-  load-mixin
-  {:key-fn (fn [_] "table")}
+                  load-mixin
+                  {:key-fn (fn [_] "table")}
   [r h-header]
   (tc {:component :box
        :opts      {:display "flex"}

@@ -1,6 +1,6 @@
 (ns app.renderer.controllers.theme
   (:require
-   [cljs.tools.reader.edn :as edn]))
+    [cljs.tools.reader.edn :as edn]))
 
 (defmulti control (fn [event] event))
 
@@ -41,4 +41,4 @@
       {:state         {:dark? (= "dark" theme)}
        :local-storage {:method :set
                        :data   "default"
-                       :key    :theme}}) ))
+                       :key    :theme}})))

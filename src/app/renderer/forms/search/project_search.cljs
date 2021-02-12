@@ -24,18 +24,18 @@
         (assoc category :list (filter pred-proj (:list category)))))))
 
 (rum/defc item < rum/reactive
-  {:key-fn (fn [r data] (str (:id  data)))}
+                 {:key-fn (fn [r data] (str (:id data)))}
   [r data]
   (let [title       (:title data)
         id          (:id data)
         selected-id (rum/react selected-project)
         class       (cond-> "table-row"
-                      (= selected-id id) (str " selected-project " ))]
+                            (= selected-id id) (str " selected-project "))]
     (tc {:component :list-item
          :opts      {:button    true
                      :key       (str id)
                      :onClick   #(do (reset! selected-project id)
-                                     (citrus/dispatch! r :project :get-by-project-id id) )
+                                     (citrus/dispatch! r :project :get-by-project-id id))
                      :className class}
          :child     {:component :list-item-text
                      :child     {:component :typography
@@ -44,7 +44,7 @@
                                  :child     title}}})))
 
 (rum/defc subheader < rum/reactive
-  {:key-fn (fn [_ id _] id)}
+                      {:key-fn (fn [_ id _] id)}
   [r category paper]
   (tc {:component :list-subheader
        :opts      {:className "search-list-subheader"}
@@ -52,7 +52,7 @@
        :child     category}))
 
 (rum/defc table < rum/reactive
-  {:key-fn (fn [_] "table")}
+                  {:key-fn (fn [_] "table")}
   [r]
   (let [list   (rum/react (citrus/subscription r [:project :left]))
         theme  (rum/react (citrus/subscription r [:theme :cljs]))
@@ -73,7 +73,7 @@
                                      f-list)}})))
 
 (rum/defc search < rum/reactive
-  {:key-fn (fn [_] "search")}
+                   {:key-fn (fn [_] "search")}
   [r]
   (tc {:component :text-field
        :opts      {:onChange    #(citrus/dispatch! r :project :set-search-project (.. % -target -value))
@@ -89,6 +89,6 @@
 
 (rum/defc Search-box
   [r]
-  (tc  {:component :box
-        :child     [(search r)
-                    (table r)]}))
+  (tc {:component :box
+       :child     [(search r)
+                   (table r)]}))

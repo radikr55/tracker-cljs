@@ -6,7 +6,7 @@
 (def search-atom (atom ""))
 
 (rum/defc item < rum/reactive
-  {:key-fn (fn [_ data] (:id data))}
+                 {:key-fn (fn [_ data] (:id data))}
   [r data]
   (let [title (:title data)
         code  (:code data)
@@ -27,7 +27,7 @@
                                   :child     title}]}})))
 
 (rum/defc subheader < rum/reactive
-  {:key-fn (fn [_ id _] id)}
+                      {:key-fn (fn [_ id _] id)}
   [r category paper]
   (tc {:component :list-subheader
        :opts      {:className "search-list-subheader"}
@@ -35,11 +35,11 @@
        :child     category}))
 
 (rum/defc table < rum/reactive
-  {:key-fn (fn [_] "table")}
+                  {:key-fn (fn [_] "table")}
   [r]
   (let [{list :right} (rum/react (citrus/subscription r [:project]))
-        theme         (rum/react (citrus/subscription r [:theme :cljs]))
-        paper         (-> theme :palette :background :paper)]
+        theme (rum/react (citrus/subscription r [:theme :cljs]))
+        paper (-> theme :palette :background :paper)]
     (tc {:component :box
          :opts      {:className "search-list-body"}
          :child     {:component :list
@@ -55,7 +55,7 @@
                                      list)}})))
 
 (rum/defc search < rum/reactive
-  {:key-fn (fn [_] "search")}
+                   {:key-fn (fn [_] "search")}
   [r]
   (tc {:component :text-field
        :opts      {:variant     "outlined"
@@ -71,6 +71,6 @@
 
 (rum/defc Search-box
   [r]
-  (tc  {:component :box
-        :child     [(search r)
-                    (table r)]}))
+  (tc {:component :box
+       :child     [(search r)
+                   (table r)]}))

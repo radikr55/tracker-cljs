@@ -11,11 +11,11 @@
 (defn local-get [web-content item]
   (-> (.executeJavaScript web-content (gstring/format "localStorage.getItem('%s')" item) true)
       (p/then #(edn/read-string %))
-      (p/catch #(print  %))))
+      (p/catch #(print %))))
 
 (defn local-remove [web-content item]
   (-> (.executeJavaScript web-content (gstring/format "localStorage.removeItem('%s')" item) true)
-      (p/catch #(print  %))))
+      (p/catch #(print %))))
 
 (defn package-config [config]
   (get (js->clj (js/require "../package.json")) config))

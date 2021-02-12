@@ -25,11 +25,11 @@
 (defn timeout-theme []
   (let [web-content (.-webContents @main-window)
         theme       (if (.-shouldUseDarkColors nativeTheme) "dark" "light")]
-    (->  (ls/local-get web-content "theme")
-         (p/then #(when (= 'default %)
-                    (send-ipc @main-window "theme-default" theme)
-                    (reset! theme-timeout
-                            (js/setTimeout timeout-theme 500)))))))
+    (-> (ls/local-get web-content "theme")
+        (p/then #(when (= 'default %)
+                   (send-ipc @main-window "theme-default" theme)
+                   (reset! theme-timeout
+                           (js/setTimeout timeout-theme 500)))))))
 
 (defn set-theme []
   (reset! theme-timeout
@@ -49,7 +49,7 @@
                         :click       #(send-ipc @main-window "refresh" nil)}
                        {:type "separator"}
                        {:label "Clear Notifications"
-                        :click #(send-ipc  @main-window "clear-notification" nil)}
+                        :click #(send-ipc @main-window "clear-notification" nil)}
                        {:label "Clear Inactive Tasks"
                         :click #(send-ipc @main-window "clear-tasks" nil)}
                        {:type "separator"}
@@ -82,7 +82,7 @@
                                 {:role "copy"}
                                 {:role "paste"}
                                 {:role "delete"}]
-                          [{:role "reload"}])}
+                               [{:role "reload"}])}
             {:label   "Dev"
              :submenu [{:role "reload"}
                        {:label       "Log"
@@ -111,8 +111,8 @@
                                (.minimize @main-window))))
 
 (defonce on-get-name
-  (.on ipcMain "update-title-bar-menu"
-       #(set-menu)))
+         (.on ipcMain "update-title-bar-menu"
+              #(set-menu)))
 
 (comment
   (menu-template "rad" true))

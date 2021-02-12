@@ -6,7 +6,7 @@
             [app.renderer.forms.search.issue-search :as issue-search]))
 
 (rum/defc close-button < rum/reactive
-  {:key-fn (fn [_] "close")}
+                         {:key-fn (fn [_] "close")}
   [r]
   (tc {:component :icon-button
        :opts      {:className "search-close"
@@ -17,7 +17,7 @@
        :child     {:component :close}}))
 
 (rum/defc title < rum/reactive
-  {:key-fn (fn [_] "title")}
+                  {:key-fn (fn [_] "title")}
   [_]
   (tc {:component :box
        :opts      {:px 1}
@@ -41,7 +41,7 @@
                  state)})
 
 (rum/defc loaded-content < load-mixin
-  {:key-fn (fn [_] "content")}
+                           {:key-fn (fn [_] "content")}
   [r]
   (tc {:component :box
        :opts      {:px             2

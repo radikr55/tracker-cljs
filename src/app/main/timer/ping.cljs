@@ -6,7 +6,7 @@
             [promesa.core :as p]
             [cljs-time.format :as ft]))
 
-(def time-ping 5) ; sec
+(def time-ping 5)                                           ; sec
 (def format "yyyy/MM/dd HH:mm")
 (def current-task "current-task")
 (def status-active "active")
@@ -41,7 +41,7 @@
                                                                  :task   code}}))))))))))))
 
 (defonce timer-idle-time
-  (reset! ping-interval
-          (js/setInterval #(save-to-ls (js/Date.)
-                                       (.getSystemIdleTime powerMonitor))
-                          (* time-ping 1000)) ))
+         (reset! ping-interval
+                 (js/setInterval #(save-to-ls (js/Date.)
+                                              (.getSystemIdleTime powerMonitor))
+                                 (* time-ping 1000))))

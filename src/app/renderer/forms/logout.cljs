@@ -3,7 +3,7 @@
             [citrus.core :as citrus]
             [app.renderer.utils :refer [tc]]))
 
-(rum/defc dialog-logout < rum/reactive  [r]
+(rum/defc dialog-logout < rum/reactive [r]
   (tc {:component :dialog
        :opts      {:open    (rum/react (citrus/subscription r [:home :logout]))
                    :onClose #(citrus/subscription r :home :close-logout)}

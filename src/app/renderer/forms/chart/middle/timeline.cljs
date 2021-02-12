@@ -7,7 +7,7 @@
 
 (def mouse-event (atom nil))
 (def f-time (atom ""))
-(def show?       (atom false))
+(def show? (atom false))
 (def container-ref (js/React.createRef))
 (def tooltip-ref (js/React.createRef))
 
@@ -23,9 +23,9 @@
     (ft/unparse (ft/formatter "HH:mm") dtime)))
 
 (defn calc-time [event chart-ref scale]
-  (when (and  (.-current  container-ref) (.-current  chart-ref))
-    (let [element         (.-current  container-ref)
-          scroll-position (.-scrollLeft (.-current  chart-ref))
+  (when (and (.-current container-ref) (.-current chart-ref))
+    (let [element         (.-current container-ref)
+          scroll-position (.-scrollLeft (.-current chart-ref))
           left            (.-left (.getBoundingClientRect element))
           time            (+ (- (:pageX event) (.-offsetLeft element)) scroll-position)
           format          (format-time time scale)]
@@ -55,11 +55,11 @@
       (scroll-middle-box 60 ref scale))))
 
 (rum/defc box < rum/reactive
-  {:key-fn (fn [_ _ _ index] (str index))}
+                {:key-fn (fn [_ _ _ index] (str index))}
   [r width content index top?]
-  [:div  {:style
-          {:flex (str "0 0 " width  "px")}
-          :className "timeline-box"}
+  [:div {:style
+                    {:flex (str "0 0 " width "px")}
+         :className "timeline-box"}
    content])
 
 (defn get-timeline [r]
@@ -71,13 +71,13 @@
       #(let [index %1
              value %2]
          (cond
-           (= index 0)                            (box r start-end-width value index)
+           (= index 0) (box r start-end-width value index)
            (= (inc index) (count timeline-value)) (box r start-end-width value index)
-           :else                                  (box r width value index)))
+           :else (box r width value index)))
       (if (= scale 1) timeline-value-1x timeline-value))))
 
-(rum/defc tooltip  < rum/reactive
-  {:key-fn (fn [_ _ x] (str "tooltip" x))}
+(rum/defc tooltip < rum/reactive
+                    {:key-fn (fn [_ _ x] (str "tooltip" x))}
   [r height top?]
   (let [show        (rum/react show?)
         mouse-event (rum/react mouse-event)
@@ -96,7 +96,7 @@
                      :child     format}})))
 
 (rum/defc container < rum/reactive
-  {:key-fn (fn [_] "timeline-container")}
+                      {:key-fn (fn [_] "timeline-container")}
   [r height top?]
   (let [chart-ref (rum/react (citrus/subscription r [:home :chart-ref]))
         scale     (rum/react (citrus/subscription r [:home :scale]))
@@ -114,15 +114,15 @@
       (get-timeline r)]]))
 
 (rum/defc activity < rum/reactive
-  {:key-fn (fn [_ row index] (str index))}
+                     {:key-fn (fn [_ row index] (str index))}
   [r row index]
   (let [inactive? (:inactive-log row)
         scale     (rum/react (citrus/subscription r [:home :scale]))
         width     (str (* scale (:interval row)) "px")
         class     (cond
                     (nil? inactive?) "chart-activity-block-grey"
-                    inactive?        "chart-activity-block-inactive"
-                    :else            "chart-activity-block-active")]
+                    inactive? "chart-activity-block-inactive"
+                    :else "chart-activity-block-active")]
     [:div {:style {:min-width width
                    :height    "100%"
                    :display   "flex"}
@@ -130,7 +130,7 @@
     ))
 
 (rum/defc activity-container < rum/reactive
-  {:key-fn (fn [_] "acivity-container")}
+                               {:key-fn (fn [_] "acivity-container")}
   [r height top?]
   (let [scale         (rum/react (citrus/subscription r [:home :scale]))
         activity-list (rum/react (citrus/subscription r [:chart :activity]))
@@ -142,7 +142,7 @@
      (map-indexed #(activity r %2 %1) (first activity-list))]))
 
 (rum/defc Timeline < rum/reactive
-  {:key-fn (fn [_ _ top?] (str "timeline" top?))}
+                     {:key-fn (fn [_ _ top?] (str "timeline" top?))}
   [r height top?]
   (let [activity-height    5
         timeline-height    (- height activity-height)

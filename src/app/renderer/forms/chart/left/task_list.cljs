@@ -20,7 +20,7 @@
        :child     [{:component :add
                     :opts      {:key "icon"}
                     :styl      {:font-size "18px"}}
-                   {:component :box 
+                   {:component :box
                     :opts      {:key "title"}
                     :child     {:component :typography
                                 :styl      {:min-inline-size "fit-content"
@@ -45,7 +45,7 @@
                      :link     link}))
 
 (rum/defc item < rum/reactive
-  {:key-fn (fn [_ row] (str (:code row)))}
+                 {:key-fn (fn [_ row] (str (:code row)))}
   [r row h-body]
   (let [code           (:code row)
         code-str       (if (empty? code) away code)
@@ -58,10 +58,10 @@
         highlight-code (rum/react (citrus/subscription r [:task-popper :code]))
         current-task   (rum/react (citrus/subscription r [:chart :current-task]))
         class          (cond-> "task-box"
-                         (empty? code)           (str " away ")
-                         (seq code)              (str " active ")
-                         (= code highlight-code) (str " highlight-task ")
-                         (= code current-task)   (str " selected-task "))]
+                               (empty? code) (str " away ")
+                               (seq code) (str " active ")
+                               (= code highlight-code) (str " highlight-task ")
+                               (= code current-task) (str " selected-task "))]
     (tc {:component :box
          :opts      {:height        (str h-body "px")
                      :onContextMenu context-menu
@@ -95,7 +95,7 @@
                                   :child     desc}}]})))
 
 (rum/defc body < rum/reactive
-  {:key-fn (fn [_] "body")}
+                 {:key-fn (fn [_] "body")}
   [r h-top h-header h-body]
   (let [middle-list-ref (rum/react (citrus/subscription r [:home :middle-list-ref]))
         right-list-ref  (rum/react (citrus/subscription r [:home :right-list-ref]))

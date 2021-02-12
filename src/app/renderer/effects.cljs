@@ -8,13 +8,13 @@
 (defn local-storage [r controller-name effect]
   (let [{:keys [method data key on-read]} effect]
     (case method
-      :set    (js/localStorage.setItem (name key) data)
+      :set (js/localStorage.setItem (name key) data)
       :remove (js/localStorage.removeItem (name key))
-      :get    (edn/read-string (js/localStorage.getItem (name key)))
-      :add    (js/localStorage.setItem (name key)
-                                       (merge
-                                         data
-                                         (edn/read-string (js/localStorage.getItem (name key)))))
+      :get (edn/read-string (js/localStorage.getItem (name key)))
+      :add (js/localStorage.setItem (name key)
+                                    (merge
+                                      data
+                                      (edn/read-string (js/localStorage.getItem (name key)))))
       nil)))
 
 (defmulti dispatch! (fn [_ _ effect]
