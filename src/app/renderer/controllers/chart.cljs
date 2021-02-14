@@ -289,16 +289,19 @@
   [key (loop [origin     list
               previously nil
               result     []]
-         (let [current         (first origin)
-               current-start   (:start current)
-               current-end     (:end current)
-               current-code    (:code current)
-               previously-end  (:end previously)
-               previously-code (:code previously)
-               btlast          (into [] (butlast result))
-               nearby?         (and (not (nil? current-code))
-                                    (= previously-code current-code)
-                                    (t/= current-start previously-end))]
+         (let [current            (first origin)
+               current-start      (:start current)
+               current-end        (:end current)
+               current-code       (:code current)
+               current-subcode    (:subcode current)
+               previously-end     (:end previously)
+               previously-code    (:code previously)
+               previously-subcode (:subcode previously)
+               btlast             (into [] (butlast result))
+               nearby?            (and
+                                    (= previously-subcode current-subcode)
+                                       (= previously-code current-code)
+                                       (t/= current-start previously-end))]
            (cond
              (nil? origin) result
              nearby? (let [el (assoc previously :end current-end)]
@@ -344,10 +347,17 @@
                              (filter #(not (nil? (:code %))))
                              (filter #(not= (:code %) code))
                              (filter #(not (t/= (:start %) (:end %))))
+                             (map #(assoc % :subcode (:code %)))
                              (map #(dissoc % :code))
                              (into value)
                              (sort compare-date))})]
     (into {} res)))
+
+(defn remove-empty-block
+  "remove first empty interval with code"
+  [{chart :chart :as row}]
+  (assoc row :chart
+             (filter #(not (t/= (:end %) (:start %))) chart)))
 
 (defmethod control :success-track-log-load [event [result] init-state]
   (let [date          (:date init-state)
@@ -381,7 +391,8 @@
                            (map add-middle-stubs)
                            (map calc-interval)
                            (map add-format-time)
-                           (map map-by-code))
+                           (map map-by-code)
+                           (map remove-empty-block))
         state-list    (->> arr
                            calc-interval
                            (filter #(not (nil? (:code %))))

@@ -27,8 +27,7 @@
         class         (cond-> "calendar-day calendar-actual-day "
                               (t/= chart-date date) (str " calendar-selected ")
                               (some #(t/= date %) not-submitted) (str " calendar-not-submitted ")
-                              disable? (str " calendar-disabled "))
-        ]
+                              disable? (str " calendar-disabled "))]
     [:div {:class   class
            :onClick #(when (not disable?)
                        (citrus/dispatch! r :chart :set-date date)

@@ -5,11 +5,13 @@
             [citrus.core :as citrus]
             [citrus.cursor :as c]
             [cljs-time.core :as t]
+            [cljs.pprint :refer [pprint]]
             [app.renderer.forms.chart.middle.timeline :as timeline]
             [app.renderer.forms.chart.middle.chart-popper :as popper]))
 
 (def middle-list-ref (js/React.createRef))
 (def last-active-time->ref (atom {:position nil}))
+(def dnd-map (atom {}))
 
 (defn open-dialog [r event row]
   (citrus/dispatch! r :chart-popper :open-popper
@@ -26,6 +28,44 @@
     (reset! last-active-time->ref
             {:position end-position})))
 
+(defn dnd [draggable? code place-class index width block child]
+  (let [draggableId (str "draggable-" code index)
+        droppableId (str "droppable-" code index)
+        draggable   {:component :dnd-draggable
+                     :opts      {:draggableId draggableId
+                                 :key         "draggable"
+                                 :index       index}
+                     :child     (fn [provided snapshot]
+                                  (tc {:component :box
+                                       :child     [(merge child
+                                                          {:opts (merge {:key "element"
+                                                                         :ref (.-innerRef provided)}
+                                                                        (js->clj (.-draggableProps provided))
+                                                                        (js->clj (.-dragHandleProps provided)))})
+                                                   (when (.-isDragging snapshot)
+                                                     (tc {:component :box
+                                                          :opts      {:width     width
+                                                                      :key       "placeholder"
+                                                                      :className place-class}}))]}))}]
+    (reset! dnd-map
+            (assoc @dnd-map droppableId {:block block
+                                         :code  code}))
+    (tc {:component :dnd-droppable
+         :opts      {:droppableId droppableId
+                     :key         index
+                     :type        (str "type-" index)
+                     }
+         :child     (fn [provided snapshot]
+                      (tc {:component :box
+                           :styl      {:box-shadow (when (.-isDraggingOver snapshot) "0px 0px 10px 2px rgba(17, 32, 229, 0.4) inset")}
+                           :opts      {:ref (.-innerRef provided)}
+                           :child     [(if draggable?
+                                         draggable
+                                         child)
+                                       (.-placeholder provided)
+                                       ]}))})))
+
+
 (rum/defcs box < rum/reactive
                  (rum/local false ::isHighlight)
                  {:key-fn (fn [_ _ index] (str index))}
@@ -38,6 +78,12 @@
         scale        (rum/react (citrus/subscription r [:home :scale]))
         current-task (rum/react (citrus/subscription r [:chart :current-task]))
         width        (str (* scale (:interval block)) "px")
+        place-class  (cond-> "chart-block "
+                             gray? (str " chart-block-empty chart-block-gray ")
+                             (not gray?) (str " chart-block-empty chart-block-white ")
+                             (empty? row-code) (str " chart-row-away ")
+                             (seq row-code) (str " chart-row-blue ")
+                             (= row-code current-task) (str " selected-row "))
         class        (cond-> "chart-block "
                              away? (str " chart-block-away ")
                              not-nil? (str " chart-block-blue ")
@@ -61,31 +107,19 @@
                        :child     (str "(" interval ")")}]
         end-position (* scale (tu/get-interval (t/at-midnight (:end block)) (:end block)))]
     (check-position not-nil? end-position)
-    (tc {:component :box
-         :child     {:component :box
-                     :opts      {:width       width
-                                 :height      "100%"
-                                 :onMouseOver #(reset! state true)
-                                 :onMouseOut  #(reset! state false)
-                                 :onClick     #(open-dialog r % (assoc block :code row-code))
-                                 :display     "flex"
-                                 :className   class
-                                 :title       title}
-                     :child     (when (and (not away?) not-nil?) child)}})))
-
-(def scroll-mixin
-  {:after-render (fn [{[r] :rum/args :as state}]
-                   (when (and (:position @last-active-time->ref)
-                              (-> @r :chart :auto-scroll)
-                              (.-current middle-list-ref))
-                     (let [parent-element   (.-parentNode (.-parentNode (.-current middle-list-ref)))
-                           parent-width     (.-clientWidth parent-element)
-                           last-active-left (:position @last-active-time->ref)
-                           position         (- last-active-left (/ parent-width 2))]
-                       (citrus/dispatch! r :chart :off-auto-scroll)
-                       (.scrollTo parent-element
-                                  (clj->js {:left position}))))
-                   state)})
+    (dnd (or away? not-nil?) row-code place-class index width block
+         {:component :box
+          :opts      {:key index}
+          :child     {:component :box
+                      :opts      {:width       width
+                                  :height      "100%"
+                                  :onMouseOver #(reset! state true)
+                                  :onMouseOut  #(reset! state false)
+                                  :onClick     #(open-dialog r % (assoc block :code row-code))
+                                  :display     "flex"
+                                  :className   class
+                                  :title       title}
+                      :child     (when (and (not away?) not-nil?) child)}})))
 
 (rum/defc item < rum/reactive
                  {:key-fn (fn [_ row] (:code row))}
@@ -104,6 +138,46 @@
                      :width   width}
          :child     (map-indexed #(box r %2 %1 (odd? index) code) list)})))
 
+(defn on-drag-end [r e]
+  (let [event        (js->clj e :keywordize-keys true)
+        source       (:source event)
+        dest         (:destination event)
+        source-block (:block (get @dnd-map (:droppableId source)))
+        dest-block   (:block (get @dnd-map (:droppableId dest)))
+        source-code  (:code (get @dnd-map (:droppableId source)))
+        dest-code    (:code (get @dnd-map (:droppableId dest)))]
+    (when-not (and (not (nil? dest-block))
+                   (not (nil? source-block))
+                   (= source-code dest-code))
+      (citrus/dispatch! r :chart-popper :save-time
+                        (:start source-block)
+                        (:end source-block)
+                        (str dest-code))))
+  )
+
+(defn dnd-context [r child]
+  (tc {:component :dnd-context
+       :opts      {
+                   ;:onDragStart (fn [e]
+                   ;               (reset! dnd-active true))
+                   :onDragEnd   #(on-drag-end  r %)
+                   }
+       :child     child}))
+
+(def scroll-mixin
+  {:after-render (fn [{[r] :rum/args :as state}]
+                   (when (and (:position @last-active-time->ref)
+                              (-> @r :chart :auto-scroll)
+                              (.-current middle-list-ref))
+                     (let [parent-element   (.-parentNode (.-parentNode (.-current middle-list-ref)))
+                           parent-width     (.-clientWidth parent-element)
+                           last-active-left (:position @last-active-time->ref)
+                           position         (- last-active-left (/ parent-width 2))]
+                       (citrus/dispatch! r :chart :off-auto-scroll)
+                       (.scrollTo parent-element
+                                  (clj->js {:left position}))))
+                   state)})
+
 (rum/defc body < rum/reactive
                  scroll-mixin
                  {:key-fn (fn [_] "body")}
@@ -111,12 +185,12 @@
   (let [list (rum/react (citrus/subscription r [:chart :list]))]
     (citrus/dispatch! r :home :set-middle-list-ref middle-list-ref)
     (reset! last-active-time->ref {:position nil})
-    (tc {:component :dnd-context
-         :child     {:component :box
-                     :opts      {:overflow "hidden"
-                                 :ref      middle-list-ref
-                                 :height   (str "calc(100vh - " (+ 2 h-top (* 2 h-header)) "px)")}
-                     :child     (map-indexed #(item r %2 h-body %1) list)}})))
+    (reset! dnd-map {})
+    (dnd-context r {:component :box
+                    :opts      {:overflow "hidden"
+                                :ref      middle-list-ref
+                                :height   (str "calc(100vh - " (+ 2 h-top (* 2 h-header)) "px)")}
+                    :child     (map-indexed #(item r %2 h-body %1) list)})))
 
 (rum/defc ChartList < rum/reactive
   [r h-top h-header h-body]
