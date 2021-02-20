@@ -176,7 +176,7 @@
 (defmethod control :submit-all [_ _ state]
   (let [token (effects/local-storage
                 nil
-                :poject
+                :project
                 {:method :get
                  :key    :token})
         date  (:date state)
@@ -199,7 +199,7 @@
 (defmethod control :clear-notification [_ _ state]
   (let [token (effects/local-storage
                 nil
-                :poject
+                :project
                 {:method :get
                  :key    :token})
         date  (:date state)
@@ -235,7 +235,7 @@
   (let [date  (:date state)
         token (effects/local-storage
                 nil
-                :poject
+                :project
                 {:method :get
                  :key    :token})]
     {:http {:endpoint :active-task
@@ -311,7 +311,7 @@
         codes (:codes args)
         token (effects/local-storage
                 nil
-                :poject
+                :project
                 {:method :get
                  :key    :token})]
     {:http {:endpoint :submit
@@ -327,7 +327,7 @@
 (defmethod control :success-delete-task-empty [event [args r] state]
   (let [codes        (:codes args)
         exist        (-> (effects/local-storage nil
-                                                :poject
+                                                :project
                                                 {:method :get
                                                  :key    :current-task})
                          :code)

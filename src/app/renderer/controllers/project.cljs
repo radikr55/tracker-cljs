@@ -47,7 +47,7 @@
 (defmethod control :get-tasks [_ [task] state]
   (let [token (effects/local-storage
                 nil
-                :poject
+                :project
                 {:method :get
                  :key    :token})]
     {:state (assoc state :task task)

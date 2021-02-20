@@ -24,6 +24,10 @@
               :code (:code row)
               :start (:start row)
               :end (:end row)
+              :max-start (:max-start row)
+              :min-start (:min-start row)
+              :max-end (:max-end row)
+              :min-end (:min-end row)
               :open true
               :disabled (= (:start row) (:end row)))}))
 
@@ -33,25 +37,42 @@
             :code nil
             :end nil
             :start nil
+            :max-start nil
+            :min-start nil
+            :max-end nil
+            :min-end nil
             :open false)})
 
 (defmethod control :set-start [_ [start] state]
-  (if (< start (:end state))
-    {:state (assoc state :start start
-                         :disabled false)}
-    {:state (assoc state :disabled true)}))
+  (let [{max-start :max-start
+         min-start :min-start} state
+        max-bool (not (boolean max-start))
+        min-bool (not (boolean min-start))]
+    (if (and (< start (:end state))
+             (or min-bool (>= start min-start))
+             (or max-bool (<= start max-start)))
+      {:state (assoc state :start start
+                           :disabled false)}
+      {:state (assoc state :disabled true)}))
+  )
 
 (defmethod control :set-end [_ [end] state]
-  (if (and (t/after? (tu/get-local-without-offset (t/now)) end)
-           (t/after? end (:start state)))
-    {:state (assoc state :end end
-                         :disabled false)}
-    {:state (assoc state :disabled true)}))
+  (let [{max-end :max-end
+         min-end :min-end} state
+        max-bool (not (boolean max-end))
+        min-bool (not (boolean min-end))]
+    (if (and (t/after? (tu/get-local-without-offset (t/now)) end)
+             (t/after? end (:start state))
+             (or min-bool (>= end min-end))
+             (or max-bool (<= end max-end)))
+      {:state (assoc state :end end
+                           :disabled false)}
+      {:state (assoc state :disabled true)})))
 
 (defmethod control :save-time [_ [start end task] state]
   (let [token  (effects/local-storage
                  nil
-                 :poject
+                 :project
                  {:method :get
                   :key    :token})
         offset (.getTimezoneOffset (js/Date. start))]

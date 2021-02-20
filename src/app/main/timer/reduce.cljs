@@ -153,11 +153,13 @@
                                                      :data ->packages
                                                      :offset offset)
                                          :endpoint :save-ping})
-                                      (p/then #(print %))
+                                      (p/then #(print "success send-ping"))
                                       (p/then #(ls/local-remove web-content "time"))
                                       (p/then #(send-ipc @w/main-window "refresh" nil))
-                                      (p/catch #(print %))))]
-      (when (validate-package ->packages)
+                                      (p/catch #(print "error send-ping" %))))]
+      (when (and
+              (validate-package ->packages)
+              (ls/local-get web-content "token"))
         (-> (ls/local-get web-content "token")
             (p/then send-fetch)
             (p/then #(reset! last-send-log (last ->packages)))
@@ -197,113 +199,113 @@
          (reset! check-interval
                  (js/setTimeout check-fun (* time-check 1000))))
 
-(comment
-  (-> (process-ping)
-      (p/then #(send-ping %))
-      (p/catch #(print "timer-send-ping " %)))
-
-  (-> (process-ping)
-      (p/then print))
-
-  ;(-> (send-ping '({:start    2021-02-09T14:29:00.000Z
-  ;                  :end      2021-02-09T14:49:00.000Z
-  ;                  :status   "active"
-  ;                  :task     "WELKIN-46",
-  ;                  :inactive false}))
-  ;    (p/then print))
-  (-> (api/fetch
-        {:method   :post
-         :params   {:name   "r.shylo"
-                    :token  "JbMjR3MNho0ms9Rv8DtU7gRyeOGwnCfi"
-                    :secret "M6jnwvmefmG9PlSFWFf1ThSDy9y0aDj7"}
-         :endpoint :save-ping})
-      (p/then js->clj)
-      (p/then print)
-      (p/catch #(print (js->clj %)))
-      )
-
-  (-> (api/fetch
-        {:method   :get
-         :endpoint :sa})
-      (p/then js->clj)
-      (p/then print)
-      (p/catch #(print (js->clj %)))
-      )
-
-  (js/clearInterval @send-interval)
-
-  (js/clearInterval @check-interval)
-
-  (reset! n/inactive-interval 5)
-
-  (-> (process-ping)
-      ;; (p/then pprint)
-      (p/then #(send-ping %))
-      (p/catch #(print %)))
-
-  (defn ping->vector [ping-vector]
-    (->> (collect-package ping-vector)
-         (map #(inactive->active %))
-         (map #(set-inactive-log %))
-         (reduce #(merge-packages %1 %2) [])
-         (map #(assoc %
-                 :start (c/to-string (:start %))
-                 :end (c/to-string (:end %))))))
-
-  ;; (-> (->> (into [] init)
-  ;;          (sort-by first))
-  ;;     ping->vector
-  ;;     pr/pprint)
-  {"2020/11/08 02:23" {:status "active", :task "SA_TT-33"}, "2020/11/08 02:24" {:status "active", :task "SA_TT-33"}, "2020/11/08 02:25" {:status "active", :task "SA_TT-33"}, "2020/11/08 02:26" {:status "active", :task "SA_TT-33"}, "2020/11/08 02:27" {:status "active", :task "SA_TT-33"}, "2020/11/08 02:28" {:status "active", :task "SA_TT-33"}}
-
-  (def init (into {} [["2020/10/31 12:04" {:status "inactive", :task "WELKIN-76"}]
-                      ["2020/10/31 12:05" {:status "active", :task nil}]
-                      ["2020/10/31 12:06" {:status "active", :task "WELKIN-76"}]
-                      ["2020/10/31 12:07" {:status "inactive", :task "WELKIN-76"}]
-                      ["2020/10/31 12:08" {:status "inactive", :task "WELKIN-76"}]
-                      ["2020/10/31 12:09" {:status "inactive", :task "WELKIN-76"}]
-                      ["2020/10/31 12:10" {:status "inactive", :task "WELKIN-76"}]
-                      ["2020/10/31 12:11" {:status "active", :task "WELKIN-76"}]
-                      ["2020/10/31 12:12" {:status "active", :task "WELKIN-76"}]
-                      ["2020/10/31 12:13" {:status "active", :task "WELKIN-76"}]
-                      ["2020/10/31 12:14" {:status "active", :task "WELKIN-76"}]
-                      ["2020/10/31 12:15" {:status "inactive", :task "WELKIN-76"}]
-                      ["2020/10/31 12:16" {:status "inactive", :task "WELKIN-76"}]
-                      ["2020/10/31 12:17" {:status "inactive", :task "WELKIN-76"}]
-                      ["2020/10/31 12:18" {:status "inactive", :task "WELKIN-76"}]
-                      ["2020/10/31 12:19" {:status "inactive", :task "WELKIN-76"}]
-                      ["2020/10/31 12:20" {:status "active", :task "WELKIN-76"}]
-                      ["2020/10/31 12:21" {:status "inactive", :task "WELKIN-76"}]
-                      ["2020/10/31 12:22" {:status "inactive", :task "WELKIN-76"}]
-                      ["2020/10/31 12:23" {:status "inactive", :task "WELKIN-76"}]
-                      ["2020/10/31 12:24" {:status "inactive", :task "WELKIN-76"}]
-                      ["2020/10/31 12:25" {:status "active", :task "WELKIN-76"}]
-                      ["2020/10/31 12:26" {:status "active", :task "WELKIN-76"}]
-                      ["2020/10/31 12:27" {:status "active", :task "WELKIN-76"}]
-                      ["2020/10/31 12:28" {:status "active", :task "WELKIN-76"}]
-                      ["2020/10/31 12:29" {:status "active", :task "WELKIN-76"}]
-                      ["2020/10/31 12:30" {:status "inactive", :task "WELKIN-76"}]
-                      ["2020/10/31 12:31" {:status "inactive", :task "WELKIN-76"}]
-                      ["2020/10/31 12:32" {:status "inactive", :task "WELKIN-76"}]
-                      ["2020/10/31 12:33" {:status "inactive", :task "WELKIN-76"}]
-                      ["2020/10/31 12:34" {:status "inactive", :task "WELKIN-76"}]
-                      ["2020/10/31 12:35" {:status "inactive", :task "WELKIN-76"}]
-                      ["2020/10/31 12:36" {:status "inactive", :task "WELKIN-76"}]
-                      ["2020/10/31 12:37" {:status "inactive", :task "WELKIN-76"}]
-                      ["2020/10/31 12:38" {:status "inactive", :task "WELKIN-76"}]
-                      ["2020/10/31 12:39" {:status "inactive", :task "WELKIN-76"}]]))
-
-  (->> {"2020/10/31 12:34" {:status "inactive", :task "WELKIN-76"}
-        "2020/10/31 12:35" {:status "inactive", :task "WELKIN-76"}
-        ;; "2020/10/31 12:36" {:status "inactive", :task "WELKIN-76"}
-        }
-       (collect-package)
-       (map inactive->active)
-       (map set-inactive-log)
-       (reduce #(merge-packages %1 %2) [])
-       (map set-inactive-task)
-       (map #(assoc %
-               :start (c/to-string (:start %))
-               :end (c/to-string (:end %)))))
-
-  (ls/local-set (.-webContents @w/main-window) "time" init))
+;(comment
+;  (-> (process-ping)
+;      (p/then #(send-ping %))
+;      (p/catch #(print "timer-send-ping " %)))
+;
+;  (-> (process-ping)
+;      (p/then print))
+;
+;  ;(-> (send-ping '({:start    2021-02-09T14:29:00.000Z
+;  ;                  :end      2021-02-09T14:49:00.000Z
+;  ;                  :status   "active"
+;  ;                  :task     "WELKIN-46",
+;  ;                  :inactive false}))
+;  ;    (p/then print))
+;  (-> (api/fetch
+;        {:method   :post
+;         :params   {:name   "r.shylo"
+;                    :token  "JbMjR3MNho0ms9Rv8DtU7gRyeOGwnCfi"
+;                    :secret "M6jnwvmefmG9PlSFWFf1ThSDy9y0aDj7"}
+;         :endpoint :save-ping})
+;      (p/then js->clj)
+;      (p/then print)
+;      (p/catch #(print (js->clj %)))
+;      )
+;
+;  (-> (api/fetch
+;        {:method   :get
+;         :endpoint :sa})
+;      (p/then js->clj)
+;      (p/then print)
+;      (p/catch #(print (js->clj %)))
+;      )
+;
+;  (js/clearInterval @send-interval)
+;
+;  (js/clearInterval @check-interval)
+;
+;  (reset! n/inactive-interval 5)
+;
+;  (-> (process-ping)
+;      ;; (p/then pprint)
+;      (p/then #(send-ping %))
+;      (p/catch #(print %)))
+;
+;  (defn ping->vector [ping-vector]
+;    (->> (collect-package ping-vector)
+;         (map #(inactive->active %))
+;         (map #(set-inactive-log %))
+;         (reduce #(merge-packages %1 %2) [])
+;         (map #(assoc %
+;                 :start (c/to-string (:start %))
+;                 :end (c/to-string (:end %))))))
+;
+;  ;; (-> (->> (into [] init)
+;  ;;          (sort-by first))
+;  ;;     ping->vector
+;  ;;     pr/pprint)
+;  {"2020/11/08 02:23" {:status "active", :task "SA_TT-33"}, "2020/11/08 02:24" {:status "active", :task "SA_TT-33"}, "2020/11/08 02:25" {:status "active", :task "SA_TT-33"}, "2020/11/08 02:26" {:status "active", :task "SA_TT-33"}, "2020/11/08 02:27" {:status "active", :task "SA_TT-33"}, "2020/11/08 02:28" {:status "active", :task "SA_TT-33"}}
+;
+;  (def init (into {} [["2020/10/31 12:04" {:status "inactive", :task "WELKIN-76"}]
+;                      ["2020/10/31 12:05" {:status "active", :task nil}]
+;                      ["2020/10/31 12:06" {:status "active", :task "WELKIN-76"}]
+;                      ["2020/10/31 12:07" {:status "inactive", :task "WELKIN-76"}]
+;                      ["2020/10/31 12:08" {:status "inactive", :task "WELKIN-76"}]
+;                      ["2020/10/31 12:09" {:status "inactive", :task "WELKIN-76"}]
+;                      ["2020/10/31 12:10" {:status "inactive", :task "WELKIN-76"}]
+;                      ["2020/10/31 12:11" {:status "active", :task "WELKIN-76"}]
+;                      ["2020/10/31 12:12" {:status "active", :task "WELKIN-76"}]
+;                      ["2020/10/31 12:13" {:status "active", :task "WELKIN-76"}]
+;                      ["2020/10/31 12:14" {:status "active", :task "WELKIN-76"}]
+;                      ["2020/10/31 12:15" {:status "inactive", :task "WELKIN-76"}]
+;                      ["2020/10/31 12:16" {:status "inactive", :task "WELKIN-76"}]
+;                      ["2020/10/31 12:17" {:status "inactive", :task "WELKIN-76"}]
+;                      ["2020/10/31 12:18" {:status "inactive", :task "WELKIN-76"}]
+;                      ["2020/10/31 12:19" {:status "inactive", :task "WELKIN-76"}]
+;                      ["2020/10/31 12:20" {:status "active", :task "WELKIN-76"}]
+;                      ["2020/10/31 12:21" {:status "inactive", :task "WELKIN-76"}]
+;                      ["2020/10/31 12:22" {:status "inactive", :task "WELKIN-76"}]
+;                      ["2020/10/31 12:23" {:status "inactive", :task "WELKIN-76"}]
+;                      ["2020/10/31 12:24" {:status "inactive", :task "WELKIN-76"}]
+;                      ["2020/10/31 12:25" {:status "active", :task "WELKIN-76"}]
+;                      ["2020/10/31 12:26" {:status "active", :task "WELKIN-76"}]
+;                      ["2020/10/31 12:27" {:status "active", :task "WELKIN-76"}]
+;                      ["2020/10/31 12:28" {:status "active", :task "WELKIN-76"}]
+;                      ["2020/10/31 12:29" {:status "active", :task "WELKIN-76"}]
+;                      ["2020/10/31 12:30" {:status "inactive", :task "WELKIN-76"}]
+;                      ["2020/10/31 12:31" {:status "inactive", :task "WELKIN-76"}]
+;                      ["2020/10/31 12:32" {:status "inactive", :task "WELKIN-76"}]
+;                      ["2020/10/31 12:33" {:status "inactive", :task "WELKIN-76"}]
+;                      ["2020/10/31 12:34" {:status "inactive", :task "WELKIN-76"}]
+;                      ["2020/10/31 12:35" {:status "inactive", :task "WELKIN-76"}]
+;                      ["2020/10/31 12:36" {:status "inactive", :task "WELKIN-76"}]
+;                      ["2020/10/31 12:37" {:status "inactive", :task "WELKIN-76"}]
+;                      ["2020/10/31 12:38" {:status "inactive", :task "WELKIN-76"}]
+;                      ["2020/10/31 12:39" {:status "inactive", :task "WELKIN-76"}]]))
+;
+;  (->> {"2020/10/31 12:34" {:status "inactive", :task "WELKIN-76"}
+;        "2020/10/31 12:35" {:status "inactive", :task "WELKIN-76"}
+;        ;; "2020/10/31 12:36" {:status "inactive", :task "WELKIN-76"}
+;        }
+;       (collect-package)
+;       (map inactive->active)
+;       (map set-inactive-log)
+;       (reduce #(merge-packages %1 %2) [])
+;       (map set-inactive-task)
+;       (map #(assoc %
+;               :start (c/to-string (:start %))
+;               :end (c/to-string (:end %)))))
+;
+;  (ls/local-set (.-webContents @w/main-window) "time" init))

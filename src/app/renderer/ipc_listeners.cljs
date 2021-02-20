@@ -29,6 +29,11 @@
        (fn [event arg]
          (citrus/dispatch! r :home :open-logout))))
 
+(defn force-logout [r]
+  (.on ipcRenderer "force-logout"
+       (fn [event arg]
+         (citrus/dispatch! r :user :logout r))))
+
 (defn about [r]
   (.on ipcRenderer "about"
        (fn [event arg]
@@ -55,6 +60,7 @@
   (theme r)
   (theme-default r)
   (logout r)
+  (force-logout r)
   (about r)
   (clear-notificaiton r)
   (clear-tasks r))

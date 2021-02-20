@@ -34,7 +34,7 @@
 (defmethod control :send-time [_ [date] state]
   (let [token (effects/local-storage
                 nil
-                :poject
+                :project
                 {:method :get
                  :key    :token})]
     {:http {:endpoint :submit

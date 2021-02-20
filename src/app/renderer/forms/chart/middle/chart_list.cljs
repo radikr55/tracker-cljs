@@ -65,9 +65,13 @@
                        :child     (str "(" interval ")")}]
         end-position (* scale (tu/get-interval (t/at-midnight (:end block)) (:end block)))
         on-click     (if (not code)
-                       (when (not (:stub? block)) #(citrus/dispatch! r :chart-popper :save-time
-                                                                    (:start block) (:end block) row-code))
-                       #(open-dialog r % (assoc block :code row-code)))]
+                       (when (not (:stub? block))
+                         #(open-dialog r % (assoc block :code row-code
+                                                        :min-start (:start block)
+                                                        :max-end (:end block))))
+                       #(open-dialog r % (assoc block :code row-code
+                                                      :max-start (:start block)
+                                                      :min-end (:end block))))]
     (check-position not-nil? end-position)
     (tc (if dragging?
           {:component :box

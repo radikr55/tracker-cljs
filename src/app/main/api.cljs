@@ -2,6 +2,8 @@
   (:require [httpurr.client.node :as c]
             [httpurr.status :as status]
             [cljs.pprint :refer [pprint]]
+            [app.main.utils :refer [send-ipc]]
+            [app.main.window :as w]
             [promesa.core :as p]
             [app.main.local-storage :as ls]))
 
@@ -31,7 +33,8 @@
       (node-fn params)
       (p/then (fn [{status :status body :body :as response}]
                 (condp = status
-                  status/ok (p/resolved (parse-body body))
+                  status/ok           (p/resolved (parse-body body))
+                  status/unauthorized (p/rejected (send-ipc @w/main-window "force-logout" nil))
                   (p/rejected (parse-body body)))))))
 
 (defn- method->node-fn [method]

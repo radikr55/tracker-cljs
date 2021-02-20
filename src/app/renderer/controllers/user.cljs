@@ -1,5 +1,6 @@
 (ns app.renderer.controllers.user
-  (:require [citrus.core :as citrus]))
+  (:require [citrus.core :as citrus]
+            [app.renderer.effects :as effects]))
 
 (def initial-state {:login    nil
                     :token    nil
@@ -17,6 +18,16 @@
           :on-error :error-login}})
 
 (defmethod control :logout [event [reconciler] state]
+  (effects/local-storage
+    nil
+    :project
+    {:method :remove
+     :key    :time})
+  (effects/local-storage
+    nil
+    :project
+    {:method :remove
+     :key    :current-task})
   (citrus/dispatch! reconciler :router :push :login)
   {:state         (dissoc state :token)
    :local-storage {:method :remove
