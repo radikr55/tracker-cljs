@@ -62,7 +62,7 @@
   {:state args})
 
 (defmethod control :success-tasks [event [args] state]
-  {:state (assoc state :right (:list args))})
+  {:state (assoc state :right args)})
 
 (defmethod control :success-by-project-id [event [args] state]
   {:state (assoc state :right (:right args))})

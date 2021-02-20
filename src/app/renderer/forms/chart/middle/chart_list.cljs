@@ -18,8 +18,8 @@
                                 :mouseY (.-clientY event)}
                      :row      row}))
 
-(defn check-position [not-nil? end-position]
-  (when (and not-nil?
+(defn check-position [show? end-position]
+  (when (and show?
              (or (not (:time @last-active-time->ref))
                  (and (:time @last-active-time->ref)
                       (< end-position
@@ -72,7 +72,7 @@
                        #(open-dialog r % (assoc block :code row-code
                                                       :max-start (:start block)
                                                       :min-end (:end block))))]
-    (check-position not-nil? end-position)
+    (check-position (and not-nil? (not= (:interval block) 0) ) end-position)
     (tc (if dragging?
           {:component :box
            :opts      {:height    "100%"
@@ -155,7 +155,7 @@
 ;    (.scrollTo parent-element
 ;               (clj->js {:left new-scroll}))))
 
-(defn zoom [r e scale old-scale]
+(defn zoom [r e scale]
   (let [delta        (.-deltaY e)
         window-event (.-event js/window)
         ctrl?        (.-ctrlKey window-event)]
@@ -171,14 +171,13 @@
   (let [list         (rum/react (citrus/subscription r [:chart :list]))
         chart        (rum/react (citrus/subscription r [:chart :chart]))
         scale        (rum/react (citrus/subscription r [:home :scale]))
-        old-scale    (rum/react (citrus/subscription r [:home :old-scale]))
         current-task (rum/react (citrus/subscription r [:chart :current-task]))]
     (citrus/dispatch! r :home :set-middle-list-ref middle-list-ref)
     (reset! last-active-time->ref {:position nil})
     (tc {:component :box
          :opts      {:overflow "hidden"
                      :ref      middle-list-ref
-                     :onWheel  #(zoom r % scale old-scale)
+                     :onWheel  #(zoom r % scale)
                      :height   (str "calc(100vh - " (+ 2 h-top (* 2 h-header)) "px)")}
          :child     (map-indexed #(rum/with-key
                                     (item r %2 h-body %1 chart scale current-task)
