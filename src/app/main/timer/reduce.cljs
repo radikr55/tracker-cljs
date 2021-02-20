@@ -10,7 +10,7 @@
             [cljs.pprint :refer [pprint]]
             [cljs-time.format :as ft]))
 
-(def inactive-interval 2)
+(def inactive-interval 5)
 (def time-send (* 60 inactive-interval))                    ; sec
 (def time-check 5)                                          ; sec
 (def format "yyyy/MM/dd HH:mm")
@@ -154,7 +154,7 @@
                                                      :offset offset)
                                          :endpoint :save-ping})
                                       (p/then #(print %))
-                                      ;(p/then #(ls/local-remove web-content "time"))
+                                      (p/then #(ls/local-remove web-content "time"))
                                       (p/then #(send-ipc @w/main-window "refresh" nil))
                                       (p/catch #(print %))))]
       (when (validate-package ->packages)
@@ -196,7 +196,6 @@
 (defonce check-inactive
          (reset! check-interval
                  (js/setTimeout check-fun (* time-check 1000))))
-
 
 (comment
   (-> (process-ping)

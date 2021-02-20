@@ -45,7 +45,7 @@
         chart-popper-open (rum/react (citrus/subscription r [:chart-popper :open]))
         wheel             (when (not chart-popper-open)
                             #(timeline/on-wheel-container % chart-ref scale))
-        width             (str (* scale 1440) "px")]
+        width             (str (* scale 1439) "px")]
     (tc {:component :box
          :opts      {:width     (str (- @atom-width @left-width) "px")
                      :onWheel   wheel

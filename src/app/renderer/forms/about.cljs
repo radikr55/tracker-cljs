@@ -18,8 +18,7 @@
   (tc {:component :dialog
        :opts      {:open      (rum/react (citrus/subscription r [:home :about]))
                    :fullWidth true
-                   :maxWidth  "xs"
-                   :onClose   #(citrus/subscription r :home :close-about)}
+                   :maxWidth  "xs"}
        :child     [{:component :dialog-title
                     :opts      {:key       "dialog-title"
                                 :className "about-dialog-header"}

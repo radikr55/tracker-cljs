@@ -8,6 +8,8 @@
             [citrus.core :as citrus]
             ["@material-ui/core" :refer [CssBaseline]]
             ["@material-ui/core/styles" :refer [createMuiTheme MuiThemeProvider]]
+            ["react-dnd-html5-backend" :refer [HTML5Backend]]
+            ["react-dnd" :refer [DndProvider]]
             [app.renderer.forms.search :refer [Search]]))
 
 (defn create-theme [dark?]
@@ -53,17 +55,20 @@
     (rum/react (citrus/subscription r [:refresh]))
     (citrus/dispatch! r :user :init-token token)
     (rum/adapt-class
-      MuiThemeProvider {:theme theme}
-      (js/React.createElement CssBaseline)
-      [:div
-       (dialog-logout r)
-       (dialog-about r)
-       (loading r)
-       (snack r)
-       (case route
-         :login (Login r)
-         :search (Search r)
-         :home (Home r)
-         (if (boolean token)
-           (Home r)
-           (Login r)))])))
+      DndProvider {:backend HTML5Backend}
+      (rum/adapt-class
+        MuiThemeProvider {:theme theme}
+        (js/React.createElement CssBaseline)
+        [:div
+         (dialog-logout r)
+         (dialog-about r)
+         (loading r)
+         (snack r)
+         (case route
+           :login (Login r)
+           :search (Search r)
+           :home (Home r)
+           (if (boolean token)
+             (Home r)
+             (Login r)))]))
+    ))

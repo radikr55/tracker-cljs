@@ -8,7 +8,11 @@
             [app.main.timer.ping :as ping]
             [app.main.timer.reduce :as r]
             [app.main.utils :refer [send-ipc]]
+            [promesa.core :as p]
+            ["path" :as path]
+            ["os" :as os]
             ["electron" :as electron :refer [app
+                                             session
                                              Menu
                                              BrowserWindow
                                              globalShortcut
@@ -26,6 +30,13 @@
 
 (defn add-shortcuts []
   (.register globalShortcut "CommandOrControl+H" #(send-ipc @w/main-window "about" nil)))
+
+;(def react-dev-tools-path (.join path (.homedir os)
+;                                 "/Library/Application Support/Google/Chrome/Profile 1/Extensions/fmkadmapgofadopljbjfkapdkoienihi/4.10.1_0"))
+;
+;(-> (.whenReady app)
+;    (p/then #(doto (.-defaultSession session)
+;               (.loadExtension react-dev-tools-path (clj->js {:allowFileAccess true})))))
 
 (defn init-browser []
   (reset! w/main-window (BrowserWindow.

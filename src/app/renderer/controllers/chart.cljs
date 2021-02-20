@@ -53,8 +53,10 @@
         end-day   (t/minus- (t/at-midnight (t/plus- end (t/days 1))) (t/minutes 1))]
     (cond-> origin
             (t/after? start start-day) (->> (concat [{:start start-day
+                                                      :stub?  true
                                                       :end   start}]))
             (t/before? end end-day) (concat [{:start end
+                                              :stub?  true
                                               :end   end-day}]))))
 
 (defn add-middle-stubs [origin]
@@ -66,9 +68,11 @@
         (nil? origin) result
         (nil? previously) (recur (next origin) current (conj result current))
         :else (let [previously-end (:end previously)
-                    current-start  (:start current)]
+                    current-start  (:start current)
+                    stub?          (t/= (:end previously) (:start previously))]
                 (if (not (t/= previously-end current-start))
                   (recur (next origin) current (conj result {:start previously-end
+                                                             :stub?  stub?
                                                              :end   current-start}
                                                      current))
                   (recur (next origin) current (conj result current))))))))
@@ -88,6 +92,70 @@
                (assoc % :format-start format-start
                         :format-end format-end
                         :format-interval format-interval)))))
+
+(defn merge-nearby [[key list]]
+  [key (loop [origin     list
+              previously nil
+              result     []]
+         (let [current         (first origin)
+               current-start   (:start current)
+               current-end     (:end current)
+               current-code    (:code current)
+               previously-end  (:end previously)
+               previously-code (:code previously)
+               btlast          (into [] (butlast result))
+               nearby?         (and (not (nil? current-code))
+                                    (= previously-code current-code)
+                                    (t/= current-start previously-end))]
+           (cond
+             (nil? origin) result
+             nearby? (let [el (assoc previously :end current-end)]
+                       (recur (next origin) el (conj btlast el)))
+             :else (recur (next origin) current (conj result current)))))])
+
+(defn activity-arr [arr]
+  (if (not-empty arr)
+    {:activity arr}
+    {}))
+
+(defn add-mock [date code ->some? arr]
+  (let [contains-away (some ->some? arr)]
+    (if contains-away
+      arr
+      (conj arr
+            {:code  code
+             :start (t/at-midnight date)
+             :end   (t/at-midnight date)}))))
+
+(defn add-empty-tasks [date descs arr]
+  (loop [origin descs
+         result arr]
+    (let [current (first origin)]
+      (cond
+        (nil? origin) result
+        :else (let [current-code (:code current)
+                    with-mock    (add-mock date current-code #(= (:code %) current-code) result)]
+                (recur (next origin) with-mock))))))
+
+(defn compare-date [a b]
+  (let [left  (:start a)
+        right (:start b)]
+    (cond
+      (t/before? left right) -1
+      (t/after? left right) 1
+      :else 0)))
+
+(defn group-by-code [arr]
+  (let [->group (group-by :code arr)
+        res     (for [[code value] ->group]
+                  {code (->> arr
+                             (filter #(not (nil? (:code %))))
+                             (filter #(not= (:code %) code))
+                             (filter #(not (t/= (:start %) (:end %))))
+                             (map #(dissoc % :code))
+                             (into value)
+                             (sort compare-date))})]
+    (into {} res)))
 
 (defmulti control (fn [event] event))
 
@@ -226,7 +294,7 @@
                           :start (c/to-string start-day)
                           :end (c/to-string end-day))
               :method   :delete
-              :on-load  :success-delete-task
+              :on-load  :success-delete-task-empty
               :on-error :error}})
     ))
 
@@ -239,6 +307,24 @@
                      :key    :current-task}}))
 
 (defmethod control :success-delete-task [event [args r] state]
+  (let [date  (:date state)
+        codes (:codes args)
+        token (effects/local-storage
+                nil
+                :poject
+                {:method :get
+                 :key    :token})]
+    {:http {:endpoint :submit
+            :params   (assoc token :query
+                                   [{:issueCode (first codes)
+                                     :timeSpent 0
+                                     :date      (c/to-string (tu/merge-date-time date (tu/field->to-time "12:00")))
+                                     :offset    (.getTimezoneOffset (js/Date.))}])
+            :method   :post
+            :on-load  :success-delete-task-empty
+            :on-error :error}}))
+
+(defmethod control :success-delete-task-empty [event [args r] state]
   (let [codes        (:codes args)
         exist        (-> (effects/local-storage nil
                                                 :poject
@@ -284,70 +370,6 @@
             :method   :post
             :on-load  :success-track-log-load
             :on-error :error}}))
-
-(defn merge-nearby [[key list]]
-  [key (loop [origin     list
-              previously nil
-              result     []]
-         (let [current         (first origin)
-               current-start   (:start current)
-               current-end     (:end current)
-               current-code    (:code current)
-               previously-end  (:end previously)
-               previously-code (:code previously)
-               btlast          (into [] (butlast result))
-               nearby?         (and (not (nil? current-code))
-                                    (= previously-code current-code)
-                                    (t/= current-start previously-end))]
-           (cond
-             (nil? origin) result
-             nearby? (let [el (assoc previously :end current-end)]
-                       (recur (next origin) el (conj btlast el)))
-             :else (recur (next origin) current (conj result current)))))])
-
-(defn activity-arr [arr]
-  (if (not-empty arr)
-    {:ativity arr}
-    {}))
-
-(defn add-mock [date code ->some? arr]
-  (let [contains-away (some ->some? arr)]
-    (if contains-away
-      arr
-      (conj arr
-            {:code  code
-             :start (t/at-midnight date)
-             :end   (t/at-midnight date)}))))
-
-(defn add-empty-tasks [date descs arr]
-  (loop [origin descs
-         result arr]
-    (let [current (first origin)]
-      (cond
-        (nil? origin) result
-        :else (let [current-code (:code current)
-                    with-mock    (add-mock date current-code #(= (:code %) current-code) result)]
-                (recur (next origin) with-mock))))))
-
-(defn compare-date [a b]
-  (let [left  (:start a)
-        right (:start b)]
-    (cond
-      (t/before? left right) -1
-      (t/after? left right) 1
-      :else 0)))
-
-(defn group-by-code [arr]
-  (let [->group (group-by :code arr)
-        res     (for [[code value] ->group]
-                  {code (->> arr
-                             (filter #(not (nil? (:code %))))
-                             (filter #(not= (:code %) code))
-                             (filter #(not (t/= (:start %) (:end %))))
-                             (map #(dissoc % :code))
-                             (into value)
-                             (sort compare-date))})]
-    (into {} res)))
 
 (defmethod control :success-track-log-load [event [result] init-state]
   (let [date          (:date init-state)

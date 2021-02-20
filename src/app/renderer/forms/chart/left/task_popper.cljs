@@ -37,15 +37,14 @@
                                    :opts      {:className "menu-item-typography"
                                                :key       "typography"}
                                    :child     "View in JIRA"}]}
-                     (when (tu/eq-by-date date (t/now))
-                       {:component :menu-item
-                        :opts      {:key     "remove"
-                                    :onClick #(citrus/dispatch! r :chart :delete-current-task code)}
-                        :child     [{:component :list-item-icon
-                                     :opts      {:key "icon"}
-                                     :child     {:component :close
-                                                 :opts      {:className "menu-item-icon"}}}
-                                    {:component :typography
-                                     :opts      {:key       "typography"
-                                                 :className "menu-item-typography"}
-                                     :child     "Remove Task"}]})]}))))
+                     {:component :menu-item
+                      :opts      {:key     "remove"
+                                  :onClick #(citrus/dispatch! r :chart :delete-current-task code)}
+                      :child     [{:component :list-item-icon
+                                   :opts      {:key "icon"}
+                                   :child     {:component :close
+                                               :opts      {:className "menu-item-icon"}}}
+                                  {:component :typography
+                                   :opts      {:key       "typography"
+                                               :className "menu-item-typography"}
+                                   :child     "Remove Task"}]}]}))))

@@ -1,7 +1,6 @@
 (ns app.renderer.utils
   (:require
     ["react-draggable" :default Draggable]
-    ["react-beautiful-dnd" :as dnd]
     ["react-simple-timefield" :default TimeField]
     ["@material-ui/core/styles" :refer [styled]]
     ["@material-ui/lab" :refer [Alert]]
@@ -89,9 +88,6 @@
     :snack Snackbar
     :alert Alert
     :badge Badge
-    :dnd-context dnd/DragDropContext
-    :dnd-droppable dnd/Droppable
-    :dnd-draggable dnd/Draggable
     nil))
 
 (defn obj-js [component]
