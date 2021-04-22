@@ -12,20 +12,34 @@ on:
     type: [created]
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
+ release:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [macos-latest, ubuntu-latest, windows-latest]
+
     steps:
-    - uses: actions/checkout@v2
-    - uses: actions/setup-node@v2
-      with:
-        node-version: '10.22.0'
-    - run: npm install
-    - run: npm run build
-    - run: npm run dist
-      env:
-        NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
-    - uses: actions/upload-artifact@v2
-      with:
-        name: my-artifact
-        path: dist/
-  
+      - name: Check out Git repository
+        uses: actions/checkout@v1
+
+      - name: Install Node.js, NPM and Yarn
+        uses: actions/setup-node@v1
+        with:
+          node-version: 10
+          
+      - name: Build Electron app
+      - run: npm run build
+
+      - name: Build/release Electron app
+        uses: samuelmeuli/action-electron-builder@v1
+        with:
+          # GitHub token, automatically provided to the action
+          # (No need to define this secret in the repo settings)
+          github_token: ${{ secrets.github_token }}
+          
+      - name: Upload artifact
+      - uses: actions/upload-artifact@v2
+        with:
+           name: my-artifact
+           path: dist/
