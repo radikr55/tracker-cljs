@@ -8,8 +8,7 @@ on:
     branches: [ master ]
   pull_request:
     branches: [ master ]
-  release:
-    type: [created]
+
 
 jobs:
  release:
@@ -17,7 +16,7 @@ jobs:
 
     strategy:
       matrix:
-        os: [macos-latest, ubuntu-latest, windows-latest]
+        os: [ubuntu-latest]
 
     steps:
       - name: Check out Git repository
@@ -38,7 +37,7 @@ jobs:
           github_token: ${{ secrets.github_token }}
           
       - name: Upload artifact
-      - uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v2
         with:
            name: my-artifact
            path: dist/
