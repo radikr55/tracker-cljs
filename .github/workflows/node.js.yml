@@ -27,8 +27,7 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: 10
-          
-      - name: Build Electron app
+      - run: npm install
       - run: npm run build
 
       - name: Build/release Electron app
