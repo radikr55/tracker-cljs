@@ -8,7 +8,7 @@
         "start": "electron .",
         "dev": "sass --watch resources/public/sass:resources/public/css & ./node_modules/.bin/shadow-cljs watch main renderer",
         "test": "./node_modules/.bin/shadow-cljs compile main renderer test",
-        "build": "./node_modules/.bin/shadow-cljs compile main release",
+        "build": "sass resources/public/sass:resources/public/css & ./node_modules/.bin/shadow-cljs compile main release",
         "clean": "rm -rf resources/public/js/* && rm -rf target",
         "dist": "electron-builder"
     },
@@ -20,8 +20,7 @@
     "license": "MIT",
     "devDependencies": {
         "electron-builder": "21.2.0",
-        "electron-devtools-installer": "3.1.1",
-        "electron-nightly": "13.0.0-nightly.20210202",
+        "electron": "10.1.1",
         "shadow-cljs": "2.8.110"
     },
     "dependencies": {
