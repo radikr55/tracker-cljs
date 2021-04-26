@@ -72,7 +72,7 @@
                        #(open-dialog r % (assoc block :code row-code
                                                       :max-start (:start block)
                                                       :min-end (:end block))))]
-    (check-position (and not-nil? (not= (:interval block) 0) ) end-position)
+    (check-position (and not-nil? (not= (:interval block) 0)) end-position)
     (tc (if dragging?
           {:component :box
            :opts      {:height    "100%"
@@ -104,11 +104,12 @@
                      (filter #(= (:code %) code))
                      first
                      :chart)
-        on-drop (fn [r item code]
+        on-drop (fn [r item drop-code]
                   (let [{start :start
-                         end   :end} (:block (js->clj item :keywordize-keys true))]
-                    (citrus/dispatch! r :chart-popper :save-time
-                                      start end code))
+                         end   :end
+                         code  :code} (:block (js->clj item :keywordize-keys true))]
+                    (if (not= code drop-code) (citrus/dispatch! r :chart-popper :save-time
+                                                                start end drop-code)))
                   (clj->js {}))
         collect (fn [monitor] {:over? (and (.isOver monitor)
                                            (not= code

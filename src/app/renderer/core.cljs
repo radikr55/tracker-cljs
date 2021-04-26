@@ -1,6 +1,7 @@
 (ns app.renderer.core
   (:require [rum.core :as rum]
             [goog.dom :as dom]
+            [cljs-time.core :as t]
             ["electron-log" :as log]
             [citrus.core :as citrus]
             [app.renderer.effects :as effects]
@@ -43,6 +44,25 @@
                               :http          effects/http}}))
 
 (defonce init-ctrl (citrus/broadcast-sync! reconciler :init))
+
+(defn check-not-submitted [date not-submitted]
+  (if (some #(t/= date %) not-submitted)
+    (effects/ipc-renderer nil nil {:type "update-clear-notification"
+                                   :args true})
+    (effects/ipc-renderer nil nil {:type "update-clear-notification"
+                                   :args false})))
+
+(add-watch (citrus/subscription reconciler [:chart :date]) :enable-clear-notification
+           (fn [_ _ old new]
+             (let [date          @(citrus/subscription reconciler [:chart :date])
+                   not-submitted @(citrus/subscription reconciler [:chart :not-submitted])]
+               (check-not-submitted date not-submitted))))
+
+(add-watch (citrus/subscription reconciler [:chart :not-submitted]) :enable-clear-notification
+           (fn [_ _ old new]
+             (let [date          @(citrus/subscription reconciler [:chart :date])
+                   not-submitted @(citrus/subscription reconciler [:chart :not-submitted])]
+               (check-not-submitted date not-submitted))))
 
 (defn start! []
   (ipc/start! reconciler)
