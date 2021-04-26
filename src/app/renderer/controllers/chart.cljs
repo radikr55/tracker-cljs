@@ -53,10 +53,10 @@
         end-day   (t/minus- (t/at-midnight (t/plus- end (t/days 1))) (t/minutes 1))]
     (cond-> origin
             (t/after? start start-day) (->> (concat [{:start start-day
-                                                      :stub?  true
+                                                      :stub? true
                                                       :end   start}]))
             (t/before? end end-day) (concat [{:start end
-                                              :stub?  true
+                                              :stub? true
                                               :end   end-day}]))))
 
 (defn add-middle-stubs [origin]
@@ -72,7 +72,7 @@
                     stub?          (t/= (:end previously) (:start previously))]
                 (if (not (t/= previously-end current-start))
                   (recur (next origin) current (conj result {:start previously-end
-                                                             :stub?  stub?
+                                                             :stub? stub?
                                                              :end   current-start}
                                                      current))
                   (recur (next origin) current (conj result current))))))))

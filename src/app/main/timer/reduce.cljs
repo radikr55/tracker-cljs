@@ -57,7 +57,8 @@
 (defn inactive->active
   "Switch incative status to active if less then 5"
   [ping-package]
-  (if (interval-less? ping-package)
+  (if (and (not (:last? ping-package))
+           (interval-less? ping-package))
     (assoc ping-package :status "active")
     ping-package))
 
@@ -86,6 +87,10 @@
                           :status current-status
                           :task   current-task}))))
 
+(defn set-last-to-inactive
+  [ping-package]
+  (set-top ping-package (assoc (last ping-package) :last? true)))
+
 (defn collect-package [map-ping]
   (loop [origin map-ping
          result []]
@@ -109,6 +114,7 @@
                     (when (seq ping-vector)
                       (->> ping-vector
                            (collect-package)
+                           (set-last-to-inactive)
                            (map inactive->active)
                            (map set-inactive-log)
                            (reduce #(merge-packages %1 %2) [])
@@ -129,7 +135,7 @@
          (not last-inactive?))))
 
 (defn fix-packages
-  "add previously end time to if it eq p.end + 1 = c.start"
+  "add previously end time if p.end + 1 = c.start"
   [packages]
   (let [last-send-log-end (:end @last-send-log)
         last-end-date     (c/to-date-time last-send-log-end)
@@ -140,7 +146,6 @@
       (cons (assoc c-first :start last-send-log-end)
             (drop 1 packages))
       packages)))
-
 
 (defn send-ping [packages]
   (when @w/main-window
@@ -153,17 +158,19 @@
                                                      :data ->packages
                                                      :offset offset)
                                          :endpoint :save-ping})
-                                      (p/then #(print "success send-ping"))
                                       (p/then #(ls/local-remove web-content "time"))
                                       (p/then #(send-ipc @w/main-window "refresh" nil))
                                       (p/catch #(print "error send-ping" %))))]
-      (when (and
-              (validate-package ->packages)
-              (ls/local-get web-content "token"))
-        (-> (ls/local-get web-content "token")
-            (p/then send-fetch)
-            (p/then #(reset! last-send-log (last ->packages)))
-            (p/catch #(print %)))))))
+      (-> (ls/local-get web-content "token")
+          (p/then (fn [token]
+                    (when (and
+                            (validate-package ->packages)
+                            token)
+                      (-> (ls/local-get web-content "token")
+                          (p/then send-fetch)
+                          (p/then #(reset! last-send-log (last ->packages)))
+                          (p/catch #(print %))))))
+          (p/catch #(print %))))))
 
 (defn inactive-show [package]
   (when (seq package)
@@ -180,13 +187,17 @@
                                                   (c/to-date (:end element))))
         (send-ping package)))))
 
+(defn send-fun []
+  (-> (process-ping)
+      (p/then #(send-ping %))
+      (p/catch #(print "timer-send-ping " %)))
+  (js/clearTimeout @send-interval)
+  (reset! check-interval
+          (js/setTimeout send-fun (* time-send 1000))))
+
 (defonce timer-send-ping
          (reset! send-interval
-                 (js/setInterval (fn []
-                                   (-> (process-ping)
-                                       (p/then #(send-ping %))
-                                       (p/catch #(print "timer-send-ping " %))))
-                                 (* time-send 1000))))
+                 (js/setTimeout send-fun (* time-send 1000))))
 
 (defn check-fun []
   (-> (process-ping)
@@ -198,6 +209,18 @@
 (defonce check-inactive
          (reset! check-interval
                  (js/setTimeout check-fun (* time-check 1000))))
+
+
+
+;; (-> (process-ping)
+;;     (p/then #(send-ping %))
+;;     (p/catch #(print "timer-send-ping " %)))
+
+;; (-> (->> (into [] {"2021/04/25 19:28" {:status "active", :task "WELKIN-9"}, "2021/04/25 19:56" {:status "inactive", :task "WELKIN-9"}, "2021/04/25 19:42" {:status "active", :task "WELKIN-9"}, "2021/04/25 19:58" {:status "inactive", :task "WELKIN-9"}, "2021/04/25 19:34" {:status "inactive", :task "WELKIN-9"}, "2021/04/25 19:33" {:status "inactive", :task "WELKIN-9"}, "2021/04/25 19:32" {:status "inactive", :task "WELKIN-9"}, "2021/04/25 20:03" {:status "active", :task "WELKIN-9"}, "2021/04/25 19:50" {:status "inactive", :task "WELKIN-9"}, "2021/04/25 19:30" {:status "inactive", :task "WELKIN-9"}, "2021/04/25 19:41" {:status "active", :task "WELKIN-9"}, "2021/04/25 19:29" {:status "inactive", :task "WELKIN-9"}, "2021/04/25 19:52" {:status "active", :task "WELKIN-9"}, "2021/04/25 19:26" {:status "active", :task "WELKIN-9"}, "2021/04/25 19:51" {:status "active", :task "WELKIN-9"}, "2021/04/25 19:59" {:status "inactive", :task "WELKIN-9"}, "2021/04/25 19:47" {:status "inactive", :task "WELKIN-9"}, "2021/04/25 19:37" {:status "active", :task "WELKIN-9"}, "2021/04/25 19:27" {:status "active", :task "WELKIN-9"}, "2021/04/25 19:31" {:status "inactive", :task "WELKIN-9"}, "2021/04/25 19:36" {:status "inactive", :task "WELKIN-9"}, "2021/04/25 19:39" {:status "active", :task "WELKIN-9"}, "2021/04/25 19:54" {:status "inactive", :task "WELKIN-9"}, "2021/04/25 19:43" {:status "active", :task "WELKIN-9"}, "2021/04/25 19:48" {:status "inactive", :task "WELKIN-9"}, "2021/04/25 19:38" {:status "active", :task "WELKIN-9"}, "2021/04/25 19:35" {:status "inactive", :task "WELKIN-9"}, "2021/04/25 20:01" {:status "inactive", :task "WELKIN-9"}, "2021/04/25 19:57" {:status "inactive", :task "WELKIN-9"}, "2021/04/25 20:02" {:status "inactive", :task "WELKIN-9"}, "2021/04/25 19:46" {:status "inactive", :task "WELKIN-9"}, "2021/04/25 19:53" {:status "inactive", :task "WELKIN-9"}, "2021/04/25 19:24" {:status "inactive", :task "WELKIN-9"}, "2021/04/25 20:00" {:status "inactive", :task "WELKIN-9"}, "2021/04/25 19:45" {:status "active", :task "WELKIN-9"}, "2021/04/25 19:49" {:status "inactive", :task "WELKIN-9"}, "2021/04/25 19:44" {:status "active", :task "WELKIN-9"}, "2021/04/25 19:25" {:status "active", :task "WELKIN-9"}, "2021/04/25 19:40" {:status "active", :task "WELKIN-9"}, "2021/04/25 19:55" {:status "inactive", :task "WELKIN-9"}})
+;;          (sort-by first))
+;;     ping->vector
+;;     pprint)
+
 
 ;(comment
 ;  (-> (process-ping)
@@ -243,20 +266,18 @@
 ;      (p/then #(send-ping %))
 ;      (p/catch #(print %)))
 ;
-;  (defn ping->vector [ping-vector]
-;    (->> (collect-package ping-vector)
-;         (map #(inactive->active %))
-;         (map #(set-inactive-log %))
-;         (reduce #(merge-packages %1 %2) [])
-;         (map #(assoc %
-;                 :start (c/to-string (:start %))
-;                 :end (c/to-string (:end %))))))
+;; (defn ping->vector [ping-vector]
+;;   (->> (collect-package ping-vector)
+;;        (map #(inactive->active %))
+;;        (map #(set-inactive-log %))
+;;        (reduce #(merge-packages %1 %2) [])
+;;        (map #(assoc %
+;;                     :start (c/to-string (:start %))
+;;                     :end (c/to-string (:end %))))))
+
 ;
-;  ;; (-> (->> (into [] init)
-;  ;;          (sort-by first))
-;  ;;     ping->vector
-;  ;;     pr/pprint)
 ;  {"2020/11/08 02:23" {:status "active", :task "SA_TT-33"}, "2020/11/08 02:24" {:status "active", :task "SA_TT-33"}, "2020/11/08 02:25" {:status "active", :task "SA_TT-33"}, "2020/11/08 02:26" {:status "active", :task "SA_TT-33"}, "2020/11/08 02:27" {:status "active", :task "SA_TT-33"}, "2020/11/08 02:28" {:status "active", :task "SA_TT-33"}}
+
 ;
 ;  (def init (into {} [["2020/10/31 12:04" {:status "inactive", :task "WELKIN-76"}]
 ;                      ["2020/10/31 12:05" {:status "active", :task nil}]
@@ -295,17 +316,23 @@
 ;                      ["2020/10/31 12:38" {:status "inactive", :task "WELKIN-76"}]
 ;                      ["2020/10/31 12:39" {:status "inactive", :task "WELKIN-76"}]]))
 ;
-;  (->> {"2020/10/31 12:34" {:status "inactive", :task "WELKIN-76"}
-;        "2020/10/31 12:35" {:status "inactive", :task "WELKIN-76"}
-;        ;; "2020/10/31 12:36" {:status "inactive", :task "WELKIN-76"}
-;        }
-;       (collect-package)
-;       (map inactive->active)
-;       (map set-inactive-log)
-;       (reduce #(merge-packages %1 %2) [])
-;       (map set-inactive-task)
-;       (map #(assoc %
-;               :start (c/to-string (:start %))
-;               :end (c/to-string (:end %)))))
+
+
+;; (->> {"2020/10/31 12:34" {:status "active", :task "WELKIN-76"}
+;;       "2020/10/31 12:35" {:status "active", :task "WELKIN-76"}
+;;       "2020/10/31 12:36" {:status "active", :task "WELKIN-76"}
+;;       "2020/10/31 12:37" {:status "inactive", :task "WELKIN-76"}
+;;       "2020/10/31 12:38" {:status "inactive", :task "WELKIN-76"}}
+;;      (collect-package)
+;;      (set-last-to-inactive)
+
+;;      (map inactive->active)
+;;      ;; (map set-inactive-log)
+;;      ;; (reduce #(merge-packages %1 %2) [])
+;;      ;; (map set-inactive-task)
+;;      (map #(assoc %
+;;                   :start (c/to-string (:start %))
+;;                   :end (c/to-string (:end %)))))
+
 ;
 ;  (ls/local-set (.-webContents @w/main-window) "time" init))

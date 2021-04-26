@@ -51,7 +51,7 @@
   (add-shortcuts)
   (w/load-local-index)
   (.setApplicationMenu Menu (.buildFromTemplate Menu
-                                                (w/menu-template "" 'default))))
+                                                (w/menu-template "" 'default false))))
 
 (defn main []
   (.on app "window-all-closed" #(.quit app))

@@ -1,9 +1,9 @@
 (ns app.main.window
   (:require [app.main.local-storage :as ls]
+            [app.main.utils :refer [send-ipc]]
             [promesa.core :as p]
             ["electron-log" :as log]
             ["path" :as path]
-            [app.main.utils :refer [send-ipc]]
             ["electron" :as electron :refer [Menu
                                              app
                                              shell
@@ -42,14 +42,15 @@
     (do (set-theme)
         (send-ipc @main-window "theme-default" theme))))
 
-(defn menu-template [name theme]
+(defn menu-template [name theme notification?]
   (clj->js [{:label   "TaskTracker"
              :submenu [{:label       "Refresh"
                         :accelerator "CmdOrCtrl+Shift+R"
-                        :click       #(send-ipc @main-window "refresh" nil)}
+                        :click       #((resolve 'app.main.timer.reduce/send-fun))}
                        {:type "separator"}
-                       {:label "Clear Notifications"
-                        :click #(send-ipc @main-window "clear-notification" nil)}
+                       {:label   "Clear Notifications"
+                        :enabled notification?
+                        :click   #(send-ipc @main-window "clear-notification" nil)}
                        {:label "Clear Inactive Tasks"
                         :click #(send-ipc @main-window "clear-tasks" nil)}
                        {:type "separator"}
@@ -93,17 +94,17 @@
                         :click       #(send-ipc @main-window "theme" (if (= 'dark theme) "light" "dark"))}
                        {:role "toggledevtools"}]}]))
 
-(defn set-menu []
+(defn set-menu [notification?]
   (let [web-content (.-webContents @main-window)]
     (-> (p/all [(ls/local-get web-content "token")
                 (ls/local-get web-content "theme")])
         (p/then (fn [[token theme]]
                   (.setApplicationMenu Menu (.buildFromTemplate Menu
-                                                                (menu-template (:name token) theme))))))))
+                                                                (menu-template (:name token) theme notification?))))))))
 
 (defn load-local-index []
   (.loadURL @main-window (str "file://" js/__dirname "/public/index.html"))
-  (set-menu)
+  (set-menu false)
   (.on app "before-quit" #(reset! force-quit true))
   (.on @main-window "closed" #(reset! main-window nil))
   (.on @main-window "close" #(when (not @force-quit)
@@ -112,7 +113,12 @@
 
 (defonce on-get-name
          (.on ipcMain "update-title-bar-menu"
-              #(set-menu)))
+              #(set-menu false)))
+
+
+(defonce on-get-chage-date
+         (.on ipcMain "update-clear-notification"
+              #(set-menu %2)))
 
 (comment
   (menu-template "rad" true))
