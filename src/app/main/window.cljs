@@ -4,7 +4,6 @@
             [promesa.core :as p]
             ["electron-log" :as log]
             ["path" :as path]
-            [app.main.utils :refer [send-ipc]]
             ["electron" :as electron :refer [Menu
                                              app
                                              shell

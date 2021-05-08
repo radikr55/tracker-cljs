@@ -3,7 +3,7 @@
     "version": "0.2.0",
     "description": "TimeTracker",
     "main": "resources/main.js",
-    "server-link": "http://localhost:7000/",
+    "server-link": "https://api.it-dev.softarex.com/",
     "scripts": {
         "start": "electron .",
         "dev": "sass --watch resources/public/sass:resources/public/css & ./node_modules/.bin/shadow-cljs watch main renderer",
