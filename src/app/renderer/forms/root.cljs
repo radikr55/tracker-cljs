@@ -65,9 +65,9 @@
          (loading r)
          (snack r)
          (case route
-           :login (Login r)
+           :login  (Login r)
            :search (Search r)
-           :home (Home r)
+           :home   (Home r)
            (if (boolean token)
              (Home r)
              (Login r)))]))
