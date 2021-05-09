@@ -9,7 +9,8 @@
                     :button    nil
                     :sevetiy   nil
                     :auto-hide false
-                    :message   nil})
+                    :message   nil
+                    :offline?  false})
 
 (defmulti control (fn [event] event))
 
@@ -40,14 +41,20 @@
                        {:state {:code     400002
                                 :severity "error"
                                 :message  "Unauthorized"}})
-      :else {:state {:code     400003
-                     :severity "error"
-                     :message  error}})))
+      (= 503 status) (do (citrus/dispatch! r :router :push :offline)
+                         {:state {:offline? true}})
+      :else          {:state {:code     400003
+                              :severity "error"
+                              :message  error}})))
 
-;; (defmethod control :offline [_ [error r]]
-;;   {:state {:code     400004
-;;            :severity "error"
-;;            :message  "Offline"
-;;            :button   "Refresh"
-;;            :action   #(.reload (.getCurrentWindow remote) )}})
+(defmethod control :ping [_ _ state]
+  {:http {:endpoint :ping
+          :method   :get
+          :on-load  :success-ping
+          :on-error :error}})
 
+(defmethod control :success-ping [_ _ state]
+  {:state (assoc state :offline? false)})
+
+(defmethod control :error [_ [e] state]
+  (print e))

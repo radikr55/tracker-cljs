@@ -5,6 +5,7 @@
             [app.renderer.forms.logout :refer [dialog-logout]]
             [app.renderer.forms.about :refer [dialog-about]]
             [app.renderer.forms.home :refer [Home]]
+            [app.renderer.forms.offline :refer [Offline]]
             [citrus.core :as citrus]
             ["@material-ui/core" :refer [CssBaseline]]
             ["@material-ui/core/styles" :refer [createMuiTheme MuiThemeProvider]]
@@ -65,9 +66,10 @@
          (loading r)
          (snack r)
          (case route
-           :login  (Login r)
-           :search (Search r)
-           :home   (Home r)
+           :login   (Login r)
+           :search  (Search r)
+           :offline (Offline r)
+           :home    (Home r)
            (if (boolean token)
              (Home r)
              (Login r)))]))

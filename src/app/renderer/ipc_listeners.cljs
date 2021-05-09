@@ -54,6 +54,11 @@
        (fn [event arg]
          (citrus/dispatch! r :chart :delete-all-empty-tasks))))
 
+(defn offline [r]
+  (.on ipcRenderer "offline"
+       (fn [event arg]
+         (citrus/dispatch! r :error :show-error {:status 503} r))))
+
 (defn start! [r]
   (render-secret r)
   (refresh r)
@@ -63,4 +68,5 @@
   (force-logout r)
   (about r)
   (clear-notificaiton r)
-  (clear-tasks r))
+  (clear-tasks r)
+  (offline r))

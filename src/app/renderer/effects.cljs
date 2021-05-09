@@ -30,19 +30,21 @@
 (defn http [r c {:keys [endpoint params slug on-load on-error method type headers token]}]
   (citrus/dispatch! r :loading :on)
   (->
-    (api/fetch {:endpoint endpoint
-                :params   params
-                :slug     slug
-                :method   method
-                :type     type
-                :headers  headers
-                :token    token})
+    (api/fetch {:reconciler r
+                :endpoint   endpoint
+                :params     params
+                :slug       slug
+                :method     method
+                :type       type
+                :headers    headers
+                :token      token})
     (p/then (fn [e]
               (citrus/dispatch! r :error :check-version e)
               e))
     (p/then (fn [e]
               (citrus/dispatch! r :loading :off)
-              (dispatch! r c on-load e r)))
+              (dispatch! r c on-load e r)
+              e))
     (p/catch (fn [e]
                (citrus/dispatch! r :loading :off)
                (citrus/dispatch! r :error :show-error e r)

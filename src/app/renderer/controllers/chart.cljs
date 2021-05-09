@@ -340,7 +340,7 @@
     (citrus/dispatch! r :task-popper :close-popper)
     (merge state update-local)))
 
-(defmethod control :error [_ e state]
+(defmethod control :error [_ [e] state]
   (print e))
 
 (defmethod control :inc-date [_ _ state]

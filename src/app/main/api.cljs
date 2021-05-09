@@ -35,7 +35,9 @@
                 (condp = status
                   status/ok           (p/resolved (parse-body body))
                   status/unauthorized (p/rejected (send-ipc @w/main-window "force-logout" nil))
-                  (p/rejected (parse-body body)))))))
+                  (p/rejected (parse-body body)))))
+      (p/catch (fn [e]
+                 (p/rejected (send-ipc @w/main-window "offline" nil))))))
 
 (defn- method->node-fn [method]
   (case method
