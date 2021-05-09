@@ -67,7 +67,7 @@
                   status/unauthorized (p/rejected {:status status/unauthorized})
                   (p/rejected (parse-body body)))))
       (p/catch (fn [e]
-                 (p/rejected {:status status/service-unavailable})))))
+                 (p/rejected {:status (or (:status e) status/service-unavailable)})))))
 
 (defn- method->xhr-fn [method]
   (case method
