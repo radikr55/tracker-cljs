@@ -63,7 +63,8 @@
                 (js/localStorage.setItem "app-version" (get headers "x-app-version"))
                 (js/localStorage.setItem "app-version-link" (get headers "x-app-version-link"))
                 (condp = status
-                  status/ok (p/resolved (parse-body body))
+                  status/ok           (p/resolved (parse-body body))
+                  status/unauthorized (p/rejected {:status status/unauthorized})
                   (p/rejected (parse-body body)))))
       (p/catch (fn [e]
                  (p/rejected {:status status/service-unavailable})))))
