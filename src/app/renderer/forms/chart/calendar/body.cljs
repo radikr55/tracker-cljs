@@ -8,7 +8,7 @@
 (def day-names ["MO" "TU" "WE" "TH" "FR" "SA" "SU"])
 
 (defn disable-date [date]
-  (t/after? date (t/now)))
+  (t/after? date (tu/to-local (t/now))))
 
 (rum/defc stub-day <
   {:key-fn (fn [_] "stub-day")}

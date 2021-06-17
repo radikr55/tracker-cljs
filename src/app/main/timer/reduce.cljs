@@ -7,7 +7,6 @@
             [app.main.utils :refer [send-ipc]]
             [app.main.local-storage :as ls]
             [promesa.core :as p]
-            [cljs.pprint :refer [pprint]]
             [cljs-time.format :as ft]))
 
 (def inactive-interval 5)

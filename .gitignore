@@ -5,7 +5,7 @@ node_modules/
 .nrepl-port
 yarn.lock
 .clj-kondo/
-
+dist/
 resources/public/js
 resources/public/css
 resources/main.js

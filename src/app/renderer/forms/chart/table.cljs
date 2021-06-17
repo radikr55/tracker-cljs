@@ -13,19 +13,18 @@
 (def h-body 50)
 (def left-min-width 200)
 (def left-max-width 500)
-(def init-width (- js/window.innerWidth right-width))
 (def atom-width (atom (- js/window.innerWidth right-width)))
 (def left-width (atom 200))
 (def chart-ref (js/React.createRef))
 (def left-ref (js/React.createRef))
 
 (add-watch atom-width :window-width
-           (fn [_ _ old new]
+           (fn [_ _ _ new]
              (when (and (.-current chart-ref) @left-width)
                (set! (.-width (.-style (.-current chart-ref))) (str (- new @left-width) "px")))))
 
 (add-watch left-width :resize-width
-           (fn [_ _ old new]
+           (fn [_ _ _ new]
              (set! (.-width (.-style (.-current chart-ref))) (str (- @atom-width new) "px"))
              (set! (.-width (.-style (.-current left-ref))) (str new "px"))))
 
@@ -57,7 +56,7 @@
 
 (rum/defc gap < rum/reactive
                 {:key-fn (fn [_] "gap")}
-  [r h-top]
+  [_ h-top]
   (tc {:component :draggable
        :opts      {:axis     "x"
                    :position {:x @left-width}

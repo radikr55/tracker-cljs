@@ -1,10 +1,8 @@
 (ns app.renderer.forms.chart.middle.chart-popper
-  (:require [rum.core :as rum]
+  (:require [app.renderer.time-utils :as tu]
             [app.renderer.utils :refer [tc]]
-            [app.renderer.time-utils :as tu]
             [citrus.core :as citrus]
-            [cljs-time.core :as t]
-            [cljs-time.format :as ft]))
+            [rum.core :as rum]))
 
 (rum/defc body < rum/reactive
                  {:key-fn (fn [_] "body")}
@@ -98,3 +96,11 @@
                                                    :left (:mouseX position)}
                                  :onClose         #(citrus/dispatch! r :chart-popper :close-popper)}
                      :child     (body r start end task date)}))))
+
+(defn zoom [r e]
+  (let [delta        (.-deltaY e)
+        window-event (.-event js/window)
+        ctrl?        (.-ctrlKey window-event)]
+    (when ctrl? (if (> delta 0)
+                  (citrus/dispatch! r :home :dec-scale)
+                  (citrus/dispatch! r :home :inc-scale)))))

@@ -400,6 +400,10 @@ $themes: (light: ('orange-away': #ffab40,
     display: flex;
     justify-content: center;
     border-bottom: solid 1px $border-color;
+    user-select: none;
+    &:hover {
+        background: $border-color;
+    }
   }
 
 
@@ -509,6 +513,11 @@ $themes: (light: ('orange-away': #ffab40,
     align-items: center;
     border-bottom: solid 1px $border-color;
     flex-direction: column;
+    user-select: none;
+    &:hover {
+        background: $border-color;
+    }
+
   }
 
   .stat-header {
@@ -922,8 +931,21 @@ $themes: (light: ('orange-away': #ffab40,
   }
 
   .notification {
-      width: 50%;
-      margin: auto;
+    width: 50%;
+    margin: auto;
+  }
+
+  .right-list div:first-child {
+    overflow-x: hidden !important;
+  }
+
+  .thumb-vertical {
+    position: relative;
+    display: block;
+    width: 100%;
+    cursor: pointer;
+    border-radius: inherit;
+    background-color: $scroll-color;
   }
 
 }

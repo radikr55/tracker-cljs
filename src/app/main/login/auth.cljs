@@ -16,12 +16,12 @@
 
 (defn open-auth-window [redirectUri]
   (-> (clear-cookies redirectUri)
-      (p/then (fn [e]
+      (p/then (fn [_]
                 (.loadURL @w/main-window redirectUri)
                 (.setMenu @w/main-window nil)))
       (p/catch #(print %))))
 
 (defonce on-auth
          (.on ipcMain "oauth"
-              (fn [event args]
+              (fn [_ args]
                 (open-auth-window args))))

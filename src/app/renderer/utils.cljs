@@ -4,6 +4,7 @@
    ["react-simple-timefield" :default TimeField]
    ["@material-ui/core/styles" :refer [styled]]
    ["@material-ui/lab" :refer [Alert]]
+   ["react-custom-scrollbars" :default Scrollbars]
    ["@material-ui/core" :refer [Typography Box
                                 Fade LinearProgress
                                 InputAdornment TextField
@@ -24,6 +25,7 @@
                                  SettingsEthernetSharp
                                  Visibility Sort
                                  Cancel CheckCircle
+                                 ArrowForward ArrowBack
                                  ArrowForwardIos ArrowBackIos
                                  ArrowDownward ArrowUpward
                                  DeleteForeverOutlined
@@ -71,6 +73,8 @@
     :popper                     Popper
     :sort                       Sort
     :arrow-up                   ArrowUpward
+    :arrow-back                 ArrowBack
+    :arrow-forward              ArrowForward
     :arrow-left                 ArrowBackIos
     :arrow-right                ArrowForwardIos
     :grid                       Grid
@@ -89,6 +93,8 @@
     :alert                      Alert
     :badge                      Badge
     :circular-progress          CircularProgress
+    :scrollbars                 Scrollbars
+    :div                        "div"
     nil))
 
 (defn obj-js [component]
@@ -109,31 +115,22 @@
                                #(clj->js styl))
                               (clj->js opts)
                               (cond
-                                (map? child) (js/React.createElement comp (clj->js opts) (tc child))
+                                (map? child)    (js/React.createElement comp (clj->js opts) (tc child))
                                 (vector? child) (js/React.createElement comp (clj->js opts) (map tc child))
-                                :else child))
+                                :else           child))
       (cond
-        (nil? comp) component
+        (nil? comp)         component
         (object? component) component
-        (map? child) (js/React.createElement comp (clj->js opts) (tc child))
-        (vector? child) (js/React.createElement comp (clj->js opts) (map tc child))
-        :else (js/React.createElement comp (clj->js opts) child)))))
+        (map? child)        (js/React.createElement comp (clj->js opts) (tc child))
+        (vector? child)     (js/React.createElement comp (clj->js opts) (map tc child))
+        :else               (js/React.createElement comp (clj->js opts) child)))))
 
-
-(defn scroll-vertical-box
-  [posr ref]
-  (let [current (.-current ref)]
-    (when (not (nil? current))
-      (let [scroll-position (.-scrollTop current)
-            pos             (+ posr scroll-position)]
-        (set! (.-scrollTop current) pos)))))
-
-(defn on-wheel-vertical [e boxes]
-  (let [delta (.-deltaY e)]
-    (doseq [box boxes]
-      (if (> delta 0)
-        (scroll-vertical-box 30 box)
-        (scroll-vertical-box -30 box)))))
+(defn scroll-vertical-box [right boxes]
+  (doseq [box boxes
+          :let [current (.-current box)
+                r-current (.-current right)]]
+    (when (and (not (nil? r-current)) (not (nil? current)))
+      (set! (.-scrollTop current) (.-scrollTop (.-view (.-current right)))))))
 
 (defn package-config [config]
   (get (js->clj (js/require "../../package.json")) config))

@@ -19,11 +19,11 @@
        :child     [{:component :icon-button
                     :opts      {:onClick #(citrus/dispatch! r :calendar-popper :previously-month r)
                                 :key     "previously"}
-                    :child     {:component :arrow-left}}
+                    :child     {:component :arrow-back}}
                    {:component :icon-button
                     :opts      {:onClick #(citrus/dispatch! r :calendar-popper :next-month r)
                                 :key     "next"}
-                    :child     {:component :arrow-right}}]}))
+                    :child     {:component :arrow-forward}}]}))
 
 (rum/defc Header < rum/reactive
                    {:key-fn (fn [_] "header")}

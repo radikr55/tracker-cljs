@@ -1,15 +1,14 @@
 (ns app.renderer.forms.chart.left.task-list
   (:require [rum.core :as rum]
-            [app.renderer.utils :refer [tc on-wheel-vertical]]
+            [app.renderer.utils :refer [tc]]
             [app.renderer.forms.chart.left.task-popper :as task-popper]
             [citrus.core :as citrus]))
 
 (def left-list-ref (js/React.createRef))
 (def away "Away (Not working)")
 
-(rum/defc header <
-  {:key-fn (fn [_] "header")}
-  [r h-header top?]
+(rum/defc header < {:key-fn (fn [_] "header")}
+  [r h-header]
   (tc {:component :box
        :opts      {:height    (str h-header "px")
                    :key       "header"
@@ -28,8 +27,7 @@
                                             :font-weight     "900"}
                                 :child     "Add Task"}}]}))
 
-(rum/defc footer <
-  {:key-fn (fn [_] "footer")}
+(rum/defc footer < {:key-fn (fn [_] "footer")}
   [h-header]
   (tc {:component :box
        :opts      {:height    (str h-header "px")
@@ -97,16 +95,11 @@
 (rum/defc body < rum/reactive
                  {:key-fn (fn [_] "body")}
   [r h-top h-header h-body]
-  (let [middle-list-ref (rum/react (citrus/subscription r [:home :middle-list-ref]))
-        right-list-ref  (rum/react (citrus/subscription r [:home :right-list-ref]))
-        list            (rum/react (citrus/subscription r [:chart :list]))]
+  (let [list            (rum/react (citrus/subscription r [:chart :list]))]
     (citrus/dispatch! r :home :set-left-list-ref left-list-ref)
     (tc {:component :box
          :opts      {:overflow "hidden"
                      :ref      left-list-ref
-                     :onWheel  #(on-wheel-vertical % [middle-list-ref
-                                                      left-list-ref
-                                                      right-list-ref])
                      :height   (str "calc(100vh - " (+ 2 h-top (* 2 h-header)) "px)")}
          :child     (map #(item r % h-body) list)})))
 

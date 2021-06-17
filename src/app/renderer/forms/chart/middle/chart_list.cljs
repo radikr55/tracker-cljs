@@ -3,7 +3,6 @@
             [app.renderer.utils :refer [tc]]
             [app.renderer.time-utils :as tu]
             [citrus.core :as citrus]
-            [citrus.cursor :as c]
             [cljs-time.core :as t]
             [app.renderer.forms.chart.middle.timeline :as timeline]
             ["react-dnd" :refer [useDrag useDrop]]
@@ -28,29 +27,29 @@
             {:position end-position})))
 
 (rum/defc box < rum/static
-  [r block index gray? row-code scale current-task drag props line-props]
+  [r block gray? row-code scale current-task drag props line-props]
   (let [{dragging? :dragging?} props
         code         (:code block)
         not-nil?     (boolean code)
         away?        (and (some? code) (empty? code))
         width        (str (* scale (:interval block)) "px")
         place-class  (cond-> "chart-block "
-                             gray? (str " chart-block-empty chart-block-gray ")
-                             (not gray?) (str " chart-block-empty chart-block-white ")
-                             (empty? row-code) (str " chart-row-away ")
-                             (seq row-code) (str " chart-row-blue ")
-                             (= row-code current-task) (str " selected-row ")
-                             (:over? line-props) (str " chart-active-drop-area "))
+                       gray? (str " chart-block-empty chart-block-gray ")
+                       (not gray?) (str " chart-block-empty chart-block-white ")
+                       (empty? row-code) (str " chart-row-away ")
+                       (seq row-code) (str " chart-row-blue ")
+                       (= row-code current-task) (str " selected-row ")
+                       (:over? line-props) (str " chart-active-drop-area "))
         class        (cond-> "chart-block "
-                             away? (str " chart-block-away ")
-                             not-nil? (str " chart-block-blue ")
-                             (and (not code) gray?) (str " chart-block-empty chart-block-gray ")
-                             (and (not code) (not gray?)) (str " chart-block-empty chart-block-white ")
-                             (empty? row-code) (str " chart-row-away ")
-                             (seq row-code) (str " chart-row-blue ")
-                             (:stub? block) (str " chart-block-stub ")
-                             (= row-code current-task) (str " selected-row ")
-                             (:over? line-props) (str " chart-active-drop-area "))
+                       away? (str " chart-block-away ")
+                       not-nil? (str " chart-block-blue ")
+                       (and (not code) gray?) (str " chart-block-empty chart-block-gray ")
+                       (and (not code) (not gray?)) (str " chart-block-empty chart-block-white ")
+                       (empty? row-code) (str " chart-row-away ")
+                       (seq row-code) (str " chart-row-blue ")
+                       (:stub? block) (str " chart-block-stub ")
+                       (= row-code current-task) (str " selected-row ")
+                       (:over? line-props) (str " chart-active-drop-area "))
         start        (:format-start block)
         end          (:format-end block)
         interval     (:format-interval block)
@@ -67,11 +66,11 @@
         on-click     (if (not code)
                        (when (not (:stub? block))
                          #(open-dialog r % (assoc block :code row-code
-                                                        :min-start (:start block)
-                                                        :max-end (:end block))))
+                                                  :min-start (:start block)
+                                                  :max-end (:end block))))
                        #(open-dialog r % (assoc block :code row-code
-                                                      :max-start (:start block)
-                                                      :min-end (:end block))))]
+                                                :max-start (:start block)
+                                                :min-end (:end block))))]
     (check-position (and not-nil? (not= (:interval block) 0)) end-position)
     (tc (if dragging?
           {:component :box
@@ -90,11 +89,11 @@
            :child     (when (and (not away?) not-nil?) child)}))))
 
 (rum/defc wrap-box < rum/static
-  [r block index gray? row-code scale current-task line-props]
-  (let [[props drag drop] (useDrag (clj->js {:item    {:type  "box"
-                                                       :block block}
-                                             :collect (fn [monitor] {:dragging? (.isDragging monitor)})}))]
-    (box r block index gray? row-code scale current-task drag props line-props)))
+  [r block gray? row-code scale current-task line-props]
+  (let [[props drag] (useDrag (clj->js {:item    {:type  "box"
+                                                  :block block}
+                                        :collect (fn [monitor] {:dragging? (.isDragging monitor)})}))]
+    (box r block gray? row-code scale current-task drag props line-props)))
 
 (rum/defc item < rum/static
   [r row h-body index chart scale current-task]
@@ -108,10 +107,10 @@
                   (let [{start :start
                          end   :end
                          code  :code} (:block (js->clj item :keywordize-keys true))]
-                    (if (not= code drop-code) (citrus/dispatch! r :chart-popper :save-time
-                                                                start end drop-code)))
+                    (when (not= code drop-code) (citrus/dispatch! r :chart-popper :save-time
+                                                                  start end drop-code)))
                   (clj->js {}))
-        collect (fn [monitor] {:over? (and (.isOver monitor)
+        collect (fn [^js/DragSourceMonitoris monitor] {:over? (and (.isOver monitor)
                                            (not= code
                                                  (-> (.getItem monitor)
                                                      (js->clj :keywordize-keys true)
@@ -126,7 +125,7 @@
                      :display "flex"
                      :width   width}
          :child     (map-indexed #(rum/with-key
-                                    (wrap-box r %2 %1 (odd? index) code scale current-task prop)
+                                    (wrap-box r %2 (odd? index) code scale current-task prop)
                                     %1)
                                  list)})))
 
@@ -144,30 +143,17 @@
                                   (clj->js {:left position}))))
                    state)})
 
-;TODO fix scroll position after scale
-;(defn reset-cursor-scroll [old-scale scale]
-;  (let [origin-old     (* old-scale 1439)
-;        origin-new     (* scale 1439)
-;        parent-element (.-parentNode (.-parentNode (.-current middle-list-ref)))
-;        parent-width   (.-clientWidth parent-element)
-;        scroll-left    (.-scrollLeft parent-element)
-;        new-scroll     (* origin-new (/ scroll-left (- origin-old parent-width)))]
-;    (print scroll-left parent-width)
-;    (.scrollTo parent-element
-;               (clj->js {:left new-scroll}))))
-
-(defn zoom [r e scale]
+(defn zoom [r e]
   (let [delta        (.-deltaY e)
         window-event (.-event js/window)
         ctrl?        (.-ctrlKey window-event)]
-    (when ctrl? (do (if (> delta 0)
-                      (citrus/dispatch! r :home :dec-scale)
-                      (citrus/dispatch! r :home :inc-scale))
-                    ))))
+    (when ctrl? (if (> delta 0)
+                  (citrus/dispatch! r :home :dec-scale)
+                  (citrus/dispatch! r :home :inc-scale)))))
 
 (rum/defc body < rum/reactive
-                 scroll-mixin
-                 {:key-fn (fn [_] "body")}
+  scroll-mixin
+  {:key-fn (fn [_] "body")}
   [r h-top h-header h-body]
   (let [list         (rum/react (citrus/subscription r [:chart :list]))
         chart        (rum/react (citrus/subscription r [:chart :chart]))
@@ -178,7 +164,7 @@
     (tc {:component :box
          :opts      {:overflow "hidden"
                      :ref      middle-list-ref
-                     :onWheel  #(zoom r % scale)
+                     :onWheel  #(zoom r %)
                      :height   (str "calc(100vh - " (+ 2 h-top (* 2 h-header)) "px)")}
          :child     (map-indexed #(rum/with-key
                                     (item r %2 h-body %1 chart scale current-task)

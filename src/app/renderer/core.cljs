@@ -59,22 +59,22 @@
           (js/setTimeout send-ping (* offline-time 1000))))
 
 (add-watch (citrus/subscription reconciler [:chart :date]) :enable-clear-notification
-           (fn [_ _ old new]
+           (fn []
              (let [date          @(citrus/subscription reconciler [:chart :date])
                    not-submitted @(citrus/subscription reconciler [:chart :not-submitted])]
                (check-not-submitted date not-submitted))))
 
 (add-watch (citrus/subscription reconciler [:chart :not-submitted]) :enable-clear-notification
-           (fn [_ _ old new]
+           (fn []
              (let [date          @(citrus/subscription reconciler [:chart :date])
                    not-submitted @(citrus/subscription reconciler [:chart :not-submitted])]
                (check-not-submitted date not-submitted))))
 
 (add-watch (citrus/subscription reconciler [:error :offline?]) :process-offline
-           (fn [_ _ old new]
+           (fn [_ _ _ new]
              (let [start-ping #(reset! offline-interval (js/setTimeout send-ping (* offline-time 1000)))
-                   stop-ping #(do (citrus/dispatch! reconciler :router :push :home)
-                                  (js/clearTimeout @offline-interval ))]
+                   stop-ping  #(do (citrus/dispatch! reconciler :router :push :home)
+                                   (js/clearTimeout @offline-interval))]
                (if new
                  (start-ping)
                  (stop-ping)))))
@@ -87,4 +87,3 @@
 (defn ^:dev/after-load start []
   (rum/mount (Root reconciler)
              (dom/getElement "app-container")))
-

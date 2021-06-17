@@ -2,13 +2,11 @@
   (:require [rum.core :as rum]
             [app.renderer.utils :refer [tc]]
             [app.renderer.time-utils :as tu]
-            [citrus.core :as citrus]
-            [cljs-time.core :as t]
-            [cljs-time.format :as ft]))
+            [citrus.core :as citrus]))
 
 (rum/defc body < rum/reactive
                  {:key-fn (fn [_] "body")}
-  [r time task date]
+  [r time _ date]
   (let [time-str (tu/format-time->field time)]
     (tc {:component :paper
          :opts      {:className "chart-popper-paper"}
@@ -58,7 +56,6 @@
                    {:key-fn (fn [_] "popover")}
   [r]
   (let [stat-popper (rum/react (citrus/subscription r [:stat-popper]))
-        list        (rum/react (citrus/subscription r [:chart :list]))
         position    (:position stat-popper)
         open?       (:open stat-popper)
         time        (:time stat-popper)

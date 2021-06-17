@@ -1,16 +1,13 @@
 (ns app.renderer.forms.chart.left.task-popper
   (:require [rum.core :as rum]
             [app.renderer.utils :refer [tc]]
-            [app.renderer.time-utils :as tu]
             ["electron" :refer [shell]]
-            [cljs-time.core :as t]
             [citrus.core :as citrus]))
 
 (rum/defc SubMenu < rum/reactive
                     {:key-fn (fn [_] "submenu")}
   [r]
   (let [p        (rum/react (citrus/subscription r [:task-popper]))
-        date     (rum/react (citrus/subscription r [:chart :date]))
         code     (:code p)
         open?    (:open p)
         position (:position p)

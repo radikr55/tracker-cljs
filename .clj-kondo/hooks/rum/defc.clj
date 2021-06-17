@@ -18,6 +18,4 @@
         new-node       (with-meta
                          (api/list-node (list* (api/token-node 'defn) component-name body))
                          (meta node))]
-    ;; (prn (meta sexpr))
-    ;; (prn expr)
     {:node new-node}))

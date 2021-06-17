@@ -68,7 +68,7 @@
          (case route
            :login   (Login r)
            :search  (Search r)
-           :offline (Offline r)
+           :offline (Offline)
            :home    (Home r)
            (if (boolean token)
              (Home r)

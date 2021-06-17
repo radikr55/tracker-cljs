@@ -2,8 +2,7 @@
   (:require [rum.core :as rum]
             [app.renderer.utils :refer [tc]]))
 
-(rum/defc Offline < rum/reactive
-  [r]
+(rum/defc Offline []
   (tc {:component :grid
        :styl      {:width  "100%"
                    :height "100vh"}

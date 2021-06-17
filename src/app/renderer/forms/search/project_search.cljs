@@ -1,18 +1,19 @@
 (ns app.renderer.forms.search.project-search
   (:require [rum.core :as rum]
             [app.renderer.utils :refer [tc]]
-            [citrus.core :as citrus]))
+            [citrus.core :as citrus]
+            [clojure.string :as s]))
 
 (def selected-project (atom nil))
 
 (defn title-includes?
   [base str]
-  (clojure.string/includes? (clojure.string/upper-case base)
-                            (clojure.string/upper-case str)))
+  (s/includes? (s/upper-case base)
+                            (s/upper-case str)))
 
 
 (defn filter-list [list criteria]
-  (if (clojure.string/blank? criteria)
+  (if (s/blank? criteria)
     list
     (let [pred-proj     #(or (title-includes? (:title %) criteria)
                              (= (:id %) @selected-project)
@@ -24,7 +25,7 @@
         (assoc category :list (filter pred-proj (:list category)))))))
 
 (rum/defc item < rum/reactive
-                 {:key-fn (fn [r data] (str (:id data)))}
+                 {:key-fn (fn [_ data] (str (:id data)))}
   [r data]
   (let [title       (:title data)
         id          (:id data)
@@ -45,9 +46,10 @@
 
 (rum/defc subheader < rum/reactive
                       {:key-fn (fn [_ id _] id)}
-  [r category paper]
-  (tc {:component :list-subheader
-       :opts      {:className "search-list-subheader"}
+  [_ category paper]
+  (tc {:component :list-item
+       :opts      {:className "search-list-subheader"
+                   :disabled true}
        :styl      {:backgroundColor paper}
        :child     category}))
 
@@ -61,16 +63,21 @@
         f-list (filter-list list search)]
     (tc {:component :box
          :opts      {:className "search-list-body"}
-         :child     {:component :list
-                     :opts      {:key       "project"
-                                 :className "search-list"}
+         :child  {:component :scrollbars
+                     :opts      {:autoHeight true
+                                 :autoHeightMin    "calc(100vh - 140px)"
+                                 :autoHeightMax    "calc(100vh - 140px)"
+                                 :renderThumbVertical (fn [opts]
+                                                        (print (js->clj opts))
+                                                        (tc {:component :div
+                                                             :opts {:className "thumb-vertical"}}))}
                      :child     (map (fn [data]
                                        (let [category (:category data)
                                              d-list   (:list data)]
-                                         [(when (not (clojure.string/blank? category))
+                                         [(when (not (s/blank? category))
                                             (subheader r category paper))
                                           (map #(item r %) d-list)]))
-                                     f-list)}})))
+                                     f-list)}   })))
 
 (rum/defc search < rum/reactive
                    {:key-fn (fn [_] "search")}

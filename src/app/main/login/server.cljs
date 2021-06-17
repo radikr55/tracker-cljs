@@ -6,7 +6,6 @@
 
 (defonce app (express))
 
-
 (.get app "/login"
       (fn [req res]
         (w/load-local-index)
@@ -15,12 +14,8 @@
           (.once web-content "dom-ready"
                  #(.send web-content "secret" (.-originalUrl req))))))
 
-(defn -main [& mess]
+(defn -main []
   (let [server (.listen app port
                         #(println "Server running at http://127.0.0.1:8666/"))]
-    (.on server "error" #(print %))
-    ))
+    (.on server "error" #(print %))))
 
-(comment
-  (try (throw js/Error) (catch :default e (print e)))
-  (-main))

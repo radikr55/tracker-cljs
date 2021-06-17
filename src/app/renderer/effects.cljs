@@ -5,8 +5,8 @@
             [promesa.core :as p]
             ["electron" :refer [ipcRenderer]]))
 
-(defn local-storage [r controller-name effect]
-  (let [{:keys [method data key on-read]} effect]
+(defn local-storage [_ _ effect]
+  (let [{:keys [method data key _]} effect]
     (case method
       :set (js/localStorage.setItem (name key) data)
       :remove (js/localStorage.removeItem (name key))
@@ -24,7 +24,7 @@
   (apply citrus/dispatch! r c event args))
 
 (defmethod dispatch! PersistentArrayMap [r c effects & oargs]
-  (doseq [[effect [c event & args]] effects]
+  (doseq [[_ [c event & args]] effects]
     (apply dispatch! r c event (concat args oargs))))
 
 (defn http [r c {:keys [endpoint params slug on-load on-error method type headers token]}]
