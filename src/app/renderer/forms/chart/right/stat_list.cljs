@@ -84,11 +84,9 @@
                      :onScroll   (fn [_] (scroll-vertical-box right-list-ref [middle-list-ref left-list-ref]))
                      :autoHeightMin    (str "calc(100vh - " (+ 2 h-top (* 2 h-header)) "px)")
                      :autoHeightMax    (str "calc(100vh - " (+ 2 h-top (* 2 h-header)) "px)")
-                     :renderThumbVertical (fn [opts]
-                                            (print (js->clj opts))
+                     :renderThumbVertical (fn [_]
                                    (tc {:component :div
-                                        :opts {:className "thumb-vertical"}}))
-                     }
+                                        :opts {:className "thumb-vertical"}}))}
          :child     (map-indexed #(item r %2 h-body %1) list)})))
 
 (rum/defc StatList < rum/reactive

@@ -67,8 +67,7 @@
                      :opts      {:autoHeight true
                                  :autoHeightMin    "calc(100vh - 140px)"
                                  :autoHeightMax    "calc(100vh - 140px)"
-                                 :renderThumbVertical (fn [opts]
-                                                        (print (js->clj opts))
+                                 :renderThumbVertical (fn [_]
                                                         (tc {:component :div
                                                              :opts {:className "thumb-vertical"}}))}
                      :child     (map (fn [data]

@@ -19,7 +19,7 @@
     "author": "Rodion Shylo <r.shylo@softarex.com>",
     "license": "MIT",
     "devDependencies": {
-        "electron": "10.1.1",
+        "electron": "10.2.0",
         "electron-builder": "21.2.0",
         "shadow-cljs": "2.13.0"
     },
@@ -42,7 +42,7 @@
         "react-draggable": "4.4.3",
         "react-simple-timefield": "3.2.3",
         "sass": "1.26.10",
-        "ws": "7.4.0"
+        "ws": "7.4.6"
     },
     "build": {
         "productName": "TaskTracker v2",
