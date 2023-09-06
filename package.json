@@ -19,7 +19,7 @@
     "author": "Rodion Shylo <r.shylo@softarex.com>",
     "license": "MIT",
     "devDependencies": {
-        "electron": "10.2.0",
+        "electron": "22.3.21",
         "electron-builder": "21.2.0",
         "shadow-cljs": "2.13.0"
     },
